@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.TeamCollaborationActivity"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@color/color3">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            >
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llReport"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:background="@android:color/white">
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:text="View Report"
+                android:layout_gravity="center"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            >
+            <ImageView
+                android:id="@+id/imgHome"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_home" />
+
+        </LinearLayout>
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date Of Intraction with IFB Executives"></TextView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+                <ImageView
+                    android:id="@+id/imgCalendar"
+                    android:src="@drawable/calendericon"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"></ImageView>
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvDate"></TextView>
+
+            </LinearLayout>
+            <TextView
+                android:layout_marginTop="20dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How satisfied you are on IFB display in your store?"></TextView>
+            <RadioGroup
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/radioGroupQ1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RadioButton
+
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ1VerySatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Very Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ1Satisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ1SomeSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Somewhat Satisfied"
+                    android:textSize="9sp"/>
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ1NotSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Not Satisfied"
+                    android:textSize="9sp"/>
+            </RadioGroup>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How satisfied you are on IFB stock availability in your store?"></TextView>
+            <RadioGroup
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/radioGroupQ2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RadioButton
+
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ2VerySatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Very Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ2Satisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ2SomeSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Somewhat Satisfied"
+                    android:textSize="9sp"/>
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ2NotSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Not Satisfied"
+                    android:textSize="9sp"/>
+            </RadioGroup>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How price of product (MOP) is maintained in your market?"></TextView>
+            <RadioGroup
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/radioGroupQ3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RadioButton
+
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ3VerySatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Very Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ3Satisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ3SomeSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Somewhat Satisfied"
+                    android:textSize="9sp"/>
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ3NotSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Not Satisfied"
+                    android:textSize="9sp"/>
+            </RadioGroup>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inshop Branding and POP Placement"></TextView>
+            <RadioGroup
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/radioGroupQ4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RadioButton
+
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ4VerySatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Very Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ4Satisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ4SomeSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Somewhat Satisfied"
+                    android:textSize="9sp"/>
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ4NotSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Not Satisfied"
+                    android:textSize="9sp"/>
+            </RadioGroup>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Are you happy with IFB after Sales experience (Installation/Demo)?"></TextView>
+            <RadioGroup
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:id="@+id/radioGroupQ5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <RadioButton
+
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ5VerySatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Very Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ5Satisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Satisfied"
+                    android:textSize="9sp"/>
+
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ5SomeSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Somewhat Satisfied"
+                    android:textSize="9sp"/>
+                <RadioButton
+                    android:layout_weight="1"
+                    android:id="@+id/radioButtonQ5NotSatisfied"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Not Satisfied"
+                    android:textSize="9sp"/>
+            </RadioGroup>
+            <Button
+                android:id="@+id/btnSubmit"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:text="Submit"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@color/color2"
+                android:layout_width="200dp"
+                android:layout_height="40dp"></Button>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

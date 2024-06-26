@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.cordova.ifb">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".AndroidXCamera.AndroidXCameraActivity"
+            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.NewDashboardActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activity.INDDashbaordActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activity.ReferEarnActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activity.SalesManage2Activity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ODUScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CompSalesDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.UpdateSerialInvoiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SerialInvoiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.AttendanceCheckOutActivity"
+            android:screenOrientation="userPortrait" />
+        <activity android:name=".activity.RefregeratorDialogActivity" />
+        <activity android:name=".activity.CSRIssueReportActivity" />
+        <activity android:name=".activity.CSRIssueDashboardActivity" />
+        <activity android:name=".activity.VaccineReportActivity" />
+        <activity android:name=".activity.VaccineDashboardActivity" />
+        <activity android:name=".activity.VaccineStausActivity" />
+        <activity android:name=".activity.SalesLeadDashboardActivity" />
+        <activity android:name=".activity.CustomerCallingConsolidateReportActivity" />
+        <activity android:name=".activity.ConsolidateSalesReportActivity" />
+        <activity android:name=".activity.SalesReportDashboardActivity" />
+        <activity android:name=".activity.ReplenshedReportActivity" />
+        <activity android:name=".activity.ReplenshedUpdateActivity" />
+        <activity android:name=".activity.ReplenishedItemActivity" />
+        <activity android:name=".activity.ReplenishedActivity" />
+        <activity android:name=".activity.CollaborationReportActivity" />
+        <activity android:name=".activity.TeamCollaborationActivity" />
+        <activity android:name=".activity.DeliveryAddressUpdateActivity" />
+        <activity android:name=".activity.SalesManageDashboardActivity" />
+        <activity android:name=".activity.SalesLeadDetailsActivity" />
+        <activity android:name=".activity.SalesLeadActivity" />
+        <activity android:name=".activity.DisplayMatrix2Activity" />
+        <activity android:name=".activity.DailyCounterSaleDashboardActivity" />
+        <activity android:name=".activity.DWReportActivity" />
+        <activity android:name=".activity.DWManageActivity" />
+        <activity android:name=".activity.DWDashboardActivity" />
+        <activity android:name=".activity.KAEnqueryActivity" />
+        <activity android:name=".activity.IQueryManageActivity" />
+        <activity android:name=".activity.IQueriesDashboardActivity" />
+        <activity android:name=".activity.CustomerDetailsActivity" />
+        <activity android:name=".activity.CallingReportActivity" />
+        <activity android:name=".activity.CustomerCallingManaeActivity" />
+        <activity
+            android:name=".activity.DocDashBaordActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CVisitReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CVisitManageActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CVisitDashboardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DisplayMatrixReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DisplayMatrixDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".activity.SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.LoginActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.AttendanceDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesDashboardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.AttemdanceReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.AttendanceManageActivity"
+            android:screenOrientation="userPortrait" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".activity.SalesManageActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesTargetActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.QAReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.DisplayMatrixActivity"
+            android:screenOrientation="userPortrait" />
+        <activity android:name=".activity.AirConditionerDialogActivity" />
+        <activity android:name=".activity.WasherDryerDialogActivity" />
+        <activity android:name=".activity.KADialogActivity" />
+        <activity android:name=".activity.OvenDialogActivity" />
+        <activity android:name=".activity.ClothsDryerDialogActivity" />
+        <activity android:name=".activity.CookerDialogActivity" />
+        <activity android:name=".activity.DishwasherDialogActivity" />
+        <activity android:name=".activity.MicroOvenDialogActivity" />
+        <activity
+            android:name=".activity.RefrigeratorDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.RefregeratorFFDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.WaterPurifierDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity android:name=".activity.WMFLUDialogActivity" />
+        <activity android:name=".activity.WMTLDialogActivity" />
+        <activity
+            android:name=".activity.SaleDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.NotificationActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.QueriesActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.NoSalesActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesReturnActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ModelExchangeActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.OtherSalesDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.OtherDailyActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TLDailyActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TLSalesDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TSRDailyActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TSRSalesDashboardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TLSalesReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.OtherSaleReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.LocationReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CompetitorSaleActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CompSaleReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DummySaleDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DummySaleManageActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DummySaleReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DummyUpdationActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DummySaleUpdationFormActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.QuestionDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.FeedBack1Activity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity android:name=".activity.DisplayMatrixDynamicActivity" />
+        <activity android:name=".activity.KAItemDialogActivity" />
+        <activity
+            android:name=".activity.FeedbackAprilActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.DocumentNumberActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DocumentManageActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ECatelougeActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DocumentReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DailyLogDashBoardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.VisitLocationActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DailyLogManageActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.NumberTourActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.APiHitActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.MapReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.TourViewReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DailyLogReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.CustomerCallingDashboardActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.IQueriesReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.SalesReportDownldActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ECatelogActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.ESubCatActivity"
+            android:theme="@style/Theme.AppCompat.Dialog" />
+        <activity
+            android:name=".activity.DailyCompetitorSaleActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.DailyCompSaleReportActivity"
+            android:screenOrientation="userPortrait" />
+        <activity android:name=".activity.CustomerCallingManageManualActivity" />
+        <activity
+            android:name=".activity.SalesLeadReportActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.DeliveryDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SalesUpdateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.RefNoReportActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ELearningActivity"
+            android:screenOrientation="userPortrait" />
+        <activity
+            android:name=".activity.AttendanceManage2Activity"
+            android:screenOrientation="userPortrait" />
+    </application>
+
+</manifest>

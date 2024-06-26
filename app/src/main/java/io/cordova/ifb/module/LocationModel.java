@@ -1,0 +1,26 @@
+package io.cordova.ifb.module;
+
+public class LocationModel {
+    String time,address;
+
+    public LocationModel(String time, String address) {
+        this.time = time;
+        this.address = address;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}

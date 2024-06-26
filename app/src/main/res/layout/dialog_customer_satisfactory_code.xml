@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/lldesign7"
+    android:padding="5dp">
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:text="Please Enter Customer Purchase Code"></TextView>
+        <EditText
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/lldesign"
+            android:backgroundTint="@color/gray"
+            android:padding="5dp"
+            android:textColor="@color/text_color"
+            android:id="@+id/etCode"></EditText>
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:background="@drawable/lldesign"
+            android:backgroundTint="@color/black"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:text="Submit"
+            android:textSize="14sp"></Button>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blue"
+                android:textSize="14sp"
+                android:text="Resend Code after"></TextView>
+            <com.dhims.timerview.TimerTextView
+                android:layout_marginLeft="2dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:textColor="@color/red"
+                android:textStyle="bold"
+                android:id="@+id/tvTimerText"></com.dhims.timerview.TimerTextView>
+        </LinearLayout>
+        <Button
+            android:enabled="false"
+            android:id="@+id/btnResend"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:background="@drawable/lldesign"
+            android:backgroundTint="@color/gray"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:text="Resend"
+            android:textSize="14sp"></Button>
+
+    </LinearLayout>
+
+
+
+
+
+
+</LinearLayout>

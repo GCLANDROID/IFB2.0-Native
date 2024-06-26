@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="320dp"
+    android:layout_height="match_parent"
+    tools:context=".activity.FeedbackAprilActivity"
+    android:orientation="vertical"
+    android:background="@drawable/lldesign14">
+    <LinearLayout
+        android:id="@+id/llWLLoader"
+        android:layout_width="320dp"
+        android:layout_height="500dp"
+        android:gravity="center"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/ProgressbarWL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llMain"
+        android:layout_width="320dp"
+        android:layout_height="500dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <ScrollView
+            android:layout_width="320dp"
+            android:layout_height="500dp">
+            <LinearLayout
+                android:layout_width="320dp"
+                android:layout_height="500dp"
+                android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"></androidx.recyclerview.widget.RecyclerView>
+                <LinearLayout
+                    android:layout_width="300dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/lldesign"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center">
+                    <EditText
+                        android:hint="Please enter remark"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="5dp"
+                        android:textSize="14sp"
+                        android:background="@null"
+                        android:textColorHint="@android:color/black"
+                        android:textColor="@android:color/black"
+                        android:id="@+id/etRemarks"
+                        android:imeOptions="actionDone"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    >
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <Button
+                            android:id="@+id/btnSave"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/lldesign12"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:text="SAVE"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:id="@+id/llSkip">
+                        <Button
+                            android:id="@+id/btnSkip"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/lldesign13"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:text="SKIP"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+
+    </LinearLayout>
+
+</LinearLayout>
