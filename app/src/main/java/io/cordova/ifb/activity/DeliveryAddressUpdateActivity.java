@@ -321,7 +321,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         spPedestal.setAdapter(spinnerPedestalAdapter);
 
         if (categoryId.equals("IFBPC1000001")) {
-            lnWIFI.setVisibility(View.VISIBLE);
+            lnWIFI.setVisibility(View.GONE);
 
             lnPedestal.setVisibility(View.GONE);
 
@@ -1386,6 +1386,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     String MultipleProduct = object.optString("MultipleProduct");
                                     String installationBy = object.optString("InstallationBy");
                                     String WiFiDeviceStatus = object.optString("WiFiDeviceStatus");
+                                    String RELIANCEFLAG=object.optString("RELIANCEFLAG");
                                     RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
                                     rcnModel.setSerNumber(SerialNo);
@@ -1409,7 +1410,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     csrOBJ.put("TOKENNO", TokenNo);
                                     csrOBJ.put("CREATEDBY", prefManager.getUserCode());
                                     csrOBJ.put("RELIANCEFRANCH", "");
-                                    csrOBJ.put("RELIANCEFLAG", "N");
+                                    csrOBJ.put("RELIANCEFLAG", RELIANCEFLAG);
                                     csrOBJ.put("MULTIPLEQUANTITY", MultipleProduct);
                                     csrOBJ.put("TOKENCREATED", currentDate);
                                     csrOBJ.put("INSTALLATIONBY", installationBy);
