@@ -48,6 +48,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.developers.imagezipper.ImageZipper;
 import com.wajahatkarim3.longimagecamera.LongImageCameraActivity;
 
 import org.json.JSONArray;
@@ -56,17 +57,21 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
+import io.cordova.ifb.AndroidXCamera.AndroidXCameraActivity;
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PostDisplayMatrixService;
 import io.cordova.ifb.utility.PrefManager;
+import io.cordova.ifb.utility.Util;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -294,8 +299,9 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     private static final int REFFFREQUEST = 901;
     AlertDialog cameraAlert;
     String imageFileName;
-    File pictureFile;
-
+    File pictureFile,compressedImageFile;
+    Uri image_uri,image_uri1,image_uri2;
+    String currentDateandTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -310,7 +316,8 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
     private void init() {
 
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+         currentDateandTime = sdf.format(new Date());
         prefManager = new PrefManager(getApplicationContext());
         sendACModelList.clear();
         prefManager.saveAirConditionerId("");
@@ -2251,7 +2258,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                         if (responseStatus) {
                             pd.dismiss();
                             if (prefManager.getUserCode().equalsIgnoreCase("IFBAPPL00001")){
-
+                                imageAlert();
                             }else {
                                 imageAlert();
                             }
@@ -2347,20 +2354,20 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         imgPic1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraDialogForPic1();
+                AndroidXCameraActivity.launch(DisplayMatrixDynamicActivity.this, CAMERA_REQUEST);
             }
         });
         imgPic2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraDialogForPic2();
+                AndroidXCameraActivity.launch(DisplayMatrixDynamicActivity.this, CAMERA_REQUEST1);
             }
         });
 
         imgPic3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraDialogForPic3();
+                AndroidXCameraActivity.launch(DisplayMatrixDynamicActivity.this, CAMERA_REQUEST2);
             }
         });
 
@@ -3564,382 +3571,111 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CAMERA_REQUEST:
 
-                if (resultCode == Activity.RESULT_OK) {
+        if (requestCode == 2000 && resultCode == CAMERA_REQUEST) {
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get("picture"));
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY));
+            image_uri = Uri.parse(String.valueOf(data.getExtras().get("picture")));
+            //image_uri = (Uri) data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY);
+            File imageFile = new File(String.valueOf(data.getExtras().get("picture")));
+            Log.e("TAG", "image_uri: " + image_uri);
+            if (image_uri != null) {
+
+
                     try {
-                        try {
-                            String imageurl = /*"file://" +*/ getRealPathFromURI(imageUri);
-                            file = new File(imageurl);
-
-                            BitmapFactory.Options o = new BitmapFactory.Options();
-                            o.inSampleSize = 2;
-                            Bitmap bm = cropToSquare(BitmapFactory.decodeFile(imageurl, o));
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //bm is the bitmap object
-                            byte[] b = baos.toByteArray();
-                            imgPic1.setImageBitmap(bm);
-                            encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-
-                            String contentType = "image/jpg";
-                            String[] brkDown = imageurl.split("/");
-                            String name = brkDown[5];
-                            stringFile = name + "_" + encodedImage + "_" + contentType;
-                            pic1Flag = 1;
-                            cameraAlert.dismiss();
-
-
-                            // _pref.saveImage(encodedImage);
-                            //saveImage(encodedImage);
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } catch (OutOfMemoryError e) {
+                        compressedImageFile = new ImageZipper(DisplayMatrixDynamicActivity.this)
+                                .setQuality(80)
+                                .setMaxWidth(250)
+                                .setMaxHeight(250)
+                                .compressToFile(imageFile);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
+
+
+                try {
+                    encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n","");
+                    //Log.e(TAG, "base64Image: ==================="+base64image );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                break;
+                imgPic1.setImageURI(image_uri);
+                String contentType = "image/jpg";
+                stringFile = currentDateandTime + "_" + encodedImage + "_" + contentType;
+                pic1Flag = 1;
 
-            case LongImageCameraActivity.LONG_IMAGE_RESULT_CODE:
-
-
-                if (resultCode == RESULT_OK && requestCode == LongImageCameraActivity.LONG_IMAGE_RESULT_CODE) {
-                    imageFileName = data.getStringExtra(LongImageCameraActivity.IMAGE_PATH_KEY);
-                    Log.d("imageFileName", imageFileName);
-                    Bitmap d = BitmapFactory.decodeFile(imageFileName);
-                    int newHeight = (int) (d.getHeight() * (512.0 / d.getWidth()));
-                    Bitmap putImage = Bitmap.createScaledBitmap(d, 512, newHeight, true);
-                    imgPic1.setImageBitmap(putImage);
-                    pictureFile = (File) data.getExtras().get("picture");
-
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    putImage.compress(Bitmap.CompressFormat.PNG, 10, baos); //bm is the bitmap object
-                    byte[] b = baos.toByteArray();
-                    encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-
-                    cameraAlert.dismiss();
-                    String contentType = "image/png";
-                    String[] brkDown = imageFileName.split("/");
-                    String name = brkDown[6];
-                    stringFile = name + "_" + encodedImage + "_" + contentType;
-                    pic1Flag = 1;
+            }
+        }else if (requestCode == 2000 && resultCode == CAMERA_REQUEST1) {
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get("picture"));
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY));
+            image_uri1 = Uri.parse(String.valueOf(data.getExtras().get("picture")));
+            //image_uri = (Uri) data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY);
+            File imageFile = new File(String.valueOf(data.getExtras().get("picture")));
+            Log.e("TAG", "image_uri: " + image_uri1);
+            if (image_uri1 != null) {
 
 
-
-                }
-                break;
-            case CAMERA_REQUEST1:
-
-                if (resultCode == Activity.RESULT_OK) {
                     try {
-                        try {
-                            String imageurl = /*"file://" +*/ getRealPathFromURI(imageUri1);
-                            file1 = new File(imageurl);
-
-                            BitmapFactory.Options o = new BitmapFactory.Options();
-                            o.inSampleSize = 2;
-                            Bitmap bm = cropToSquare(BitmapFactory.decodeFile(imageurl, o));
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //bm is the bitmap object
-                            byte[] b = baos.toByteArray();
-                            imgPic2.setImageBitmap(bm);
-                            encodedImage1 = Base64.encodeToString(b, Base64.DEFAULT);
-
-                            String contentType = "image/jpg";
-                            String[] brkDown = imageurl.split("/");
-                            String name = brkDown[5];
-                            stringFile1 = name + "_" + encodedImage1 + "_" + contentType;
-                            pic2Flag = 1;
-                            cameraAlert.dismiss();
-
-
-                            // _pref.saveImage(encodedImage);
-                            //saveImage(encodedImage);
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } catch (OutOfMemoryError e) {
+                        compressedImageFile = new ImageZipper(DisplayMatrixDynamicActivity.this)
+                                .setQuality(80)
+                                .setMaxWidth(250)
+                                .setMaxHeight(250)
+                                .compressToFile(imageFile);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
+
+
+                try {
+                    encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n","");
+                    //Log.e(TAG, "base64Image: ==================="+base64image );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                break;
+                imgPic2.setImageURI(image_uri);
+                String contentType = "image/jpg";
+                stringFile1 = currentDateandTime + "_" + encodedImage + "_" + contentType;
+                pic2Flag = 1;
 
-            case LongImageCameraActivity.LONG_IMAGE_RESULT_CODE_PIC_1:
-
-
-                if (resultCode == RESULT_OK && requestCode == LongImageCameraActivity.LONG_IMAGE_RESULT_CODE_PIC_1) {
-                    imageFileName = data.getStringExtra(LongImageCameraActivity.IMAGE_PATH_KEY);
-                    Log.d("imageFileName", imageFileName);
-                    Bitmap d = BitmapFactory.decodeFile(imageFileName);
-                    int newHeight = (int) (d.getHeight() * (512.0 / d.getWidth()));
-                    Bitmap putImage = Bitmap.createScaledBitmap(d, 512, newHeight, true);
-                    imgPic2.setImageBitmap(putImage);
-                    pictureFile = (File) data.getExtras().get("picture");
-
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    putImage.compress(Bitmap.CompressFormat.PNG, 10, baos); //bm is the bitmap object
-                    byte[] b = baos.toByteArray();
-                    encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-
-                    cameraAlert.dismiss();
-                    String contentType = "image/png";
-                    String[] brkDown = imageFileName.split("/");
-                    String name = brkDown[6];
-                    stringFile = name + "_" + encodedImage + "_" + contentType;
-                    pic2Flag = 1;
+            }
+        }else if (requestCode == 2000 && resultCode == CAMERA_REQUEST2) {
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get("picture"));
+            Log.e("TAG", "onActivityResult: " + data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY));
+            image_uri2 = Uri.parse(String.valueOf(data.getExtras().get("picture")));
+            //image_uri = (Uri) data.getExtras().get(AndroidXCameraActivity.IMAGE_PATH_KEY);
+            File imageFile = new File(String.valueOf(data.getExtras().get("picture")));
+            Log.e("TAG", "image_uri: " + image_uri2);
+            if (image_uri2 != null) {
 
 
-
-                }
-                break;
-            case CAMERA_REQUEST2:
-
-                if (resultCode == Activity.RESULT_OK) {
                     try {
-                        try {
-                            String imageurl = /*"file://" +*/ getRealPathFromURI(imageUri2);
-                            file2 = new File(imageurl);
-
-                            BitmapFactory.Options o = new BitmapFactory.Options();
-                            o.inSampleSize = 2;
-                            Bitmap bm = cropToSquare(BitmapFactory.decodeFile(imageurl, o));
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //bm is the bitmap object
-                            byte[] b = baos.toByteArray();
-                            imgPic3.setImageBitmap(bm);
-                            encodedImage2 = Base64.encodeToString(b, Base64.DEFAULT);
-
-                            String contentType = "image/jpg";
-                            String[] brkDown = imageurl.split("/");
-                            String name = brkDown[5];
-                            stringFile2 = name + "_" + encodedImage2 + "_" + contentType;
-                            pic3Flag = 1;
-                            cameraAlert.dismiss();
-
-
-                            // _pref.saveImage(encodedImage);
-                            //saveImage(encodedImage);
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } catch (OutOfMemoryError e) {
+                        compressedImageFile = new ImageZipper(DisplayMatrixDynamicActivity.this)
+                                .setQuality(80)
+                                .setMaxWidth(250)
+                                .setMaxHeight(250)
+                                .compressToFile(imageFile);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
-                }
-                break;
 
-            case LongImageCameraActivity.LONG_IMAGE_RESULT_CODE_PIC_2:
-
-
-                if (resultCode == RESULT_OK && requestCode == LongImageCameraActivity.LONG_IMAGE_RESULT_CODE_PIC_2) {
-                    imageFileName = data.getStringExtra(LongImageCameraActivity.IMAGE_PATH_KEY);
-                    Log.d("imageFileName", imageFileName);
-                    Bitmap d = BitmapFactory.decodeFile(imageFileName);
-                    int newHeight = (int) (d.getHeight() * (512.0 / d.getWidth()));
-                    Bitmap putImage = Bitmap.createScaledBitmap(d, 512, newHeight, true);
-                    imgPic3.setImageBitmap(putImage);
-                    pictureFile = (File) data.getExtras().get("picture");
-
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    putImage.compress(Bitmap.CompressFormat.PNG, 10, baos); //bm is the bitmap object
-                    byte[] b = baos.toByteArray();
-                    encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-
-                    cameraAlert.dismiss();
-                    String contentType = "image/png";
-                    String[] brkDown = imageFileName.split("/");
-                    String name = brkDown[6];
-                    stringFile = name + "_" + encodedImage + "_" + contentType;
-                    pic3Flag = 1;
-
-
-
-                }
-                break;
-            case ACREQUEST:
 
                 try {
-
-                    Log.d("acsize", String.valueOf(AppController.ifbac));
-                    etAirIFB.setText(String.valueOf(AppController.ifbac));
-                    etAirIFB.setEnabled(false);
-                    airItem=AppController.acid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n","");
+                    //Log.e(TAG, "base64Image: ==================="+base64image );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            break;
-
-            case CLOTHSDRYERREQUEST:
-
-                try {
-
-
-                    etClothsIFB.setText(String.valueOf(AppController.ifbclotsdryersize));
-                    etClothsIFB.setEnabled(false);
-                    clothsItem=AppController.clothsdryedid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case DISHREQUEST:
-
-                try {
-
-
-                    etDishIFB.setText(String.valueOf(AppController.ifbdishsize));
-                    etDishIFB.setEnabled(false);
-                    dishItem=AppController.dishid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case WASHERDRYERREQUEST:
-
-                try {
-
-
-                    etWasherDisherIfb.setText(String.valueOf(AppController.ifbwashersize));
-                    etWasherDisherIfb.setEnabled(false);
-                    washerDyerItem=AppController.washerid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case MICROOVENREQUEST:
-
-                try {
-
-
-                    etMicroIfb.setText(String.valueOf(AppController.ifbovensize));
-                    etMicroIfb.setEnabled(false);
-                    microItem=AppController.ovenid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case KITCHENREQUEST:
-
-                try {
-
-
-                    etKAIfb.setText(String.valueOf(AppController.ifbkasize));
-                    etKAIfb.setEnabled(false);
-                    KAItem=AppController.kaid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case FLUREQUEST:
-
-                try {
-
-
-                    etFLUIfb.setText(String.valueOf(AppController.ifbflusize));
-                    etFLUIfb.setEnabled(false);
-                    FLUItem=AppController.fluid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case TLREQUEST:
-
-                try {
-
-
-                    etTLIfb.setText(String.valueOf(AppController.ifbtlsize));
-                    etTLIfb.setEnabled(false);
-                    tlItem=AppController.tlid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-
-            case REFREQUEST:
-
-                try {
-
-
-                    etREFRIGERATORIfb.setText(String.valueOf(AppController.ifbrefsize));
-                    etREFRIGERATORIfb.setEnabled(false);
-                    refItem=AppController.refid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-
-            case REFFFREQUEST:
-
-                try {
-
-
-                    etREFRIGERATORFFIfb.setText(String.valueOf(AppController.ifbrefffsize));
-                    etREFRIGERATORFFIfb.setEnabled(false);
-                    refffItem=AppController.refffid;
-
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-
-
-
-
-
-
-
-
+                imgPic3.setImageURI(image_uri);
+                String contentType = "image/jpg";
+                stringFile2 = currentDateandTime + "_" + encodedImage + "_" + contentType;
+                pic3Flag = 1;
+
+            }
         }
+
 
 
     }
@@ -4093,14 +3829,14 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         llCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cameraIntentforPic1();
+                AndroidXCameraActivity.launch(DisplayMatrixDynamicActivity.this, CAMERA_REQUEST);
             }
         });
 
         llCustomCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LongImageCameraActivity.launch(DisplayMatrixDynamicActivity.this);
+                AndroidXCameraActivity.launch(DisplayMatrixDynamicActivity.this, CAMERA_REQUEST1);
 
             }
         });

@@ -55,6 +55,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.developers.imagezipper.ImageZipper;
 import com.wajahatkarim3.longimagecamera.LongImageCameraActivity;
 
 import org.json.JSONArray;
@@ -80,13 +81,14 @@ import io.cordova.ifb.module.RcnModel;
 import io.cordova.ifb.module.SpinnerItemModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import io.cordova.ifb.utility.Util;
 import io.cordova.ifb.utility.ValidUtils;
 
 public class DeliveryAddressUpdateActivity extends AppCompatActivity {
-    LinearLayout llDate, lnWIFI, lnPedestal, llScheme, llSalesType,llSalesDate;
+    LinearLayout llDate, lnWIFI, lnPedestal, llScheme, llSalesType, llSalesDate;
     int MY_SOCKET_TIMEOUT_MS = 10000;
-    TextView tvDate,tvSalesDate;
-    String salesDate = "", monthname,deliveryDate = "";
+    TextView tvDate, tvSalesDate;
+    String salesDate = "", monthname, deliveryDate = "";
     String refNo;
     PrefManager prefManager;
     EditText etRemark;
@@ -186,7 +188,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     String firstname, lastname, month, financilayear, invoicevalue;
     JSONObject csrOBJ = new JSONObject();
     String currentDate, sucessText;
-    String Ref_Status="N";
+    String Ref_Status = "N";
     Uri image_uri;
 
     @Override
@@ -761,7 +763,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                 if (etPinCode.getText().toString().length() > 0) {
                                     if (!REGIONNAME.equals("null")) {
                                         if (etHouse.getText().toString().replaceAll(" ", "").length() > 0) {
-                                            if (etStreetName.getText().toString().replaceAll(" ", "").length() > 0 ) {
+                                            if (etStreetName.getText().toString().replaceAll(" ", "").length() > 0) {
                                                 if (etLandMark.getText().toString().replaceAll(" ", "").length() > 0) {
 
                                                     emailcheck1();
@@ -875,7 +877,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 }
 
                 deliveryDate = d + "-" + monthname + "-" + y;
-                salesDate=deliveryDate;
+                salesDate = deliveryDate;
                 tvSalesDate.setText(salesDate);
 
                 tvDate.setText(deliveryDate);
@@ -992,7 +994,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeSalesManageV6")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV6")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1057,7 +1059,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         boolean responseStatus = job1.optBoolean("responseStatus");
-                        String responseText=job1.optString("responseText");
+                        String responseText = job1.optString("responseText");
                         if (responseStatus) {
                             JSONArray responseData = job1.optJSONArray("responseData");
                             JSONObject obj = responseData.optJSONObject(0);
@@ -1068,10 +1070,10 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
                         } else {
                             pd.dismiss();
-                            if (responseText.contains("MIME")){
+                            if (responseText.contains("MIME")) {
                                 updateDeliveryAddressWithoutInvoice();
-                            }else {
-                                successAlert(responseText,"2");
+                            } else {
+                                successAlert(responseText, "2");
                             }
 
 
@@ -1104,7 +1106,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeSalesManageV6")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV6")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1169,7 +1171,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         boolean responseStatus = job1.optBoolean("responseStatus");
-                        String responseText=job1.optString("responseText");
+                        String responseText = job1.optString("responseText");
                         if (responseStatus) {
                             JSONArray responseData = job1.optJSONArray("responseData");
                             JSONObject obj = responseData.optJSONObject(0);
@@ -1180,7 +1182,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
                         } else {
                             pd.dismiss();
-                            successAlert(responseText,"2");
+                            successAlert(responseText, "2");
 
                         }
 
@@ -1307,7 +1309,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 });
     }*/
 
-    private void successAlert(String text,String flag) {
+    private void successAlert(String text, String flag) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DeliveryAddressUpdateActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_success, null);
@@ -1319,10 +1321,10 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (flag.equals("2")){
+                if (flag.equals("2")) {
                     alerDialog1.dismiss();
                     onBackPressed();
-                }else {
+                } else {
                     alerDialog1.dismiss();
                     if (Ref_Status.equalsIgnoreCase("N")) {
                         getTicketNumber();
@@ -1330,7 +1332,6 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         setRefArray();
                     }
                 }
-
 
 
             }
@@ -1386,7 +1387,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     String MultipleProduct = object.optString("MultipleProduct");
                                     String installationBy = object.optString("InstallationBy");
                                     String WiFiDeviceStatus = object.optString("WiFiDeviceStatus");
-                                    String RELIANCEFLAG=object.optString("RELIANCEFLAG");
+                                    String RELIANCEFLAG = object.optString("RELIANCEFLAG");
                                     RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
                                     rcnModel.setSerNumber(SerialNo);
@@ -1419,7 +1420,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     csrOBJ.put("WIFI", WiFiDeviceStatus);
                                     csrOBJ.put("FILECREATED", currentDate);
                                     if (prefManager.getUserCode().equals("IFBAPPL00001")) {
-                                        successAlert(sucessText,"2");
+                                        successAlert(sucessText, "2");
                                     } else {
                                         sendCSRData(csrOBJ, TokenNo);
                                     }
@@ -1434,7 +1435,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
 
                             } else {
-                                successAlert(sucessText,"2");
+                                successAlert(sucessText, "2");
                             }
 
 
@@ -1491,10 +1492,9 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     }
 
     private void galleryIntent() {
-        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-        chooseFile.setType("*/*");
-        chooseFile = Intent.createChooser(chooseFile, "Choose a file");
-        startActivityForResult(chooseFile, REQUEST_GALLERY_CODE);
+        Intent openGalleryIntent = new Intent(Intent.ACTION_PICK);
+        openGalleryIntent.setType("image/*");
+        startActivityForResult(openGalleryIntent, REQUEST_GALLERY_CODE);
     }
 
 
@@ -1512,51 +1512,71 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             File imageFile = new File(String.valueOf(data.getExtras().get("picture")));
             Log.e("TAG", "image_uri: " + image_uri);
             if (image_uri != null) {
+
+
+                try {
+                    compressedImageFile = new ImageZipper(DeliveryAddressUpdateActivity.this)
+                            .setQuality(80)
+                            .setMaxWidth(250)
+                            .setMaxHeight(250)
+                            .compressToFile(imageFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                try {
+                    encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n", "");
+                    //Log.e(TAG, "base64Image: ==================="+base64image );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 imgPic.setImageURI(image_uri);
-                //  get drawable bitmap for text recognition
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) imgPic.getDrawable();
-                Bitmap bitmap = bitmapDrawable.getBitmap();
-
-
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                byte[] byteArray = byteArrayOutputStream.toByteArray();
-                encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 String contentType = "image/jpg";
                 stringFile = tokenno + "_" + encodedImage + "_" + contentType;
                 alert1.dismiss();
             }
-        } else if ((requestCode == REQUEST_GALLERY_CODE )) {
+        } else if ((requestCode == REQUEST_GALLERY_CODE)) {
             InputStream imageStream = null;
             try {
                 try {
+                    uri = data.getData();
+                    String filePath = getRealPathFromURIPath(uri, DeliveryAddressUpdateActivity.this);
+                    file = new File(filePath);
 
-                    Bitmap bm = null;
-                    if (data != null) {
+                    imageStream = getContentResolver().openInputStream(uri);
+                    Bitmap bm = cropToSquare(BitmapFactory.decodeStream(imageStream));
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //bm is the bitmap object
+                    byte[] b = baos.toByteArray();
+                    imgPic.setImageBitmap(bm);
+                    boolean isImageTooLarge = Util.isImageGreaterThan2MB(this, uri);
+                    if (isImageTooLarge) {
                         try {
-                            bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                            compressedImageFile = new ImageZipper(DeliveryAddressUpdateActivity.this)
+                                    .setQuality(80)
+                                    .setMaxWidth(250)
+                                    .setMaxHeight(250)
+                                    .compressToFile(file);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+
+                    } else {
+                        compressedImageFile = file;
+
                     }
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bm.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                    File destination = new File(Environment.getExternalStorageDirectory(),
-                            System.currentTimeMillis() + ".jpg");
-                    String filepath = destination.getPath();
-                    imgPic.setImageBitmap(bm);
-                    alert1.dismiss();
+
+                    try {
+                        encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n", "");
+                        //Log.e(TAG, "base64Image: ==================="+base64image );
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     String contentType = "image/jpg";
-                    String[] brkDown = filepath.split("/");
-                    String name;
-
-                    name = brkDown[4];
-                    bm.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                    byte[] imageBytes = bytes.toByteArray();
-                    encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-
-                    stringFile = name + "_" + encodedImage + "_" + contentType;
-
+                    stringFile = tokenno + "_" + encodedImage + "_" + contentType;
+                    alert1.dismiss();
 
 
                 } catch (Exception e) {
@@ -1566,35 +1586,35 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        } else if ((requestCode == IDU_REQUEST )) {
+        } else if ((requestCode == IDU_REQUEST)) {
             String message = data.getStringExtra("MESSAGE");
             etSerailNumber.setText(message);
 
-        } else if ((requestCode == IDU_REQUEST_2 )) {
+        } else if ((requestCode == IDU_REQUEST_2)) {
             String message2 = data.getStringExtra("MESSAGE");
             etSerailNumberTwo.setText(message2);
         } else if ((requestCode == IDU_REQUEST_3)) {
             String message3 = data.getStringExtra("MESSAGE");
             etSerailNumberThree.setText(message3);
-        } else if ((requestCode == IDU_REQUEST_4 )) {
+        } else if ((requestCode == IDU_REQUEST_4)) {
             String message4 = data.getStringExtra("MESSAGE");
             etSerailNumberFour.setText(message4);
-        } else if ((requestCode == IDU_REQUEST_5 )) {
+        } else if ((requestCode == IDU_REQUEST_5)) {
             String message5 = data.getStringExtra("MESSAGE");
             etSerailNumberFive.setText(message5);
-        } else if ((requestCode == ODU_REQUEST )) {
+        } else if ((requestCode == ODU_REQUEST)) {
             String message1 = data.getStringExtra("MESSAGE");
             etODUNumber.setText(message1);
-        } else if ((requestCode == ODU_REQUEST_2 )) {
+        } else if ((requestCode == ODU_REQUEST_2)) {
             String message6 = data.getStringExtra("MESSAGE");
             etODUNumberTwo.setText(message6);
-        } else if ((requestCode == ODU_REQUEST_3 )) {
+        } else if ((requestCode == ODU_REQUEST_3)) {
             String message7 = data.getStringExtra("MESSAGE");
             etODUNumberThree.setText(message7);
-        } else if ((requestCode == ODU_REQUEST_4 )) {
+        } else if ((requestCode == ODU_REQUEST_4)) {
             String message8 = data.getStringExtra("MESSAGE");
             etODUNumberFour.setText(message8);
-        } else if ((requestCode == ODU_REQUEST_5 )) {
+        } else if ((requestCode == ODU_REQUEST_5)) {
             String message9 = data.getStringExtra("MESSAGE");
             etODUNumberFive.setText(message9);
         }
@@ -2413,7 +2433,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
-                        successAlert(sucessText,"2");
+                        successAlert(sucessText, "2");
                         postTokenStatus(TokenNo, "Error");
                         Toast.makeText(DeliveryAddressUpdateActivity.this, "Wrong", Toast.LENGTH_LONG).show();
 
@@ -2447,7 +2467,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         pd.dismiss();
 
 
-                        successAlert(sucessText,"1");
+                        successAlert(sucessText, "1");
 
                     }
 
