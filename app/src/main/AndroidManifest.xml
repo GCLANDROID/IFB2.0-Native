@@ -342,6 +342,8 @@
         <activity
             android:name=".activity.AttendanceManage2Activity"
             android:screenOrientation="userPortrait" />
+        <activity android:name=".activity.FeedBackRatingActivity"
+            android:screenOrientation="userPortrait"></activity>
     </application>
 
 </manifest>

@@ -49,6 +49,7 @@ import io.cordova.ifb.activity.DashBoardActivity;
 import io.cordova.ifb.activity.DocDashBaordActivity;
 import io.cordova.ifb.activity.ECatelogActivity;
 import io.cordova.ifb.activity.ELearningActivity;
+import io.cordova.ifb.activity.FeedBackRatingActivity;
 import io.cordova.ifb.activity.IQueriesDashboardActivity;
 import io.cordova.ifb.activity.LoginActivity;
 import io.cordova.ifb.activity.QAReportActivity;
@@ -81,6 +82,11 @@ public class MoreFragment extends Fragment {
 
     private void initView(){
         prefManager=new PrefManager(getContext());
+        if (prefManager.getSecurityCode().equalsIgnoreCase("GCL")){
+            binding.llFeedback.setVisibility(View.VISIBLE);
+        }else {
+            binding.llFeedback.setVisibility(View.GONE);
+        }
         binding.llChangeIMEI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,6 +98,14 @@ public class MoreFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(getContext(), ReferEarnActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+        binding.llFeedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getContext(), FeedBackRatingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

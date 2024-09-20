@@ -205,12 +205,9 @@ public class LoginActivity extends AppCompatActivity {
                         if (etSceurityCode.getText().toString().length() > 0) {
                             if (connectionCheck.isNetworkAvailable()) {
                                 if (version.equals(IFBVersion)) {
-                                    if (etUserName.getText().toString().contains("IFB")||etUserName.getText().toString().contains("ifb")||etUserName.getText().toString().contains("AEMP") ||etUserName.getText().toString().contains("aemp")){
-                                        loginFunction();
-                                    }else {
-                                        Toast.makeText(getApplicationContext(),"User Id should be start with IFB",Toast.LENGTH_LONG).show();
 
-                                    }
+                                        loginFunction();
+
 
                                 }else {
                                     if (IFBMandatory.equals("Y")) {
@@ -364,7 +361,7 @@ public class LoginActivity extends AppCompatActivity {
                                     prefManager.saveSalesPointID(SalesPointID);
                                    // Firebase(UserName);
                                 }
-                                if (prefManager.getSecurityCode().equalsIgnoreCase("IND")){
+                                if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS") ){
                                     Intent intent = new Intent(LoginActivity.this, INDDashbaordActivity.class);
                                     startActivity(intent);
                                     finish();

@@ -13,7 +13,7 @@ import io.cordova.ifb.R;
 import io.cordova.ifb.utility.PrefManager;
 
 public class INDDashbaordActivity extends AppCompatActivity implements View.OnClickListener {
-    LinearLayout llAttendance,llHelpDesk,llLeave;
+    LinearLayout llAttendance,llHelpDesk,llLeave,llFeedback;
     PrefManager prefManager;
     TextView tvUserName;
 
@@ -33,10 +33,12 @@ public class INDDashbaordActivity extends AppCompatActivity implements View.OnCl
         llAttendance=(LinearLayout) findViewById(R.id.llAttendance);
         llHelpDesk=(LinearLayout) findViewById(R.id.llHelpDesk);
         llLeave=(LinearLayout) findViewById(R.id.llLeave);
+        llFeedback=(LinearLayout)findViewById(R.id.llFeedback);
 
         llAttendance.setOnClickListener(this);
         llHelpDesk.setOnClickListener(this);
         llLeave.setOnClickListener(this);
+        llFeedback.setOnClickListener(this);
     }
 
     @Override
@@ -52,6 +54,10 @@ public class INDDashbaordActivity extends AppCompatActivity implements View.OnCl
         }else if (view==llLeave){
             Uri uri = Uri.parse(prefManager.getLeaveURL()); // missing 'http://' will cause crashed
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        }else if (view==llFeedback){
+            Intent intent=new Intent(INDDashbaordActivity.this, FeedBackRatingActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 

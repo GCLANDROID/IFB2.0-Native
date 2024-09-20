@@ -994,7 +994,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV6")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV7")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1027,7 +1027,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 .addMultipartParameter("UnderExchange", underexchange)
                 .addMultipartParameter("Area", areaName)
                 .addMultipartParameter("SalesEntryFlag", "1")
-                .addMultipartParameter("Invoicecopy", fileImage)
+                .addMultipartFile("Invoicecopy", compressedImageFile)
                 .addMultipartParameter("SerialNo", serailNumber)
                 .addMultipartParameter("SerialNo1", odunumber)
                 .addMultipartParameter("InstallationBy", InstallationBy)

@@ -444,7 +444,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
                                 JSONArray responseData = job1.optJSONArray("responseData");
                                 for (int i = 0; i < responseData.length(); i++) {
                                     JSONObject obj = responseData.getJSONObject(i);
-                                    String sDate = Util.changeAnyDateFormat(obj.optString("Date"),"dd MMM yyyy","dd");
+                                    String sDate = Util.changeAnyDateFormat(obj.optString("Month"),"dd-MM-yyyy","dd");
                                     try {
                                         date = Integer.parseInt(sDate);
                                     } catch (NumberFormatException e) {
