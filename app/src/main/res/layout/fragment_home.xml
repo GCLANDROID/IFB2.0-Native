@@ -262,6 +262,18 @@
                     android:drawableRight="@drawable/rightarrow"
                     android:drawableTint="@color/white"
                     android:padding="5dp"></Button>
+                <Button
+                    android:id="@+id/btnPalnogram"
+                    android:background="@drawable/lldesign9"
+                    android:backgroundTint="@color/yellow"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:textColor="@color/black"
+                    android:text="Update planogram Hygene"
+                    android:drawableRight="@drawable/rightarrow"
+                    android:drawableTint="@color/black"
+                    android:padding="5dp"></Button>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

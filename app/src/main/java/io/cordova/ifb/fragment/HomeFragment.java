@@ -44,6 +44,7 @@ import io.cordova.ifb.activity.DashBoardActivity;
 import io.cordova.ifb.activity.DisplayMatrixDashBoardActivity;
 import io.cordova.ifb.activity.NewDashboardActivity;
 import io.cordova.ifb.activity.NotificationActivity;
+import io.cordova.ifb.activity.PlanogramActivity;
 import io.cordova.ifb.databinding.FragmentHomeBinding;
 import io.cordova.ifb.module.ReportModule;
 import io.cordova.ifb.utility.AppController;
@@ -199,6 +200,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), DisplayMatrixDashBoardActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+
+        binding.btnPalnogram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), PlanogramActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

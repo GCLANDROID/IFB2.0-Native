@@ -19,8 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AndroidXCamera.AndroidXCameraActivity"
-            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.PlanogramActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".AndroidXCamera.AndroidXCameraActivity"
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".activity.NewDashboardActivity"
             android:exported="false">
@@ -342,8 +350,9 @@
         <activity
             android:name=".activity.AttendanceManage2Activity"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".activity.FeedBackRatingActivity"
-            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.FeedBackRatingActivity"
+            android:screenOrientation="userPortrait" />
     </application>
 
 </manifest>
