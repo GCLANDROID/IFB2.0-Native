@@ -2,6 +2,7 @@ package io.cordova.ifb.module;
 
 public class ScannedPlanogramBarcodeModel {
     String barcode,Model;
+    int count;
 
 
 
@@ -19,5 +20,13 @@ public class ScannedPlanogramBarcodeModel {
 
     public void setModel(String model) {
         Model = model;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

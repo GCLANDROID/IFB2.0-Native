@@ -67,8 +67,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/red">
+           >
             <LinearLayout
+                android:background="@color/red"
                 android:id="@+id/llManageHeader"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -78,7 +79,7 @@
                     android:id="@+id/tvManage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:text="Manage"
                     android:textSize="14sp"></TextView>
             </LinearLayout>
@@ -87,6 +88,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/white"></View>
             <LinearLayout
+                android:background="@color/light_red"
                 android:id="@+id/llReportHeader"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -96,7 +98,7 @@
                     android:id="@+id/tvReport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/light_red"
+                    android:textColor="@color/black"
                     android:text="Report"
                     android:textSize="14sp"></TextView>
             </LinearLayout>
@@ -143,6 +145,7 @@
                 android:id="@+id/llScanReport"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/tvScannedDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
@@ -154,6 +157,20 @@
                     android:layout_height="40dp"
                     android:background="@drawable/lldesign9"
                     android:layout_marginTop="20dp">
+                    <TextView
+                        android:text="SL."
+                        android:layout_gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.15"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        ></TextView>
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/black"></View>
                     <TextView
                         android:layout_gravity="center"
                         android:layout_width="0dp"
@@ -181,6 +198,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/rvItem"></androidx.recyclerview.widget.RecyclerView>
+
 
             </LinearLayout>
         </LinearLayout>
@@ -316,6 +334,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/rvPlanogram"></androidx.recyclerview.widget.RecyclerView>
+            <LinearLayout
+                android:id="@+id/llNoData"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:text="No Data Found"></TextView>
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

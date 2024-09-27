@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,10 +16,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.developers.imagezipper.ImageZipper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,7 +54,10 @@ import io.cordova.ifb.adapter.PlanopgrameHygeneAdapter;
 import io.cordova.ifb.adapter.ScannedBarcodeAdapter;
 import io.cordova.ifb.databinding.ActivityPlanogramBinding;
 import io.cordova.ifb.module.PlanogramHygeneModel;
+import io.cordova.ifb.module.ReportModule;
 import io.cordova.ifb.module.ScannedPlanogramBarcodeModel;
+import io.cordova.ifb.utility.AppController;
+import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
 
 public class PlanogramActivity extends AppCompatActivity {
@@ -51,21 +73,28 @@ public class PlanogramActivity extends AppCompatActivity {
     int y;
     String year,month;
     String financialYear;
+    PrefManager prefManager;
+    int count=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       // getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         binding= DataBindingUtil.setContentView(this,R.layout.activity_planogram);
         initView();
     }
 
     private void initView(){
+        prefManager=new PrefManager(PlanogramActivity.this);
+
         binding.llReportHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 binding.llReport.setVisibility(View.VISIBLE);
                 binding.llManage.setVisibility(View.GONE);
-                binding.tvReport.setTextColor(Color.parseColor("#FFFFFF"));
-                binding.tvManage.setTextColor(Color.parseColor("#E59B9B"));
+                binding.llReportHeader.setBackgroundColor(Color.parseColor("#FF0000"));
+                binding.llManageHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
+
+
             }
         });
 
@@ -75,8 +104,9 @@ public class PlanogramActivity extends AppCompatActivity {
             public void onClick(View view) {
                 binding.llReport.setVisibility(View.GONE);
                 binding.llManage.setVisibility(View.VISIBLE);
-                binding.tvReport.setTextColor(Color.parseColor("#E59B9B"));
-                binding.tvManage.setTextColor(Color.parseColor("#FFFFFF"));
+                binding.llManageHeader.setBackgroundColor(Color.parseColor("#FF0000"));
+                binding.llReportHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
+
             }
         });
 
@@ -91,7 +121,7 @@ public class PlanogramActivity extends AppCompatActivity {
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(PlanogramActivity.this, LinearLayoutManager.VERTICAL, false);
         binding.rvItem.setLayoutManager(layoutManager);
-        getItemList();
+
         binding.llSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,13 +129,15 @@ public class PlanogramActivity extends AppCompatActivity {
                     binding.llSearchByMonth.setVisibility(View.VISIBLE);
                     binding.llSearchByDate.setVisibility(View.GONE);
                     binding.tvSearchTxt.setText("Search by Date");
-                    binding.rvPlanogram.setVisibility(View.GONE);
+                    getReportList("1");
+                    binding.rvItem.setVisibility(View.GONE);
+
 
                 }else {
                     binding.llSearchByMonth.setVisibility(View.GONE);
                     binding.llSearchByDate.setVisibility(View.VISIBLE);
                     binding.tvSearchTxt.setText("Search by Month & Year");
-                    binding.rvPlanogram.setVisibility(View.VISIBLE);
+                    getReportList("2");
                 }
             }
         });
@@ -113,17 +145,18 @@ public class PlanogramActivity extends AppCompatActivity {
         binding.imgCalendar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.rvPlanogram.setVisibility(View.GONE);
+
               showDateDialog();
             }
         });
 
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         Calendar cal = Calendar.getInstance();
         nosaledate = df.format(cal.getTime());;
-        binding.tvDate.setText(nosaledate+"  ");
+        binding.tvDate.setText(Util.changeAnyDateFormat(nosaledate,"MM/dd/yyyy","MMM dd,yyyy")+"  ");
+        binding.tvScannedDate.setText("Scanned Barcode Details of "+Util.changeAnyDateFormat(nosaledate,"MM/dd/yyyy","MMM dd,yyyy")+" >>");
 
         y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -170,6 +203,8 @@ public class PlanogramActivity extends AppCompatActivity {
             financialYear = year+"-"+futureyear;
         }
 
+        getReportList("2");
+
         monthList.add("January");
         monthList.add("February");
         monthList.add("March");
@@ -212,28 +247,141 @@ public class PlanogramActivity extends AppCompatActivity {
         LinearLayoutManager palogramlayoutManager
                 = new LinearLayoutManager(PlanogramActivity.this, LinearLayoutManager.VERTICAL, false);
         binding.rvPlanogram.setLayoutManager(palogramlayoutManager);
-        getReportList();
+        binding.spMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                month=monthList.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        binding.SpYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                financialYear=yearList.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         binding.tvShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                binding.rvPlanogram.setVisibility(View.VISIBLE);
+                getReportList("1");
+            }
+        });
+
+        binding.imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+        binding.imgHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
 
     }
 
-    private void getItemList(){
-        ScannedBarcodeAdapter barcodeAdapter=new ScannedBarcodeAdapter(itemList,PlanogramActivity.this);
-        binding.rvItem.setAdapter(barcodeAdapter);
-    }
 
-    private void getReportList(){
-        reportitemList.add(new PlanogramHygeneModel("EXECUTIVE ZXV 9/6/3","8903287031755","WASHER DRYER","23 Sept 2024 at 12:20 PM"));
-        reportitemList.add(new PlanogramHygeneModel("EXECUTIVE ZXV 9/6/3","8903287031755","WASHER DRYER","23 Sept 2024 at 12:10 PM"));
-        reportitemList.add(new PlanogramHygeneModel("EXECUTIVE ZXV 9/6/3","8903287031755","WASHER DRYER","23 Sept 2024 at 10:10 AM"));
-        reportitemList.add(new PlanogramHygeneModel("EXECUTIVE ZXV 9/6/3","8903287031755","WASHER DRYER","23 Sept 2024 at 08:10 AM"));
-        adapter=new PlanopgrameHygeneAdapter(reportitemList,PlanogramActivity.this);
-        binding.rvPlanogram.setAdapter(adapter);
+
+    private void getReportList(String reporttype){
+        binding.rvPlanogram.setVisibility(View.VISIBLE);
+        binding.llNoData.setVisibility(View.GONE);
+        ProgressDialog progressDialog=new ProgressDialog(PlanogramActivity.this);
+        progressDialog.setMessage("Loading");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        String surl =  AppController.APIURL+"api/BarcodePlanogramhygiene?LoginID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Date="+nosaledate+"&ReportType="+reporttype+"&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputReport", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseAttendance", response);
+                        progressDialog.dismiss();
+                        reportitemList.clear();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String ProductBarCode = obj.optString("ProductBarCode");
+                                    String ModelName = obj.optString("ModelName");
+                                    String Date = obj.optString("Date");
+
+                                   PlanogramHygeneModel model=new PlanogramHygeneModel(ModelName,"","",Date);
+                                   model.setBarcode(ProductBarCode);
+                                   reportitemList.add(model);
+
+                                   ScannedPlanogramBarcodeModel barcodeModel=new ScannedPlanogramBarcodeModel();
+                                   barcodeModel.setCount(i+1);
+                                   barcodeModel.setBarcode(ProductBarCode);
+                                   barcodeModel.setModel(ModelName);
+                                   count=itemList.size()+1;
+                                   itemList.add(barcodeModel);
+
+
+
+                                }
+
+
+                                adapter=new PlanopgrameHygeneAdapter(reportitemList,PlanogramActivity.this);
+                                binding.rvPlanogram.setAdapter(adapter);
+
+                                binding.llScanReport.setVisibility(View.VISIBLE);
+
+                                ScannedBarcodeAdapter barcodeAdapter=new ScannedBarcodeAdapter(itemList,PlanogramActivity.this);
+                                binding.rvItem.setAdapter(barcodeAdapter);
+                                /*llNodata.setVisibility(View.GONE);
+                                llAgain.setVisibility(View.GONE);*/
+
+                            } else {
+                                binding.llScanReport.setVisibility(View.GONE);
+                                binding.rvPlanogram.setVisibility(View.GONE);
+                                binding.llNoData.setVisibility(View.VISIBLE);
+                                count=0;
+                                Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(PlanogramActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(PlanogramActivity.this);
+        requestQueue.add(stringRequest);
+
     }
 
 
@@ -249,6 +397,7 @@ public class PlanogramActivity extends AppCompatActivity {
         if ((requestCode == SCANNER_REQUEST)) {
             String message1 = data.getStringExtra("MESSAGE");
             binding.llScanReport.setVisibility(View.VISIBLE);
+            postBarcode(message1);
 
 
         }
@@ -331,9 +480,9 @@ public class PlanogramActivity extends AppCompatActivity {
                     monthname = "Dec";
                 }
 
-                nosaledate = d + "-" + monthname + "-" + y;
-                binding.tvDate.setText(nosaledate+"  ");
-                binding.rvPlanogram.setVisibility(View.VISIBLE);
+                nosaledate = month+"/"+d+"/"+y;
+                binding.tvDate.setText(Util.changeAnyDateFormat(nosaledate,"MM/dd/yyyy","MMM dd,yyyy")+"  ");
+                getReportList("2");
 
 
                 //  pref.saveDOJ(sdate);
@@ -352,4 +501,87 @@ public class PlanogramActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+
+    private void postBarcode(String barcode) {
+
+        final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.upload( AppController.APIURL+"api/post_BarcodePlanogramhygiene")
+                .addMultipartParameter("Barcode", barcode)
+                .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
+                .addMultipartParameter("FinancialYear", financialYear)
+                .addMultipartParameter("Month", month)
+                .addMultipartParameter("BranchID", prefManager.getBranchId())
+                .addMultipartParameter("SalesPointID", prefManager.getSalesPointID())
+                .addMultipartParameter("Remarks", "QR")
+                .addMultipartParameter("UserID", prefManager.getUserId())
+                .addMultipartParameter("Operation", "3")
+
+                .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String responseText = job1.optString("responseText");
+                        String responseData = job1.optString("responseData");
+                        boolean responseStatus = job1.optBoolean("responseStatus");
+                        if (responseStatus) {
+                            count=count+1;
+
+                            JSONArray jsonArray=job1.optJSONArray("responseData");
+                            JSONObject jsonObject=jsonArray.optJSONObject(0);
+                            String ModelName=jsonObject.optString("ModelName");
+                            String ProductBarCode=jsonObject.optString("ProductBarCode");
+                            ScannedPlanogramBarcodeModel model=new ScannedPlanogramBarcodeModel();
+                            model.setModel(ModelName);
+                            model.setBarcode(ProductBarCode);
+                            model.setCount(count);
+                            itemList.add(model);
+
+                            Toast.makeText(PlanogramActivity.this, responseText, Toast.LENGTH_LONG).show();
+
+
+                            ScannedBarcodeAdapter barcodeAdapter=new ScannedBarcodeAdapter(itemList,PlanogramActivity.this);
+                            binding.rvItem.setAdapter(barcodeAdapter);
+
+                        } else {
+
+                            Toast.makeText(PlanogramActivity.this, responseText, Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        pd.dismiss();
+                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
+                    }
+                });
+    }
+
 }

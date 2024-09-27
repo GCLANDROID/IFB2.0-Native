@@ -32,23 +32,25 @@ public class ScannedBarcodeAdapter extends RecyclerView.Adapter<ScannedBarcodeAd
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, final int i) {
 
-
+      myViewHolder.tvModelName.setText(itemList.get(i).getModel());
+        myViewHolder.tvBarcode.setText(itemList.get(i).getBarcode());
+        myViewHolder.tvSL.setText(""+itemList.get(i).getCount());
 
     }
 
     @Override
     public int getItemCount() {
-        return 1;
+        return itemList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tvBarcode,tvModelName;
+        TextView tvBarcode,tvModelName,tvSL;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             tvModelName=(TextView) itemView.findViewById(R.id.tvModelName);
             tvBarcode=(TextView) itemView.findViewById(R.id.tvBarcode);
-
+            tvSL=(TextView) itemView.findViewById(R.id.tvSL);
 
         }
     }

@@ -65,6 +65,7 @@ public class PlanopgrameHygeneAdapter extends RecyclerView.Adapter<PlanopgrameHy
         myViewHolder.tvPrdctCode.setText(itemList.get(i).getProductID());
         myViewHolder.tvCategory.setText(itemList.get(i).getCategory());
         myViewHolder.tvDateTime.setText(itemList.get(i).getCreatedOn());
+        myViewHolder.tvBarcode.setText(itemList.get(i).getBarcode());
 
     }
 

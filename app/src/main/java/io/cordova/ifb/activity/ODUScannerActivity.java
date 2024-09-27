@@ -39,7 +39,7 @@ public class ODUScannerActivity extends AppCompatActivity {
                         setResult(6,intent);
                         finish();
 
-                         Toast.makeText(ODUScannerActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(ODUScannerActivity.this, result.getText(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }

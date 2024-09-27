@@ -2,7 +2,7 @@ package io.cordova.ifb.module;
 
 public class PlanogramHygeneModel {
     boolean isExpanded;
-    String productName,productID,category,createdOn;
+    String productName,productID,category,createdOn,barcode;
 
     public boolean isExpanded() {
         return isExpanded;
@@ -49,5 +49,13 @@ public class PlanogramHygeneModel {
 
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 }

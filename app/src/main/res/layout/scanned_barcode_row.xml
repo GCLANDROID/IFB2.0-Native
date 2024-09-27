@@ -10,13 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="40dp">
         <TextView
+
+            android:id="@+id/tvSL"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.15"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="@color/red"
+            ></TextView>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/black"></View>
+        <TextView
             android:id="@+id/tvBarcode"
             android:layout_gravity="center"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="0317552409180001A1"
             android:textSize="12sp"
             android:textColor="@color/red"
             ></TextView>
@@ -31,7 +45,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Sanator SX1"
             android:textSize="12sp"
             android:textColor="@color/red"></TextView>
     </LinearLayout>
