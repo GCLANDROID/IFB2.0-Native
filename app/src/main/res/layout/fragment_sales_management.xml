@@ -26,10 +26,24 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:id="@+id/llManage">
-                    <ImageView
-                        android:layout_width="85dp"
-                        android:layout_height="85dp"
-                        android:src="@drawable/saleicon"/>
+                    <LinearLayout
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/lldesign10"
+                        android:gravity="center">
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/saletag"/>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:text="Sales"
+                        android:textColor="@android:color/black"/>
+
 
                 </LinearLayout>
                 <LinearLayout
@@ -62,7 +76,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/callupdation" />
+                            android:src="@drawable/phone" />
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -81,10 +95,25 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:id="@+id/llNoSales">
-                    <ImageView
-                        android:layout_width="95dp"
-                        android:layout_height="85dp"
-                        android:src="@drawable/nosales"/>
+                    <LinearLayout
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/lldesign10"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/nosale" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:text="No Sales"
+                        android:textColor="@android:color/black"/>
+
 
                 </LinearLayout>
 
@@ -116,10 +145,25 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:id="@+id/llTarget">
-                    <ImageView
-                        android:layout_width="95dp"
-                        android:layout_height="85dp"
-                        android:src="@drawable/targeticon"/>
+                    <LinearLayout
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/lldesign10"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/target" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:text="Target"
+                        android:textColor="@android:color/black"/>
+
 
                 </LinearLayout>
                 <LinearLayout
@@ -129,10 +173,25 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:id="@+id/llReturn">
-                    <ImageView
-                        android:layout_width="95dp"
-                        android:layout_height="85dp"
-                        android:src="@drawable/salesreturn"/>
+                    <LinearLayout
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/lldesign10"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/returnbox" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:text="Sales Return"
+                        android:textColor="@android:color/black"/>
+
 
                 </LinearLayout>
                 <LinearLayout
@@ -142,10 +201,25 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:id="@+id/llModelExchange">
-                    <ImageView
-                        android:layout_width="95dp"
-                        android:layout_height="85dp"
-                        android:src="@drawable/modelexchangeicon"/>
+                    <LinearLayout
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/lldesign10"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/replacement" />
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:text="Model Exchange"
+                        android:textColor="@android:color/black"/>
+
 
                 </LinearLayout>
 
@@ -172,7 +246,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/compsaleicon"/>
+                            android:src="@drawable/competitor"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -198,7 +272,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/fridge"/>
+                            android:src="@drawable/refrigerator"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -224,7 +298,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/cultures"/>
+                            android:src="@drawable/salelabel"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -310,7 +384,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/ic_handshake"/>
+                            android:src="@drawable/agreement"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -336,7 +410,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/replaced"/>
+                            android:src="@drawable/exchange"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -372,7 +446,7 @@
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
-                            android:src="@drawable/salesleadicon"/>
+                            android:src="@drawable/leadgeneration"/>
                     </LinearLayout>
                     <TextView
                         android:layout_width="wrap_content"
@@ -385,6 +459,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -414,6 +489,7 @@
 
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

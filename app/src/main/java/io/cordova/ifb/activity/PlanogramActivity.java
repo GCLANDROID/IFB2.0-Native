@@ -94,6 +94,7 @@ public class PlanogramActivity extends AppCompatActivity {
                 binding.llReportHeader.setBackgroundColor(Color.parseColor("#FF0000"));
                 binding.llManageHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
 
+                getReportList("2");
 
             }
         });
@@ -106,7 +107,12 @@ public class PlanogramActivity extends AppCompatActivity {
                 binding.llManage.setVisibility(View.VISIBLE);
                 binding.llManageHeader.setBackgroundColor(Color.parseColor("#FF0000"));
                 binding.llReportHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
-
+                Date c = Calendar.getInstance().getTime();
+                System.out.println("Current time => " + c);
+                SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                Calendar cal = Calendar.getInstance();
+                nosaledate = df.format(cal.getTime());;
+                getReportList("2");
             }
         });
 
@@ -129,8 +135,9 @@ public class PlanogramActivity extends AppCompatActivity {
                     binding.llSearchByMonth.setVisibility(View.VISIBLE);
                     binding.llSearchByDate.setVisibility(View.GONE);
                     binding.tvSearchTxt.setText("Search by Date");
+
                     getReportList("1");
-                    binding.rvItem.setVisibility(View.GONE);
+
 
 
                 }else {
@@ -311,6 +318,7 @@ public class PlanogramActivity extends AppCompatActivity {
                         Log.d("responseAttendance", response);
                         progressDialog.dismiss();
                         reportitemList.clear();
+                        itemList.clear();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);

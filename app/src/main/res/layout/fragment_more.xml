@@ -54,7 +54,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/ifblogo"/>
+                        android:src="@drawable/catalogue"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/ic_learning"/>
+                        android:src="@drawable/onlinelearning"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -140,7 +140,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/helpicon"/>
+                        android:src="@drawable/helpdesk"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -166,7 +166,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/question"/>
+                        android:src="@drawable/questionmark"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -227,7 +227,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/bonus"/>
+                        android:src="@drawable/refer"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -279,7 +279,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/paper"/>
+                        android:src="@drawable/doc"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -314,7 +314,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/customerreview"/>
+                        android:src="@drawable/ratingreview"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"

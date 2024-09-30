@@ -23,10 +23,27 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:id="@+id/llManage">
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/attendancemanageicon"/>
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/biometricattendance" />
+                </LinearLayout>
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Attendance \n Manage"
+                    android:textColor="@android:color/black"
+                    android:textSize="10sp" />
+
 
             </LinearLayout>
             <LinearLayout
@@ -66,10 +83,27 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/attendancereporticon"/>
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/record" />
+                </LinearLayout>
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Attendance \n Report"
+                    android:textColor="@android:color/black"
+                    android:textSize="10sp" />
+
 
             </LinearLayout>
 
@@ -87,10 +121,27 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:id="@+id/llLeaveEnc">
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/leaveicon"/>
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/leaf" />
+                </LinearLayout>
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="leave \n Enchasment"
+                    android:textColor="@android:color/black"
+                    android:textSize="10sp" />
+
 
             </LinearLayout>
             <LinearLayout
@@ -100,10 +151,27 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:id="@+id/llLeave">
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/leaveapplicationicon"/>
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/application" />
+                </LinearLayout>
+
+                <TextView
+                    android:textAlignment="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="leave \n Application"
+                    android:textColor="@android:color/black"
+                    android:textSize="10sp" />
+
 
             </LinearLayout>
             <LinearLayout
@@ -123,7 +191,7 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/syringe" />
+                        android:src="@drawable/vaccination" />
                 </LinearLayout>
 
                 <TextView
