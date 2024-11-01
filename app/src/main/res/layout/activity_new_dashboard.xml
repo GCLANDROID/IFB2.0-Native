@@ -59,9 +59,31 @@
                     android:layout_weight="1">
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/frameLayout"
-                        ></FrameLayout>
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:id="@+id/frameLayout"
+                                ></FrameLayout>
+                        </LinearLayout>
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|right"
+                            android:layout_margin="10dp"
+                            android:backgroundTint="@color/gray"
+                            android:id="@+id/fbTips"
+                            android:src="@drawable/performancee"
+                            app:fabSize="auto"
+                            app:fab_iconSize="30dp"
+                            app:maxImageSize="40dp"
+                            ></com.google.android.material.floatingactionbutton.FloatingActionButton>
+                    </FrameLayout>
+
+
 
                 </LinearLayout>
                 <LinearLayout
