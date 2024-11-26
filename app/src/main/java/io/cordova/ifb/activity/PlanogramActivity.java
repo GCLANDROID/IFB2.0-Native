@@ -91,8 +91,6 @@ public class PlanogramActivity extends AppCompatActivity {
             public void onClick(View view) {
                 binding.llReport.setVisibility(View.VISIBLE);
                 binding.llManage.setVisibility(View.GONE);
-                binding.llReportHeader.setBackgroundColor(Color.parseColor("#FF0000"));
-                binding.llManageHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
 
                 getReportList("2");
 
@@ -105,8 +103,7 @@ public class PlanogramActivity extends AppCompatActivity {
             public void onClick(View view) {
                 binding.llReport.setVisibility(View.GONE);
                 binding.llManage.setVisibility(View.VISIBLE);
-                binding.llManageHeader.setBackgroundColor(Color.parseColor("#FF0000"));
-                binding.llReportHeader.setBackgroundColor(Color.parseColor("#F56C6C"));
+
                 Date c = Calendar.getInstance().getTime();
                 System.out.println("Current time => " + c);
                 SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");

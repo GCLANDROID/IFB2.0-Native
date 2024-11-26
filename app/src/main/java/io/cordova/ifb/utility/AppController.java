@@ -37,7 +37,63 @@ public class AppController {
     public static  int ifbrefffsize=0;
     public static String refffid="";
 
+
+    public static  int air_lg=0;
+    public static  int air_samsung=0;
+    public static  int air_daiken=0;
+    public static  int air_carrier=0;
+    public static  int air_bluestar=0;
+    public static  int air_voltas=0;
+    public static  int air_onida=0;
+    public static  int air_panasonic=0;
+    public static  int air_whirlpool=0;
+    public static  int air_ogeneral=0;
+    public static  int air_godrej=0;
+    public static  int air_Haier=0;
+    public static  int air_llyods=0;
+    public static  int cloths_bosch=0;
+    public static  int dish_bosch=0;
+    public static  int dish_lg=0;
+    public static  int dish_sam=0;
+    public static  int micro_lg=0;
+    public static  int micro_sam=0;
+    public static  int micro_whirl=0;
+    public static  int micro_pana=0;
+    public static  int micro_godrej=0;
+    public static  int micro_onida=0;
+    public static  int ka_faber=0;
+    public static  int ka_sun=0;
+    public static  int ka_elica=0;
+    public static  int ka_kaff=0;
+    public static  int ka_bosch=0;
+    public static  int wmflu_lg=0;
+    public static  int wmflu_sam=0;
+    public static  int wmflu_bosch=0;
+    public static  int wmflu_whirlpool=0;
+    public static  int wmflu_beko=0;
+    public static  int tl_lg=0;
+    public static  int tl_sam=0;
+    public static  int tl_bosch=0;
+    public static  int tl_whirlpool=0;
+    public static  int tl_pana=0;
+    public static  int tl_godrej=0;
+    public static  int tl_onida=0;
+    public static  int dryer_lg=0;
+    public static  int dryer_sam=0;
+    public static  int dryer_whirlpool=0;
+    public static  int dryer_pansonic=0;
+    public static  int dryer_godrej=0;
+    public static  int dryer_onida=0;
+    public static  int dc_sam=0;
+    public static  int dc_lg=0;
+    public static  int dc_whirlpool=0;
+    public static  int dc_haier=0;
+    public static  int dc_godrej=0;
+    public static  int ff_godrej=0;
+    public static  int ff_haier=0;
+
     public static String APIURL="https://nonfss.geniusconsultant.com/IFBiOSApi/";
+    public static String localAPIURL="https://171.16.2.30/IFBiOSApi/";
 
 
     public static String changeAnyDateFormat(String reqdate, String dateformat, String reqformat) {

@@ -22,6 +22,7 @@ import io.cordova.ifb.fragment.AttendanceFragment;
 import io.cordova.ifb.fragment.HomeFragment;
 import io.cordova.ifb.fragment.MoreFragment;
 import io.cordova.ifb.fragment.SalesManagementFragment;
+import io.cordova.ifb.test.MainTestActivity;
 import io.cordova.ifb.utility.PrefManager;
 
 public class NewDashboardActivity extends AppCompatActivity {
@@ -87,7 +88,7 @@ public class NewDashboardActivity extends AppCompatActivity {
         binding.fbTips.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(NewDashboardActivity.this,IncentiveActivity.class);
+                Intent intent=new Intent(NewDashboardActivity.this, IncentiveActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
 

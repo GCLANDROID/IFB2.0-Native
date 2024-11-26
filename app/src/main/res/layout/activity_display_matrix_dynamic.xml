@@ -227,7 +227,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -254,6 +254,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/black"></LinearLayout>
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
@@ -277,6 +278,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirLgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -311,7 +321,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -338,6 +348,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/black"></LinearLayout>
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
@@ -361,6 +372,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -395,7 +415,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -413,6 +433,7 @@
                     android:text="DAIKEN"/>
             </LinearLayout>
             <LinearLayout
+
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
@@ -422,6 +443,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/black"></LinearLayout>
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
@@ -445,6 +467,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirDaikenAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -479,7 +510,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -508,7 +539,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -529,6 +561,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirCarrierAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -563,7 +604,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -592,7 +633,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -613,6 +655,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirBluestarAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -647,7 +698,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -674,6 +725,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/black"></LinearLayout>
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
@@ -697,6 +749,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirVoltasAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -731,7 +792,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -760,7 +821,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -781,6 +843,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirOnidaAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -815,7 +886,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -844,7 +915,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -865,6 +937,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirPanasonicAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -899,7 +980,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -928,7 +1009,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -949,6 +1031,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirWhirlpoolAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -983,7 +1074,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -1012,7 +1103,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -1033,6 +1125,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAiroGeneralAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -1067,7 +1168,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -1096,7 +1197,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -1117,6 +1219,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirGodrejAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -1151,7 +1262,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -1180,7 +1291,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="80dp"
                         android:layout_height="30dp"
@@ -1201,6 +1313,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirHaierAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -1235,7 +1356,7 @@
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -1262,6 +1383,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/black"></LinearLayout>
                 <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center">
@@ -1285,6 +1407,15 @@
                             android:digits="1234567890"/>
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/tvAirLloydsAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -1543,8 +1674,9 @@
             android:background="@android:color/black"></LinearLayout>
 
         <LinearLayout
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -1599,6 +1731,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvClothsBoschAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -1784,10 +1924,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -1840,6 +1980,14 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvDishBoschAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -1876,10 +2024,10 @@
         //3
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -1931,6 +2079,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvDishLgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -1969,10 +2125,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2024,6 +2180,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvDishSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -2062,10 +2226,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2199,10 +2363,10 @@
         //1
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2299,10 +2463,10 @@
         //2
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2354,6 +2518,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroLgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -2392,10 +2564,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2447,7 +2619,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -2484,10 +2663,10 @@
         //4
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2539,7 +2718,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroWhirlpoolAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -2576,10 +2762,10 @@
         //5
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2631,7 +2817,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroPanasonicAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -2668,10 +2861,10 @@
         //6
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2723,6 +2916,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroGodrejAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -2760,10 +2961,10 @@
         //7
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -2815,7 +3016,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvMicroOnidaAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -2852,10 +3060,10 @@
         //8
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -3089,10 +3297,10 @@
         //2
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -3144,6 +3352,14 @@
 
 
                     </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvKAFaberAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
 
                 </LinearLayout>
 
@@ -3181,7 +3397,8 @@
         //3
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -3236,7 +3453,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvKASunflameAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3273,7 +3497,7 @@
         //4
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -3328,7 +3552,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvKAElicaAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3366,10 +3597,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -3421,7 +3652,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvKAKaffAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3458,10 +3696,10 @@
         //6
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -3513,7 +3751,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvKABoschAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3661,6 +3906,7 @@
                 android:text="WASHING MACHINE-FLU>"/>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -3686,6 +3932,7 @@
 
         //1
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:orientation="horizontal"
@@ -3757,10 +4004,12 @@
 
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -3780,6 +4029,7 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
@@ -3787,10 +4037,10 @@
         //2
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -3842,7 +4092,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvFLULgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3878,8 +4135,9 @@
 
         //3
         <LinearLayout
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -3934,7 +4192,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvFLUSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -3971,7 +4236,8 @@
         //4
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4026,17 +4292,26 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvFLUBoschAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -4056,14 +4331,17 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
 
         //5
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4118,17 +4396,26 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvFLUWhirlpoolAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -4148,14 +4435,17 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
 
         //6
         <LinearLayout
+            android:visibility="gone"
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4210,17 +4500,26 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvFLUBekoAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
         <LinearLayout
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -4240,6 +4539,7 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
@@ -4247,7 +4547,8 @@
         //7
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4358,6 +4659,7 @@
                 android:text="WASHING MACHINE-TL>"/>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -4377,12 +4679,14 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
 
         //1
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:orientation="horizontal"
@@ -4484,7 +4788,8 @@
         //2
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4539,7 +4844,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLLgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -4576,7 +4888,8 @@
         //3
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4631,7 +4944,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -4668,7 +4988,8 @@
         //4
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4723,7 +5044,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLBoschAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -4760,7 +5088,8 @@
         //5
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -4815,7 +5144,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLWhirlpoolAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -4852,10 +5188,10 @@
         //6
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -4907,7 +5243,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLPanasonicAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -4944,10 +5287,10 @@
         //7
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -4999,7 +5342,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLGodrejAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5036,10 +5386,10 @@
         //8
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5091,7 +5441,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvTLOnidaAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5244,6 +5601,7 @@
                 android:text="WASHER DRYER>"/>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:orientation="horizontal">
@@ -5263,12 +5621,14 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
 
         //1
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:orientation="horizontal"
@@ -5370,7 +5730,8 @@
         //2
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:orientation="horizontal"
             android:background="@color/color6"
             >
@@ -5425,7 +5786,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherLgAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5463,10 +5831,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5518,7 +5886,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherSamsungAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5555,10 +5930,10 @@
         //4
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5610,7 +5985,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherWhirlpoolAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5647,10 +6029,10 @@
         //5
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5702,7 +6084,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherPanasonicAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5739,10 +6128,10 @@
         //6
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5794,7 +6183,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherGodrejAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -5831,10 +6227,10 @@
         //7
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:background="@color/color6"
-            >
+            android:padding="5dp">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -5886,7 +6282,14 @@
 
 
                     </LinearLayout>
-
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/tvWasherDisherOnidaAdd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:text="ADD"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -6220,7 +6623,14 @@
 
 
                         </LinearLayout>
-
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORLgAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -6258,10 +6668,10 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color6"
-                >
+                android:padding="5dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -6313,7 +6723,14 @@
 
 
                         </LinearLayout>
-
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORSamsungAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -6350,10 +6767,10 @@
             //4
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color6"
-                >
+                android:padding="5dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -6405,7 +6822,14 @@
 
 
                         </LinearLayout>
-
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORWhirlpoolAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -6442,10 +6866,10 @@
             //5
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color6"
-                >
+                android:padding="5dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -6497,7 +6921,14 @@
 
 
                         </LinearLayout>
-
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORHaierAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -6534,10 +6965,10 @@
             //6
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color6"
-                >
+                android:padding="5dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -6589,7 +7020,14 @@
 
 
                         </LinearLayout>
-
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORGodrejAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
                     </LinearLayout>
 
                 </LinearLayout>
@@ -6627,7 +7065,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal"
                 android:background="@color/color6"
                 >
@@ -6869,7 +7308,8 @@
             //2
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal"
                 android:background="@color/color6"
                 >
@@ -6924,6 +7364,14 @@
 
 
                         </LinearLayout>
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORFFLgAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
 
                     </LinearLayout>
 
@@ -6962,7 +7410,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal"
                 android:background="@color/color6"
                 >
@@ -7017,6 +7466,14 @@
 
 
                         </LinearLayout>
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORFFSamsungAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
 
                     </LinearLayout>
 
@@ -7054,10 +7511,10 @@
             //4
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/color6"
-                >
+                android:padding="5dp">
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -7109,6 +7566,14 @@
 
 
                         </LinearLayout>
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORFFWhirlpoolAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
 
                     </LinearLayout>
 
@@ -7146,7 +7611,8 @@
             //5
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal"
                 android:background="@color/color6"
                 >
@@ -7201,6 +7667,14 @@
 
 
                         </LinearLayout>
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORFFHaierAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
 
                     </LinearLayout>
 
@@ -7238,7 +7712,8 @@
             //6
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
                 android:orientation="horizontal"
                 android:background="@color/color6"
                 >
@@ -7293,6 +7768,14 @@
 
 
                         </LinearLayout>
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tvREFRIGERATORFFGodrejAdd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/black"
+                            android:textStyle="bold"
+                            android:text="ADD"/>
 
                     </LinearLayout>
 

@@ -53,6 +53,9 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -62,13 +65,11 @@ import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.review.ReviewInfo;
-import com.google.android.play.core.review.ReviewManager;
-import com.google.android.play.core.review.ReviewManagerFactory;
-import com.google.android.play.core.tasks.OnCompleteListener;
-import com.google.android.play.core.tasks.OnFailureListener;
-import com.google.android.play.core.tasks.OnSuccessListener;
-import com.google.android.play.core.tasks.Task;
+
+
+
+
+
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -270,16 +271,7 @@ public class DashBoardActivity extends AppCompatActivity {
 
         int launch_count = prefs.getInt("launch_count", 0);
 
-        if(launch_count>=3){
-            // third time launch
-            // Toast.makeText(DashBoardActivity.this,"3 time",Toast.LENGTH_LONG).show();
-            RateApp(DashBoardActivity.this);
 
-        } else {
-            prefs.edit()
-                    .putInt("launch_count", launch_count+1)
-                    .apply();
-        }
 
         android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -1675,38 +1667,7 @@ public class DashBoardActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    public void RateApp(final Context mContext) {
-        try {
-            final ReviewManager manager = ReviewManagerFactory.create(mContext);
-            manager.requestReviewFlow().addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
-                @Override
-                public void onComplete(@NonNull Task<ReviewInfo> task) {
-                    if(task.isSuccessful()){
-                        ReviewInfo reviewInfo = task.getResult();
-                        manager.launchReviewFlow((Activity) mContext, reviewInfo).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(Exception e) {
-                                //  Toast.makeText(mContext, "Rating Failed", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                // Toast.makeText(mContext, "Review Completed, Thank You!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(Exception e) {
-                    //  Toast.makeText(mContext, "In-App Request Failed", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     private void sendIMEIReq(String reason) {

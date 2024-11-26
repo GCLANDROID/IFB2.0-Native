@@ -2434,7 +2434,8 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                     public void onError(ANError error) {
                         pd.dismiss();
                         successAlert(sucessText, "2");
-                        postTokenStatus(TokenNo, "Error");
+                        String errormessgae=error.getMessage();
+                        postTokenStatus(TokenNo, errormessgae);
                         Toast.makeText(DeliveryAddressUpdateActivity.this, "Wrong", Toast.LENGTH_LONG).show();
 
                     }
