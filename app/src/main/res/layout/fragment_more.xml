@@ -157,7 +157,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:id="@+id/llQueries">
+                android:id="@+id/llIncentive">
                 <LinearLayout
                     android:layout_width="65dp"
                     android:layout_height="65dp"
@@ -166,14 +166,14 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/questionmark"/>
+                        android:src="@drawable/manual"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:textSize="10sp"
-                    android:text="Queries"
+                    android:text="Incentive Manual"
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
@@ -264,6 +264,39 @@
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:id="@+id/llQueries">
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/questionmark"/>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="10sp"
+                    android:text="Queries"
+                    android:textColor="@android:color/black"/>
+
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:weightSum="3">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -290,13 +323,6 @@
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:weightSum="3">
 
             <LinearLayout
                 android:visibility="visible"

@@ -68,6 +68,9 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -215,8 +218,9 @@ public class SalesManage2Activity extends AppCompatActivity {
     String pedestial = "N";
     String Cust_S_Code="";
     int i=0;
-
+    int amout;
     private final static int INTERVAL = 3000 * 60 * 1;
+    String query;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -2729,8 +2733,8 @@ public class SalesManage2Activity extends AppCompatActivity {
                                 Cust_S_Code=object.optString("Cust_S_Code");
                             }
                             JSONObject jsonObject=new JSONObject();
-                            int amout=(Integer.parseInt(etInvoiceValue.getText().toString())*Integer.parseInt(etQuantity.getText().toString()));
-                            try {
+                             amout=(Integer.parseInt(etInvoiceValue.getText().toString())*Integer.parseInt(etQuantity.getText().toString()));
+                           /* try {
                                 jsonObject.put("mobile",etMobNumber.getText().toString());
                                 jsonObject.put("OTP",Cust_S_Code);
                                 jsonObject.put("qty",etQuantity.getText().toString());
@@ -2740,7 +2744,8 @@ public class SalesManage2Activity extends AppCompatActivity {
                               //  otpSendJSON(jsonObject);
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }
+                            }*/
+                            OTpSend();
 
                             pd.dismiss();
 
@@ -3086,8 +3091,10 @@ public class SalesManage2Activity extends AppCompatActivity {
                          String status=job1.optString("status");
                          if (status.equalsIgnoreCase("Success")){
                              i=i+1;
-                             otpAlert(jsonObject);
+                             otpAlert();
                              OTPTracker(refrenceNo,Cust_S_Code,"Success");
+                         }else {
+
                          }
 
 
@@ -3102,7 +3109,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                         pd.dismiss();
                         String errormessgae=error.getMessage();
                         if (errormessgae.contains("javax.net.ssl.SSLHandshakeException")){
-                            otpSendJSON(jsonObject);
+                            OTpSend();
                         }else {
                             OTPTracker(refrenceNo,Cust_S_Code,errormessgae);
                             Toast.makeText(SalesManage2Activity.this,"Error Occured while sending Customer Code",Toast.LENGTH_LONG).show();
@@ -3112,6 +3119,9 @@ public class SalesManage2Activity extends AppCompatActivity {
                     }
                 });
     }
+
+
+
 
 
     public void otpSendJSON(JSONObject jsonObject) {
@@ -3130,7 +3140,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                         Log.d("TAG", response.toString());
                         progressBar.dismiss();
                         i=i+1;
-                        otpAlert(jsonObject);
+                        otpAlert();
                         OTPTracker(refrenceNo,Cust_S_Code,"Success");
 
                     }
@@ -3164,7 +3174,7 @@ public class SalesManage2Activity extends AppCompatActivity {
 
     }
 
-    private void otpAlert(JSONObject jsonObject) {
+    private void otpAlert() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManage2Activity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_customer_satisfactory_code, null);
@@ -3210,7 +3220,7 @@ public class SalesManage2Activity extends AppCompatActivity {
             public void onClick(View view) {
                 if (i<=5){
                     imeiALert.dismiss();
-                    otpSend(jsonObject);
+                    OTpSend();
 
                 }else {
                     Toast.makeText(SalesManage2Activity.this,"You have already reached your 5 limits",Toast.LENGTH_LONG).show();
@@ -3347,7 +3357,52 @@ public class SalesManage2Activity extends AppCompatActivity {
                 });
     }
 
+    private void OTpSend() {
+        String message = "Welcome to the IFB family! Congratulations on becoming the proud owner of "+etQuantity.getText().toString()+" IFB product - "+ categoryname+" for Rs. "+amout+". Kindly share the Purchase Verification code "+ Cust_S_Code+" for product registration so we can initiate the process of delivery, installation, and warranty - The IFB Family Team";
+        try {
+            query = URLEncoder.encode(message, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String surl = "http://smsapi.ifbhub.com/Sent?key=xpw6pSJJnTNr+AuEdVAQBHNhLxbM4eOmrRLnTN0PINs=&to="+etMobNumber.getText().toString()+"&msg="+query;
+        Log.d("inputCheckIformation", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+                        boolean result = Boolean.parseBoolean(response);
+                        // Now you can use the result as a boolean
+                        if (result){
+                            i=i+1;
+                            otpAlert();
+                            OTPTracker(refrenceNo,Cust_S_Code,"Success");
 
+                        }else {
+                            OTPTracker(refrenceNo,Cust_S_Code,"False");
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                String errormessgae=error.getMessage();
+                OTPTracker(refrenceNo,Cust_S_Code,errormessgae);
+                Toast.makeText(SalesManage2Activity.this,"Error Occured while sending Customer Code",Toast.LENGTH_LONG).show();
+
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+        requestQueue.add(stringRequest);
+    }
 
 
 
