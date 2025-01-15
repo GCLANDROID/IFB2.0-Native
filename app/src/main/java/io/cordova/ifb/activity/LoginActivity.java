@@ -58,7 +58,7 @@ import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 
 public class LoginActivity extends AppCompatActivity {
-    Button llLogin;
+    TextView llLogin;
     EditText etSceurityCode, etUserName, etPassword;
     String version = "";
     AlertDialog alertDialog,al1;
@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
     private void initialize() {
         prefManager = new PrefManager(LoginActivity.this);
         connectionCheck = new NetworkConnectionCheck(LoginActivity.this);
-        llLogin = (Button) findViewById(R.id.btnLogin);
+        llLogin = (TextView) findViewById(R.id.btnLogin);
         etSceurityCode = (EditText) findViewById(R.id.etSceurityCode);
         etUserName = (EditText) findViewById(R.id.etUserName);
         etPassword = (EditText) findViewById(R.id.etPassword);
