@@ -3342,7 +3342,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                         JSONObject job1 = response;
 
 
-                        // boolean _status = job1.getBoolean("status");
+                        // boolean _status = job1.getBoolean("status");yyyy
 
 
                         // do anything with response

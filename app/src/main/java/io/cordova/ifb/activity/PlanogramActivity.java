@@ -1,12 +1,15 @@
 package io.cordova.ifb.activity;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +37,8 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.developers.imagezipper.ImageZipper;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,8 +121,9 @@ public class PlanogramActivity extends AppCompatActivity {
         binding.llScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PlanogramActivity.this, ODUScannerActivity.class);
-                startActivityForResult(intent, SCANNER_REQUEST);
+                /*Intent intent = new Intent(PlanogramActivity.this, ODUScannerActivity.class);
+                startActivityForResult(intent, SCANNER_REQUEST);*/
+                scanCode();
             }
         });
 
@@ -588,5 +594,31 @@ public class PlanogramActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    private void scanCode() {
+        ScanOptions options = new ScanOptions();
+        options.setPrompt("Scan a barcode");
+        options.setTorchEnabled(true);
+        options.setOrientationLocked(true);
+        options.setCaptureActivity(CaptureAct.class);
+        scanLauncher.launch(options);
+    }
+
+    ActivityResultLauncher<ScanOptions> scanLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Scan Result");
+            builder.setMessage(result.getContents());
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    postBarcode(result.getContents());
+
+                }
+            }).show();
+        }
+    });
 
 }
