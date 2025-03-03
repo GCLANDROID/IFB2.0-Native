@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/lldesign2"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:layout_marginBottom="20dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

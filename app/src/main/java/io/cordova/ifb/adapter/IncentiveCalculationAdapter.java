@@ -1,6 +1,7 @@
 package io.cordova.ifb.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import io.cordova.ifb.R;
+import io.cordova.ifb.activity.IncentiveCalculationDetailsActivity;
 import io.cordova.ifb.module.IncentiveCalculationModule;
 import io.cordova.ifb.module.ReportModule;
 
@@ -31,6 +33,14 @@ public class IncentiveCalculationAdapter extends RecyclerView.Adapter<IncentiveC
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
+        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(context, IncentiveCalculationDetailsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
 
 
     }
