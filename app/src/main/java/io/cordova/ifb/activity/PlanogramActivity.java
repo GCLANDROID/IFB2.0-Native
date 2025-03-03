@@ -123,7 +123,11 @@ public class PlanogramActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Intent intent = new Intent(PlanogramActivity.this, ODUScannerActivity.class);
                 startActivityForResult(intent, SCANNER_REQUEST);*/
-                scanCode();
+                //scanCode();
+
+                Intent intent = new Intent(PlanogramActivity.this,BarcodeScannerActivity.class);
+                startActivityForResult(intent, SCANNER_REQUEST);
+
             }
         });
 
@@ -406,9 +410,24 @@ public class PlanogramActivity extends AppCompatActivity {
 
 
         if ((requestCode == SCANNER_REQUEST)) {
-            String message1 = data.getStringExtra("MESSAGE");
-            binding.llScanReport.setVisibility(View.VISIBLE);
-            postBarcode(message1);
+
+
+            if (data != null) {
+                String resultData = data.getStringExtra("code");
+                //Toast.makeText(this, "Result: " + resultData, Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Scan Result");
+                builder.setMessage(resultData);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        postBarcode(resultData);
+
+                    }
+                }).show();
+            }
+
 
 
         }

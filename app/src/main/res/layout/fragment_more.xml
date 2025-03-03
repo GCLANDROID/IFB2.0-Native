@@ -166,14 +166,14 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/manual"/>
+                        android:src="@drawable/incentive"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:textSize="10sp"
-                    android:text="Incentive Manual"
+                    android:text="Incentive"
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>

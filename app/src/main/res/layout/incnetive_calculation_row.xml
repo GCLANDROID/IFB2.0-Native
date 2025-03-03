@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/lldesign2"
+    android:padding="10dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:text="Incentive Month"
+            android:textColor="@color/text_color"></TextView>
+        <TextView
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_weight="0.8"
+            android:id="@+id/tvIncentiveMonth"
+            android:text="March"
+            android:textColor="@color/list_selected"></TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:text="Your Ranking"
+            android:textColor="@color/text_color"></TextView>
+        <TextView
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_weight="0.8"
+            android:id="@+id/tvRanking"
+            android:text="24"
+            android:textColor="@color/green"></TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:text="Your Earned Only"
+            android:textColor="@color/text_color"></TextView>
+        <TextView
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_weight="0.8"
+            android:id="@+id/tvEarning"
+            android:text="39%"
+            android:textColor="@color/orange"></TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:text="Average Incentive of Branch"
+            android:textColor="@color/text_color"></TextView>
+        <TextView
+            android:textStyle="bold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_weight="0.8"
+            android:id="@+id/tvIncentiveBranch"
+            android:text="5000"
+            android:textColor="@color/primary"></TextView>
+    </LinearLayout>
+
+
+</LinearLayout>

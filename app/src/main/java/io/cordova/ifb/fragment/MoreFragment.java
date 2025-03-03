@@ -52,6 +52,7 @@ import io.cordova.ifb.activity.ELearningActivity;
 import io.cordova.ifb.activity.FeedBackRatingActivity;
 import io.cordova.ifb.activity.IQueriesDashboardActivity;
 import io.cordova.ifb.activity.IncentiveManualActivity;
+import io.cordova.ifb.activity.IncentiveSubActivity;
 import io.cordova.ifb.activity.LoginActivity;
 import io.cordova.ifb.activity.QAReportActivity;
 import io.cordova.ifb.activity.QueriesActivity;
@@ -149,7 +150,7 @@ public class MoreFragment extends Fragment {
         binding.llIncentive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), IncentiveManualActivity.class);
+                Intent intent = new Intent(getContext(), IncentiveSubActivity.class);
                 startActivity(intent);
             }
         });
