@@ -32,7 +32,7 @@ public class IncentiveSubActivity extends AppCompatActivity {
         binding.llIncentiveCalculation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(IncentiveSubActivity.this,IncentiveCalculationActivity.class);
+                Intent intent=new Intent(IncentiveSubActivity.this,IncentiveCalculationDetailsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

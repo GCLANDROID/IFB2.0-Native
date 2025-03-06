@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:textColor="@color/black"
-            android:text="WASCHING MACHINE FL"></TextView>
+            android:id="@+id/tvCategory"></TextView>
 
         <TextView
             android:gravity="center"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:textColor="@color/black"
-            android:text="10"></TextView>
+            android:id="@+id/tvTarget"></TextView>
         <TextView
             android:gravity="center"
             android:textSize="10sp"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textColor="@color/black"
-            android:text="5"></TextView>
+            android:id="@+id/tvAcheived"></TextView>
         <TextView
             android:gravity="center"
             android:textAlignment="center"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textColor="@color/black"
-            android:text="50%"></TextView>
+            android:id="@+id/tvPercentage"></TextView>
         <TextView
             android:gravity="center"
             android:textSize="10sp"
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textColor="@color/black"
-            android:text="5000"></TextView>
+            android:id="@+id/tvAmt"></TextView>
 
 
     </LinearLayout>

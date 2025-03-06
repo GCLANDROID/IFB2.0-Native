@@ -31,19 +31,31 @@ public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<Incen
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
 
+        myViewHolder.tvAmt.setText(itemList.get(i).getAmt());
+        myViewHolder.tvCategory.setText(itemList.get(i).getCategory());
+        myViewHolder.tvPercentage.setText(itemList.get(i).getAchievement());
+        myViewHolder.tvAcheived.setText(itemList.get(i).getAcheived());
+        myViewHolder.tvTarget.setText(itemList.get(i).getTgt());
+
 
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return itemList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView tvAmt,tvPercentage,tvAcheived,tvTarget,tvCategory;
 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            tvAmt=(TextView) itemView.findViewById(R.id.tvAmt);
+            tvPercentage=(TextView) itemView.findViewById(R.id.tvPercentage);
+            tvAcheived=(TextView) itemView.findViewById(R.id.tvAcheived);
+            tvTarget=(TextView) itemView.findViewById(R.id.tvTarget);
+            tvCategory=(TextView) itemView.findViewById(R.id.tvCategory);
 
 
 

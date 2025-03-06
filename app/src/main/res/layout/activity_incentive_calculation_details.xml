@@ -56,6 +56,68 @@
                 android:padding="5dp"
                 >
                 <LinearLayout
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_weight="0.5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:text="Financial Year"></TextView>
+                        <LinearLayout
+                            android:layout_marginLeft="10dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="40dp"
+                            android:background="@drawable/lldesign7">
+                            <Spinner
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:id="@+id/spFin"></Spinner>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_weight="0.5"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:text="Month"></TextView>
+                        <LinearLayout
+                            android:layout_marginLeft="10dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="40dp"
+                            android:background="@drawable/lldesign7">
+                            <Spinner
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:id="@+id/spMonth"></Spinner>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/lldesign7"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:layout_marginTop="20dp"
+                        android:text="Show"
+                        android:textColor="@color/white"
+                        android:id="@+id/btnShow"></Button>
+                </LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/llData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/lldesign2"
@@ -82,7 +144,7 @@
                             android:layout_weight="1"
                             android:textSize="12sp"
                             android:textColor="@color/white"
-                            android:text="March"></TextView>
+                            android:id="@+id/tvMonth"></TextView>
                     </LinearLayout>
 
                     <LinearLayout
@@ -112,7 +174,7 @@
                                 android:layout_weight="1"
                                 android:textSize="12sp"
                                 android:textColor="@color/white"
-                                android:text="29"></TextView>
+                                android:id="@+id/tvSelfRank"></TextView>
                         </LinearLayout>
 
                         <LinearLayout
@@ -137,7 +199,7 @@
                                 android:layout_weight="0.3"
                                 android:textSize="12sp"
                                 android:textColor="@color/white"
-                                android:text="30%"></TextView>
+                                android:id="@+id/tvEarned"></TextView>
                         </LinearLayout>
 
                     </LinearLayout>
@@ -163,7 +225,7 @@
                             android:layout_weight="1"
                             android:textSize="12sp"
                             android:textColor="@color/white"
-                            android:text="5000"></TextView>
+                            android:id="@+id/tvIncentiveBranch"></TextView>
                     </LinearLayout>
                     <LinearLayout
                         android:padding="5dp"
@@ -225,60 +287,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 
-                    <LinearLayout
-                        android:background="@color/green"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp">
-                        <TextView
-                            android:gravity="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:textColor="@color/black"
-                            android:text="Total"></TextView>
 
-                        <TextView
-                            android:gravity="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.2"
-                            android:textColor="@color/black"
-                            android:text="10"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="5"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textAlignment="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="50%"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="5000"></TextView>
-
-
-                    </LinearLayout>
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/black"></View>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvBlockTwo"
                         android:layout_marginTop="5dp"
@@ -306,7 +315,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.2"
                             android:textColor="@color/black"
-                            android:text="10"></TextView>
+                            ></TextView>
                         <TextView
                             android:gravity="center"
                             android:textSize="10sp"
@@ -314,7 +323,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
-                            android:text="5"></TextView>
+                            ></TextView>
                         <TextView
                             android:gravity="center"
                             android:textAlignment="center"
@@ -323,7 +332,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
-                            android:text="50%"></TextView>
+                           ></TextView>
                         <TextView
                             android:gravity="center"
                             android:textSize="10sp"
@@ -331,10 +340,27 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
-                            android:text="5000"></TextView>
+                            android:id="@+id/tvFinalIncentiveAmt"></TextView>
 
 
                     </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/llNoData"
+                    android:padding="10dp"
+                    android:layout_marginTop="200dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    <TextView
+                        android:textAlignment="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color"
+                        android:text="No incentive has been generated so far for the selected month."></TextView>
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
