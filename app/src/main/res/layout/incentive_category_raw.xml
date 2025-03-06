@@ -50,15 +50,7 @@
             android:layout_weight="0.3"
             android:textColor="@color/black"
             android:text="5000"></TextView>
-        <TextView
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textSize="10sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:textColor="@color/black"
-            android:text="50000"></TextView>
+
 
     </LinearLayout>
     <View

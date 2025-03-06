@@ -9,7 +9,7 @@
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
+            android:layout_height="50dp"
             android:background="@color/color3">
             <ImageView
                 android:id="@+id/imgBack"
@@ -172,6 +172,7 @@
                         android:background="@color/yellow"
                         >
                         <TextView
+                            android:gravity="center"
                             android:textSize="10sp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -211,15 +212,7 @@
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
                             android:text="Amount"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textAlignment="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="Earning/Deduction \nAmount"></TextView>
+
 
                     </LinearLayout>
                     <View
@@ -238,12 +231,13 @@
                         android:layout_height="wrap_content"
                         android:padding="10dp">
                         <TextView
+                            android:gravity="center"
                             android:textSize="10sp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
                             android:textColor="@color/black"
-                            android:text="Total Incentive"></TextView>
+                            android:text="Total"></TextView>
 
                         <TextView
                             android:gravity="center"
@@ -254,6 +248,7 @@
                             android:textColor="@color/black"
                             android:text="10"></TextView>
                         <TextView
+                            android:gravity="center"
                             android:textSize="10sp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -277,15 +272,7 @@
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
                             android:text="5000"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textAlignment="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="50000"></TextView>
+
 
                     </LinearLayout>
                     <View
@@ -304,12 +291,13 @@
                         android:layout_height="wrap_content"
                         android:padding="10dp">
                         <TextView
+                            android:gravity="center"
                             android:textSize="10sp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
                             android:textColor="@color/black"
-                            android:text="Total Incentive"></TextView>
+                            android:text="Total Final Incentive"></TextView>
 
                         <TextView
                             android:gravity="center"
@@ -320,6 +308,7 @@
                             android:textColor="@color/black"
                             android:text="10"></TextView>
                         <TextView
+                            android:gravity="center"
                             android:textSize="10sp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -343,15 +332,7 @@
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
                             android:text="5000"></TextView>
-                        <TextView
-                            android:gravity="center"
-                            android:textAlignment="center"
-                            android:textSize="10sp"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
-                            android:textColor="@color/black"
-                            android:text="50000"></TextView>
+
 
                     </LinearLayout>
                 </LinearLayout>
