@@ -265,7 +265,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.3"
                             android:textColor="@color/black"
-                            android:text="Acheive\nment"></TextView>
+                            android:text="Acheive\nment(%)"></TextView>
                         <TextView
                             android:gravity="center"
                             android:textSize="10sp"
@@ -295,7 +295,7 @@
                         android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 
                     <LinearLayout
-                        android:background="@color/green"
+                        android:background="@color/greentwo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="10dp">

@@ -1,6 +1,7 @@
 package io.cordova.ifb.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,9 @@ public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<Incen
         myViewHolder.tvPercentage.setText(itemList.get(i).getAchievement());
         myViewHolder.tvAcheived.setText(itemList.get(i).getAcheived());
         myViewHolder.tvTarget.setText(itemList.get(i).getTgt());
+        if (itemList.get(i).getCategory().replaceAll(" ","").equalsIgnoreCase("Total")){
+            myViewHolder.itemView.setBackgroundColor(Color.parseColor("#8EF493"));
+        }
 
 
     }

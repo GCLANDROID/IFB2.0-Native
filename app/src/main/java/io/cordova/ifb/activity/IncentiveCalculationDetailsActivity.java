@@ -88,6 +88,8 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
         } else if (m == 12) {
             month = "December";
         }
+
+
         if(month.equals("January")){
             int futureyear = y - 1;
             financialYear = futureyear+"-"+year;
