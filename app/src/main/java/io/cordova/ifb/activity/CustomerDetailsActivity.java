@@ -160,7 +160,7 @@ public class CustomerDetailsActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(CustomerDetailsActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(CustomerDetailsActivity.this,NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

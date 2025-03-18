@@ -239,7 +239,7 @@ public class CollaborationReportActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(CollaborationReportActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(CollaborationReportActivity.this,NewDashboardActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

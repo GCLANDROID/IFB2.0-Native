@@ -375,7 +375,7 @@ public class CVisitManageActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
+                Intent intent = new Intent(getApplicationContext(), NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

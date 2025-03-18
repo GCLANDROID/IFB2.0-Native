@@ -144,7 +144,7 @@ public class DisplayMatrixReportActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DisplayMatrixReportActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(DisplayMatrixReportActivity.this,NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

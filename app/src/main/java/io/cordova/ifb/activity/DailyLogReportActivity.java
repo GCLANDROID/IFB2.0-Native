@@ -445,7 +445,7 @@ public class DailyLogReportActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DailyLogReportActivity.this, DashBoardActivity.class);
+                Intent intent = new Intent(DailyLogReportActivity.this, NewDashboardActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 //  finish();

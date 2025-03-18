@@ -230,6 +230,9 @@
         <activity android:name=".activity.DishwasherDialogActivity" />
         <activity android:name=".activity.MicroOvenDialogActivity" />
         <activity
+            android:name=".activity.AttendanceCalendarDialogActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"/>
+        <activity
             android:name=".activity.RefrigeratorDialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
         <activity

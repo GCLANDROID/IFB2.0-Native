@@ -1,6 +1,8 @@
 package io.cordova.ifb.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -40,11 +42,15 @@ import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.activity.AttemdanceReportActivity;
+import io.cordova.ifb.activity.AttendanceCalendarDialogActivity;
+import io.cordova.ifb.activity.ConsolidateSalesReportActivity;
 import io.cordova.ifb.activity.DashBoardActivity;
+import io.cordova.ifb.activity.DeliveryDetailsActivity;
 import io.cordova.ifb.activity.DisplayMatrixDashBoardActivity;
 import io.cordova.ifb.activity.NewDashboardActivity;
 import io.cordova.ifb.activity.NotificationActivity;
 import io.cordova.ifb.activity.PlanogramActivity;
+import io.cordova.ifb.activity.RefNoReportActivity;
 import io.cordova.ifb.databinding.FragmentHomeBinding;
 import io.cordova.ifb.module.ReportModule;
 import io.cordova.ifb.utility.AppController;
@@ -52,7 +58,7 @@ import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
 
 
-public class HomeFragment extends Fragment implements OnNavigationButtonClickedListener {
+public class HomeFragment extends Fragment  {
     View view;
     FragmentHomeBinding binding;
     PrefManager prefManager;
@@ -79,59 +85,7 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
     private void initView(){
          prefManager=new PrefManager(getContext());
 
-        HashMap<Object, Property> descHashMap = new HashMap<>();
 
-        // Initialize default property
-        Property defaultProperty = new Property();
-
-        // Initialize default resource
-        defaultProperty.layoutResource = R.layout.default_view;
-
-        // Initialize and assign variable
-        defaultProperty.dateTextViewResource = R.id.text_view;
-
-        // Put object and property
-        descHashMap.put("default", defaultProperty);
-
-        Property presentProperty = new Property();
-        presentProperty.layoutResource = R.layout.present_view;
-        presentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("P", presentProperty);
-
-        // For absent
-        Property absentProperty = new Property();
-        absentProperty.layoutResource = R.layout.absent_view;
-        absentProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("A", absentProperty);
-
-        //wo
-        Property woProperty = new Property();
-        woProperty.layoutResource = R.layout.wo_view;
-        woProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("WO", woProperty);
-
-        //holiday
-        Property hProperty = new Property();
-        hProperty.layoutResource = R.layout.ho_view;
-        hProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("H", hProperty);
-
-
-        //Leave
-        Property naProperty = new Property();
-        naProperty.layoutResource = R.layout.na_view;
-        naProperty.dateTextViewResource = R.id.text_view;
-        descHashMap.put("CL", naProperty);
-        descHashMap.put("SL", naProperty);
-        descHashMap.put("PL", naProperty);
-        descHashMap.put("CO", naProperty);
-
-
-
-
-        binding.customCalendar.setMapDescToProp(descHashMap);
-        binding.customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, this);
-        binding.customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, this);
         y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
         int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
@@ -175,6 +129,8 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             financialYear = year+"-"+futureyear;
         }
 
+        binding.tvMonth.setText("Sales Information for the Month of "+month+" - "+financialYear);
+
         String sold=prefManager.getSold().replaceAll("\\s+", "").replace("(","-");
         String soldArray[]=sold.split("-");
         if (soldArray.length>0){
@@ -215,6 +171,16 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             }
         });
 
+
+        binding.btnAttendanceCalendarReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), AttendanceCalendarDialogActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
         binding.tvInformation2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,6 +192,41 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
             }
         });
 
+        binding.llDeliveryPending.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), DeliveryDetailsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+        binding.llTotalSales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(getContext(), RefNoReportActivity.class);
+                intent.putExtra("subOperation","1");
+                intent.putExtra("month",month);
+                intent.putExtra("year",financialYear);
+                intent.putExtra("report","Total Sales");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
+
+        binding.llApprovedSales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(),RefNoReportActivity.class);
+                intent.putExtra("subOperation","6");
+                intent.putExtra("month",month);
+                intent.putExtra("year",financialYear);
+                intent.putExtra("report","Ticket Generated");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
 
 
 
@@ -233,7 +234,11 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
 
 
-        getAttendance();
+
+
+
+
+        getItemForNotification();
         setPieData();
 
 
@@ -280,326 +285,12 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
 
         // To animate the pie chart
         binding.piechart.startAnimation();
+
+        getReport();
     }
 
-    @Override
-    public Map<Integer, Object>[] onNavigationButtonClicked(int whichButton, Calendar newMonth) {
-        Map<Integer, Object>[] arr = new Map[2];
-        arr[0] = new HashMap<>();
-        switch(newMonth.get(Calendar.MONTH)) {
-            case Calendar.JANUARY:
-                Calendar calendar=Calendar.getInstance();
-                calendar.set(newMonth.get(Calendar.YEAR),0,1);
-                int futureyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futureyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"January",calendar);
 
-                break;
-            case Calendar.FEBRUARY:
-                Calendar calendar1=Calendar.getInstance();
-                calendar1.set(newMonth.get(Calendar.YEAR),1,1);
-                int year=Calendar.YEAR;
 
-                int futureoneyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futureoneyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"February",calendar1);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),2,calendar1);
-                break;
-            case Calendar.MARCH:
-                Calendar calendar2=Calendar.getInstance();
-                calendar2.set(newMonth.get(Calendar.YEAR),2,1);
-
-                int futuretwoyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futuretwoyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"March",calendar2);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),3,calendar2);
-
-                break;
-            case  Calendar.APRIL:
-                Calendar calendar3=Calendar.getInstance();
-                calendar3.set(newMonth.get(Calendar.YEAR),3,1);
-
-                int futurethreeyear = newMonth.get(Calendar.YEAR)+ 1;
-                financialYear = futurethreeyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"April",calendar3);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),4,calendar3);
-                break;
-            case Calendar.MAY:
-                Calendar calendar4=Calendar.getInstance();
-                calendar4.set(newMonth.get(Calendar.YEAR),4,1);
-
-                int futurefouryear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurefouryear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"May",calendar4);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),5,calendar4);
-                break;
-            case Calendar.JUNE:
-                Calendar calendar5=Calendar.getInstance();
-                calendar5.set(newMonth.get(Calendar.YEAR),5,1);
-
-                int futurefiveyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurefiveyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"June",calendar5);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),6,calendar5);
-                break;
-            case Calendar.JULY:
-                Calendar calendar6=Calendar.getInstance();
-                calendar6.set(newMonth.get(Calendar.YEAR),6,1);
-
-                int futuresixyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futuresixyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"July",calendar6);
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),7,calendar6);
-                break;
-            case Calendar.AUGUST:
-                Calendar calendar7=Calendar.getInstance();
-                calendar7.set(newMonth.get(Calendar.YEAR),7,1);
-
-                int futuresevenear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futuresevenear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"August",calendar7);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),8,calendar7);
-                break;
-            case Calendar.SEPTEMBER:
-                Calendar calendar8=Calendar.getInstance();
-                calendar8.set(newMonth.get(Calendar.YEAR),8,1);
-
-                int futureeightyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futureeightyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"September",calendar8);
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),9,calendar8);
-                break;
-            case Calendar.OCTOBER:
-                Calendar calendar9=Calendar.getInstance();
-                calendar9.set(newMonth.get(Calendar.YEAR),9,1);
-
-                int futurnineyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurnineyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"October",calendar9);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),10,calendar9);
-                break;
-            case Calendar.NOVEMBER:
-                Calendar calendar10=Calendar.getInstance();
-                calendar10.set(newMonth.get(Calendar.YEAR),10,1);
-
-                int futurtenyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurtenyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"October",calendar10);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),11,calendar10);
-                break;
-            case Calendar.DECEMBER:
-
-                Calendar calendar11=Calendar.getInstance();
-
-                calendar11.set(newMonth.get(Calendar.YEAR),11,1);
-
-                int futureleveyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futureleveyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"October",calendar11);
-
-
-                //getAttendanceListForNav(newMonth.get(Calendar.YEAR),12,calendar11);
-                break;
-        }
-        return arr;
-    }
-    private void getAttendance() {
-        ProgressDialog pd=new ProgressDialog(getContext());
-        pd.setCancelable(false);
-        pd.setMessage("Loading");
-        pd.show();
-        HashMap<Integer, Object> dateHashmap = new HashMap<>();
-
-        // initialize calendar
-        Calendar calendar = Calendar.getInstance();
-
-
-        String surl =  AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputReport", surl);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        Log.d("responseAttendance", response);
-
-                        pd.dismiss();
-                        presentCount=new ArrayList<>();
-                        absentCount=new ArrayList<>();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String sDate = Util.changeAnyDateFormat(obj.optString("Month"),"dd-MM-yyyy","dd");
-                                    try {
-                                        date = Integer.parseInt(sDate);
-                                    } catch (NumberFormatException e) {
-                                        e.printStackTrace();
-                                    }
-                                    String Status = obj.optString("Status");
-                                    if (Status.equalsIgnoreCase("P")){
-                                        presentCount.add(sDate);
-                                    }else if (Status.equalsIgnoreCase("A")){
-                                        absentCount.add(sDate);
-                                    }
-
-                                    dateHashmap.put(date, Status);
-
-
-                                }
-                                binding.tvPresent.setText(""+presentCount.size());
-                                binding.tvAbsent.setText(""+absentCount.size());
-
-                                binding.customCalendar.setDate(calendar, dateHashmap);
-                                getItemForNotification();
-
-
-                                /*llNodata.setVisibility(View.GONE);
-                                llAgain.setVisibility(View.GONE);*/
-
-                            } else {
-
-
-                                Toast.makeText(getContext(), "No data found", Toast.LENGTH_LONG).show();
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-             pd.dismiss();
-
-                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-    }
-
-    private void getAttendanceNav(String finYear,String m,Calendar calendar) {
-        ProgressDialog pd=new ProgressDialog(getContext());
-        pd.setCancelable(false);
-        pd.setMessage("Loading");
-        pd.show();
-        HashMap<Integer, Object> dateHashmap = new HashMap<>();
-
-        // initialize calendar
-
-
-
-        String surl =  AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + finYear + "&Month=" + m + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputReport", surl);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        Log.d("responseAttendance", response);
-
-                        pd.dismiss();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            presentCount=new ArrayList<>();
-                            absentCount=new ArrayList<>();
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String sDate = Util.changeAnyDateFormat(obj.optString("Date"),"dd MMM yyyy","dd");
-                                    try {
-                                        date = Integer.parseInt(sDate);
-                                    } catch (NumberFormatException e) {
-                                        e.printStackTrace();
-                                    }
-                                    String Status = obj.optString("Status");
-                                    if (Status.equalsIgnoreCase("P")){
-                                        presentCount.add(sDate);
-                                    }else if (Status.equalsIgnoreCase("A")){
-                                        absentCount.add(sDate);
-                                    }
-
-                                    dateHashmap.put(date, Status);
-
-
-                                }
-                                binding.tvPresent.setText(""+presentCount.size());
-                                binding.tvAbsent.setText(""+absentCount.size());
-
-                                binding.customCalendar.setDate(calendar, dateHashmap);
-
-
-
-                                /*llNodata.setVisibility(View.GONE);
-                                llAgain.setVisibility(View.GONE);*/
-
-                            } else {
-
-
-                                Toast.makeText(getContext(), "No data found", Toast.LENGTH_LONG).show();
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                pd.dismiss();
-
-                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-    }
 
 
     private void getItemForNotification() {
@@ -677,6 +368,107 @@ public class HomeFragment extends Fragment implements OnNavigationButtonClickedL
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+    }
+
+    public void  deleteALert(int pos){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Do you want to delete ?");
+
+        // Set Alert Title
+        builder.setTitle("Alert !");
+
+        // Set Cancelable false for when the user clicks
+        // on the outside the Dialog Box then it will remain show
+        builder.setCancelable(false);
+
+        // Set the positive button with yes name Lambda
+        // OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+
+
+
+
+
+        });
+
+        // Set the Negative button with No name Lambda
+        // OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+
+        // Show the Alert Dialog box
+        alertDialog.show();
+
+    }
+
+
+    public void getReport() {
+        String surl =  AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputCheck", surl);
+        final ProgressDialog progressDialog=new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressDialog.dismiss();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus){
+                                JSONArray responseData=job1.optJSONArray("responseData");
+                                for (int i=0;i<responseData.length();i++){
+                                    JSONObject jsonObject=responseData.optJSONObject(i);
+                                    String Total_Sales=jsonObject.optString("Total_Sales");
+                                    binding.tvTotalSales.setText("Total Sales\n\n"+Total_Sales);
+
+
+                                    String Delivery_Pending=jsonObject.optString("Delivery_Pending");
+                                    binding.tvTotalDeliveryPending.setText("Delivery pending\n\n"+Delivery_Pending);
+
+
+                                    String Ticket_Generated=jsonObject.optString("Ticket_Generated");
+                                    binding.tvTotalApprovedSales.setText("Ticket Generated\n\n"+Ticket_Generated);
+
+
+                                }
+                            }
+
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
+
     }
 
 }

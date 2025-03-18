@@ -49,7 +49,7 @@ public class CustomerCallingDashboardActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getApplicationContext(),DashBoardActivity.class);
+                Intent intent=new Intent(getApplicationContext(),NewDashboardActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

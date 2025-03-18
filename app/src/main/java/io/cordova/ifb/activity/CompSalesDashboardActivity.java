@@ -66,7 +66,7 @@ public class CompSalesDashboardActivity extends AppCompatActivity implements Vie
         }else if (view==imgBack){
             onBackPressed();
         }else if (view==imgHome){
-            Intent intent = new Intent(CompSalesDashboardActivity.this, DashBoardActivity.class);
+            Intent intent = new Intent(CompSalesDashboardActivity.this, NewDashboardActivity.class);
             startActivity(intent);
             finish();
         }

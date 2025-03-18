@@ -635,7 +635,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AttendanceManage2Activity.this, DashBoardActivity.class);
+                Intent intent = new Intent(AttendanceManage2Activity.this, NewDashboardActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

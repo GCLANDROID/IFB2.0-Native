@@ -536,7 +536,7 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
                 if (prefManager.getSecurityCode().equalsIgnoreCase("IND")){
                     onBackPressed();
                 }else {
-                    Intent intent=new Intent(AttendanceManageActivity.this,DashBoardActivity.class);
+                    Intent intent=new Intent(AttendanceManageActivity.this,NewDashboardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }

@@ -214,7 +214,7 @@ public class DailyLogManageActivity extends AppCompatActivity implements OnMapRe
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DailyLogManageActivity.this, DashBoardActivity.class);
+                Intent intent = new Intent(DailyLogManageActivity.this, NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

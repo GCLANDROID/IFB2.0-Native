@@ -266,7 +266,7 @@ public class DailyCounterSaleDashboardActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(DailyCounterSaleDashboardActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(DailyCounterSaleDashboardActivity.this,NewDashboardActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

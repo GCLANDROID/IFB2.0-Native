@@ -256,7 +256,7 @@ public class DailyCompSaleReportActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DailyCompSaleReportActivity.this, DashBoardActivity.class);
+                Intent intent = new Intent(DailyCompSaleReportActivity.this, NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

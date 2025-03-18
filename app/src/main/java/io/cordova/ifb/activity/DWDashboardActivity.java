@@ -59,7 +59,7 @@ public class DWDashboardActivity extends AppCompatActivity {
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(DWDashboardActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(DWDashboardActivity.this,NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

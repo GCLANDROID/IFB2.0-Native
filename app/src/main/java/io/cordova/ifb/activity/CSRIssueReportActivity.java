@@ -118,7 +118,7 @@ public class CSRIssueReportActivity extends AppCompatActivity {
         binding.imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(CSRIssueReportActivity.this,DashBoardActivity.class);
+                Intent intent=new Intent(CSRIssueReportActivity.this,NewDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
