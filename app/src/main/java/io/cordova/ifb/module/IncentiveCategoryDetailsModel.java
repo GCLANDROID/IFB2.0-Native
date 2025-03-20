@@ -1,7 +1,7 @@
 package io.cordova.ifb.module;
 
 public class IncentiveCategoryDetailsModel {
-    String category,tgt,acheived,achievement,amt,earningAmt;
+    String category,tgt,acheived,achievement,amt,earningAmt,earningList;
 
     public String getCategory() {
         return category;
@@ -49,5 +49,13 @@ public class IncentiveCategoryDetailsModel {
 
     public void setEarningAmt(String earningAmt) {
         this.earningAmt = earningAmt;
+    }
+
+    public String getEarningList() {
+        return earningList;
+    }
+
+    public void setEarningList(String earningList) {
+        this.earningList = earningList;
     }
 }

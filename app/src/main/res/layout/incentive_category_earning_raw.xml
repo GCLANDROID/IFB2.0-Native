@@ -6,10 +6,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="4dp">
         <TextView
             android:textAlignment="center"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
@@ -18,32 +18,17 @@
 
         <TextView
             android:gravity="center"
-            android:textSize="10sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:textColor="@color/black"
-            android:id="@+id/tvTarget"></TextView>
-        <TextView
-            android:gravity="center"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
             android:textColor="@color/black"
-            android:id="@+id/tvAcheived"></TextView>
+            android:id="@+id/tvQty"></TextView>
+
+
         <TextView
             android:gravity="center"
-            android:textAlignment="center"
-            android:textSize="10sp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:textColor="@color/black"
-            android:id="@+id/tvPercentage"></TextView>
-        <TextView
-            android:gravity="center"
-            android:textSize="10sp"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"

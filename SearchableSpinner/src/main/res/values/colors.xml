@@ -36,6 +36,11 @@
     <color name="stroke_border">#D7D7D7</color>
     <color name="primary1">#3D5AFF</color>
     <color name="greentwo">#8EF493</color>
+    <color name="yellow_one">#EEF834</color>
+    <color name="yellow_two">#E0EB1F</color>
+    <color name="yellow_three">#D7E11D</color>
+    <color name="orange_two">#FBAC10</color>
+    <color name="orange_one">#F6BD20</color>
 
     <!-- FF5722, E64A19-->
 

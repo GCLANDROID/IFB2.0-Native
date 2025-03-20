@@ -1,5 +1,6 @@
 package io.cordova.ifb.adapter;
 
+import android.app.Activity;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import io.cordova.ifb.R;
+import io.cordova.ifb.activity.IncentiveCalculationDetailsActivity;
 import io.cordova.ifb.module.IncentiveCategoryDetailsModel;
 
 public class IncentiveCategoryBlockTwoAdapter extends RecyclerView.Adapter<IncentiveCategoryBlockTwoAdapter.MyViewHolder> {
     ArrayList<IncentiveCategoryDetailsModel>itemList=new ArrayList<>();
+    Activity activity;
 
     @NonNull
     @Override
@@ -34,6 +37,17 @@ public class IncentiveCategoryBlockTwoAdapter extends RecyclerView.Adapter<Incen
         myViewHolder.tvPercentage.setText(itemList.get(i).getAchievement());
         myViewHolder.tvAcheived.setText(itemList.get(i).getAcheived());
         myViewHolder.tvTarget.setText(itemList.get(i).getTgt());
+
+        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (itemList.get(i).getCategory().contains("Deduction")||itemList.get(i).getCategory().contains("deduction") ){
+                    ((IncentiveCalculationDetailsActivity)activity).deductionAlert();
+                }
+            }
+        });
+
+
 
 
     }
@@ -59,8 +73,9 @@ public class IncentiveCategoryBlockTwoAdapter extends RecyclerView.Adapter<Incen
         }
     }
 
-    public IncentiveCategoryBlockTwoAdapter(ArrayList<IncentiveCategoryDetailsModel> itemList) {
+    public IncentiveCategoryBlockTwoAdapter(ArrayList<IncentiveCategoryDetailsModel> itemList,Activity activity) {
         this.itemList = itemList;
+        this.activity=activity;
 
     }
 }

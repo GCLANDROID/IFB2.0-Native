@@ -3,15 +3,25 @@ package io.cordova.ifb.activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -32,9 +42,13 @@ import java.util.Calendar;
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockOneAdapter;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockTwoAdapter;
+import io.cordova.ifb.adapter.IncentiveCategoryEarningAdapter;
+import io.cordova.ifb.adapter.IncentiveDeductionAdapter;
 import io.cordova.ifb.databinding.ActivityIncentiveCalculationDetailsBinding;
+import io.cordova.ifb.module.DeductionModule;
 import io.cordova.ifb.module.IncentiveCalculationModule;
 import io.cordova.ifb.module.IncentiveCategoryDetailsModel;
+import io.cordova.ifb.module.IncentiveCategoryEarningModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
 
@@ -48,6 +62,11 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
     int y;
     String year,month,financialYear;
     PrefManager prefManager;
+    ArrayList<DeductionModule>deductionList=new ArrayList<>();
+    AlertDialog deductionDialog,earningDialog;
+    ArrayList<IncentiveCategoryEarningModule>earningList=new ArrayList<>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,12 +208,12 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
     }
 
     private void blockOneAdapter(){
-        IncentiveCategoryBlockOneAdapter oneAdapter=new IncentiveCategoryBlockOneAdapter(blockOneList);
+        IncentiveCategoryBlockOneAdapter oneAdapter=new IncentiveCategoryBlockOneAdapter(blockOneList,this);
         binding.rvBlockOne.setAdapter(oneAdapter);
     }
 
     private void blockTwoAdapter(){
-        IncentiveCategoryBlockTwoAdapter oneAdapter=new IncentiveCategoryBlockTwoAdapter(blockTwoList);
+        IncentiveCategoryBlockTwoAdapter oneAdapter=new IncentiveCategoryBlockTwoAdapter(blockTwoList,IncentiveCalculationDetailsActivity.this);
         binding.rvBlockTwo.setAdapter(oneAdapter);
     }
 
@@ -215,6 +234,7 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
                         progressBar.dismiss();
                         blockTwoList.clear();
                         blockOneList.clear();
+                        deductionList.clear();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
@@ -233,11 +253,16 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
                                 String AverageIncentiveBranch=IncentiveDetails.optString("AverageIncentiveBranch");
                                 binding.tvIncentiveBranch.setText(AverageIncentiveBranch);
 
-                                String SelfAverageIncentive=IncentiveDetails.optString("SelfAverageIncentive");
+                                String SelfAverageIncentive=IncentiveDetails.optString("CounterTypeRank");
                                 binding.tvEarned.setText(SelfAverageIncentive);
 
                                 String FinalIncentive=IncentiveDetails.optString("FinalIncentive");
                                 binding.tvFinalIncentiveAmt.setText(FinalIncentive);
+
+                                String FY_Max_Inc=IncentiveDetails.optString("FY_Max_Inc");
+                                binding.tvHighestIncentive.setText(FY_Max_Inc);
+
+
 
                                 JSONArray IncentiveCategory=job1.optJSONArray("IncentiveCategory");
                                 for (int i=0;i<IncentiveCategory.length();i++){
@@ -247,12 +272,19 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
                                     String Achive=incentiveCatObj.optString("Achive");
                                     String AchievementPercentage=incentiveCatObj.optString("AchievementPercentage");
                                     String Amount=incentiveCatObj.optString("Amount");
+                                    JSONArray IncentiveCategoryEarningDetails=incentiveCatObj.optJSONArray("IncentiveCategoryEarningDetails");
                                     IncentiveCategoryDetailsModel module=new IncentiveCategoryDetailsModel();
                                     module.setCategory(Category);
                                     module.setTgt(Target);
                                     module.setAcheived(Achive);
                                     module.setAchievement(AchievementPercentage);
                                     module.setAmt(Amount);
+                                    if (IncentiveCategoryEarningDetails.length()>0){
+                                        module.setEarningList(IncentiveCategoryEarningDetails.toString());
+                                    }else {
+                                        module.setEarningList("");
+                                    }
+
                                     blockOneList.add(module);
                                 }
 
@@ -272,6 +304,19 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
                                         blockTwoList.add(module);
                                     }
                                     blockTwoAdapter();
+                                }
+
+                                JSONArray DeductionDetails=job1.optJSONArray("DeductionDetails");
+                                if (DeductionDetails.length()>0){
+                                    for (int i=0;i<DeductionDetails.length();i++){
+                                        JSONObject deductionOBJ=DeductionDetails.optJSONObject(i);
+                                        String Remarks=deductionOBJ.optString("Remarks");
+                                        String Amount=deductionOBJ.optString("Amount");
+                                        DeductionModule deductionModule=new DeductionModule();
+                                        deductionModule.setAmt(Amount);
+                                        deductionModule.setRemarks(Remarks);
+                                        deductionList.add(deductionModule);
+                                    }
                                 }
 
                                 blockOneAdapter();
@@ -307,5 +352,101 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(IncentiveCalculationDetailsActivity.this);
         requestQueue.add(stringRequest);
 
+    }
+
+
+    public void deductionAlert() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(IncentiveCalculationDetailsActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_deduction_details, null);
+        dialogBuilder.setView(dialogView);
+        ImageView imgCancel = (ImageView) dialogView.findViewById(R.id.imgCancel);
+
+        imgCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deductionDialog.dismiss();
+
+
+            }
+        });
+
+        RecyclerView rvItem=(RecyclerView)dialogView.findViewById(R.id.rvItem);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(IncentiveCalculationDetailsActivity.this, LinearLayoutManager.VERTICAL, false);
+        rvItem.setLayoutManager(layoutManager);
+
+        IncentiveDeductionAdapter deductionAdapter=new IncentiveDeductionAdapter(deductionList);
+        rvItem.setAdapter(deductionAdapter);
+
+
+
+        deductionDialog = dialogBuilder.create();
+        deductionDialog.setCancelable(false);
+        Window window = deductionDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        deductionDialog.show();
+    }
+
+    public void getEarningDetails(String list,String cat){
+        earningList.clear();
+        try {
+            JSONArray IncentiveCategoryEarningDetails=new JSONArray(list);
+            if (IncentiveCategoryEarningDetails.length()>0){
+                for (int i=0;i<IncentiveCategoryEarningDetails.length();i++){
+                    JSONObject object=IncentiveCategoryEarningDetails.optJSONObject(i);
+                    String ModelCode=object.optString("ModelCode");
+                    String Sold=object.optString("Sold");
+                    String Amount=object.optString("Amount");
+                    IncentiveCategoryEarningModule model=new IncentiveCategoryEarningModule();
+                    model.setCategory(ModelCode);
+                    model.setQty(Sold);
+                    model.setAmount(Amount);
+                    earningList.add(model);
+                }
+                earningDetailsAlert(cat);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void earningDetailsAlert(String cat) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(IncentiveCalculationDetailsActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_category_earning_details, null);
+        dialogBuilder.setView(dialogView);
+        ImageView imgCancel = (ImageView) dialogView.findViewById(R.id.imgCancel);
+
+        imgCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                earningDialog.dismiss();
+
+
+            }
+        });
+        TextView tvCat=(TextView)dialogView.findViewById(R.id.tvCat);
+        tvCat.setText(cat+" Earning Details");
+
+        RecyclerView rvItem=(RecyclerView)dialogView.findViewById(R.id.rvItem);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(IncentiveCalculationDetailsActivity.this, LinearLayoutManager.VERTICAL, false);
+        rvItem.setLayoutManager(layoutManager);
+
+        IncentiveCategoryEarningAdapter earningAdapter=new IncentiveCategoryEarningAdapter(earningList);
+        rvItem.setAdapter(earningAdapter);
+
+
+
+        earningDialog = dialogBuilder.create();
+        earningDialog.setCancelable(false);
+        Window window = earningDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        earningDialog.show();
     }
 }

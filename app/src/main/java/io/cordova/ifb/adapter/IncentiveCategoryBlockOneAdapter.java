@@ -1,5 +1,6 @@
 package io.cordova.ifb.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import io.cordova.ifb.R;
+import io.cordova.ifb.activity.IncentiveCalculationDetailsActivity;
 import io.cordova.ifb.module.IncentiveCalculationModule;
 import io.cordova.ifb.module.IncentiveCategoryDetailsModel;
 
 public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<IncentiveCategoryBlockOneAdapter.MyViewHolder> {
     ArrayList<IncentiveCategoryDetailsModel>itemList=new ArrayList<>();
+    Activity activity;
 
     @NonNull
     @Override
@@ -40,6 +43,19 @@ public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<Incen
         if (itemList.get(i).getCategory().replaceAll(" ","").equalsIgnoreCase("Total")){
             myViewHolder.itemView.setBackgroundColor(Color.parseColor("#8EF493"));
         }
+
+
+        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!itemList.get(i).getCategory().replaceAll(" ","").equalsIgnoreCase("Total") ){
+                    if (!itemList.get(i).getEarningList().equals("")){
+                        ((IncentiveCalculationDetailsActivity)activity).getEarningDetails(itemList.get(i).getEarningList(),itemList.get(i).getCategory());
+                    }
+
+                }
+            }
+        });
 
 
     }
@@ -66,8 +82,9 @@ public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<Incen
         }
     }
 
-    public IncentiveCategoryBlockOneAdapter(ArrayList<IncentiveCategoryDetailsModel> itemList) {
+    public IncentiveCategoryBlockOneAdapter(ArrayList<IncentiveCategoryDetailsModel> itemList,Activity activity) {
         this.itemList = itemList;
+        this.activity=activity;
 
     }
 }
