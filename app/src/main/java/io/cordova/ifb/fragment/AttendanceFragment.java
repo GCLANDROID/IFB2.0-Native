@@ -59,6 +59,7 @@ import java.util.Locale;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.activity.AttemdanceReportActivity;
+import io.cordova.ifb.activity.AttendanceCalendarDialogActivity;
 import io.cordova.ifb.activity.AttendanceCheckOutActivity;
 import io.cordova.ifb.activity.AttendanceDashBoardActivity;
 import io.cordova.ifb.activity.AttendanceManage2Activity;
@@ -101,6 +102,7 @@ public class AttendanceFragment extends Fragment {
     int attFalg;
     String financialYear, year, month;
     LinearLayout llADD;
+    TextView tvStatus,tvMonthAttendance;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -188,7 +190,8 @@ public class AttendanceFragment extends Fragment {
 
         }
         address = getCompleteAddressString(latitude, longitude);
-
+        tvStatus=(TextView) view.findViewById(R.id.tvStatus);
+        tvMonthAttendance=(TextView) view.findViewById(R.id.tvMonthAttendance);
 
     }
 
@@ -208,6 +211,14 @@ public class AttendanceFragment extends Fragment {
                 Intent intent = new Intent(getContext(), AttemdanceReportActivity.class);
                 startActivity(intent);
 
+            }
+        });
+        tvMonthAttendance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), AttendanceCalendarDialogActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
         llVaccination.setOnClickListener(new View.OnClickListener() {
@@ -888,6 +899,80 @@ public class AttendanceFragment extends Fragment {
                             } else {
                                 llCheckOut.setVisibility(View.GONE);
                             }
+
+
+                            cuurentAttendanceStatus();
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void cuurentAttendanceStatus() {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        String surl = AppController.APIURL+"api/SelfAttendanceToDay?LoginID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("inputcheck", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("responseAttendance", response);
+                        progressDialog.dismiss();
+
+                        // attendabceInfiList.clear();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+
+                            //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                            JSONArray responseData = job1.optJSONArray("responseData");
+
+                            JSONObject obj = responseData.getJSONObject(0);
+                            String Date=obj.optString("Date");
+                            String Status=obj.optString("Status");
+                            String Time=obj.optString("Time");
+                            String LogoutTime=obj.optString("LogoutTime");
+                            if (Status.equalsIgnoreCase("P")){
+                                tvStatus.setText("Attendance Status of "+Date+" : Present (In : "+Time+" - Out : "+LogoutTime+" )");
+                            }else if (Status.equalsIgnoreCase("A")){
+                                tvStatus.setText("Attendance Status of "+Date+" : Absent");
+                            }else if (Status.equalsIgnoreCase("WO")){
+                                tvStatus.setText("Attendance Status of "+Date+" : Weekly OFF");
+                            }else if (Status.equalsIgnoreCase("H")){
+                                tvStatus.setText("Attendance Status of "+Date+" : Holiday");
+                            }else if (Status.equalsIgnoreCase("CL") || Status.equalsIgnoreCase("SL")||Status.equalsIgnoreCase("PL")||Status.equalsIgnoreCase("CO")){
+                                tvStatus.setText("Attendance Status of "+Date+" : On Leave");
+                            }else {
+                                tvStatus.setText("Attendance Status of "+Date+" :  Not Marked");
+                            }
+
+
 
 
                         } catch (JSONException e) {

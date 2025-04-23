@@ -1522,7 +1522,7 @@ public class SalesManage2Activity extends AppCompatActivity {
     }
 
     private void setInstallation() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SITY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SITYSSD&ID="+prefManager.getSalesPartyCode()+"&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button

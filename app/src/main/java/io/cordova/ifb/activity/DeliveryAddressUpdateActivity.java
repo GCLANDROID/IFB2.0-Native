@@ -503,7 +503,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         spArea.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                areaName = moduleArea.get(position).getItem();
+                areaName = area.get(position);
             }
 
             @Override
@@ -2434,7 +2434,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                     public void onError(ANError error) {
                         pd.dismiss();
                         successAlert(sucessText, "2");
-                        String errormessgae=error.getMessage();
+                        String errormessgae = error.getMessage();
                         postTokenStatus(TokenNo, errormessgae);
                         Toast.makeText(DeliveryAddressUpdateActivity.this, "Wrong", Toast.LENGTH_LONG).show();
 
@@ -2787,7 +2787,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     }
 
     private void setInstallation() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SITY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=717&ID=" + prefManager.getSalesPartyCode() + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2822,13 +2822,6 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                                 installation); //selected item will look like a spinner set from XML
                                 spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                                 spInstallation.setAdapter(spinnerArrayAdapter);
-                                if (!prefManager.getSubDealerType().equals("")) {
-                                    int index = installation.indexOf(prefManager.getSubDealerType());
-                                    spInstallation.setSelection(index);
-                                    spInstallation.setEnabled(false);
-                                } else {
-                                    spInstallation.setSelection(0);
-                                }
 
 
                             } else {
@@ -3826,7 +3819,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
     private void pincodecheck(final String pincode) {
         Log.d("hitr", "6");
-        String surl = "https://cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
+        String surl = "https://crmapi.ifbsupport.com/api/wa/find-area?PinCode=" + pincode;
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -3845,10 +3838,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
                             for (int i = 0; i < job1.length(); i++) {
                                 JSONObject obj = job1.getJSONObject(i);
-                                STATENAME = obj.getString("STATENAME");
+                                STATENAME = obj.getString("State").toUpperCase();
                                 Log.d("statename", STATENAME);
-                                PINCODE = obj.optString("PINCODE");
-                                REGIONNAME = obj.optString("REGIONNAME");
+                                PINCODE = obj.optString("PinCode");
+                                REGIONNAME = obj.optString("Town");
+                                String Area = obj.optString("Area");
+                                area.add(Area);
 
 
                             }
@@ -3860,67 +3855,6 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                             spCity.setVisibility(View.GONE);
                             tvCityName.setText(REGIONNAME);
                             spState.setEnabled(false);
-                            setArea(pincode);
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("errort", e.toString());
-                            Toast.makeText(DeliveryAddressUpdateActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-
-                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-
-    private void setArea(String pincode) {
-        Log.d("hhjjk", "kkkk");
-        String surl = "https://cloud.geniusconsultant.com/GeniusPinCodeApi/api/PinCode?id=" + pincode;
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responsearea", response);
-                        progressBar.dismiss();
-                        area.clear();
-                        moduleArea.clear();
-
-
-                        try {
-                            JSONArray job1 = new JSONArray(response);
-
-                            for (int i = 0; i < job1.length(); i++) {
-                                JSONObject obj = job1.getJSONObject(i);
-                                String OFFICENAME = obj.optString("OFFICENAME");
-                                String PINCODE = obj.optString("PINCODE");
-                                area.add(OFFICENAME);
-
-                                SpinnerItemModule itemModule = new SpinnerItemModule(OFFICENAME, PINCODE);
-                                moduleArea.add(itemModule);
-
-                            }
-
-
                             spArea.setVisibility(View.VISIBLE);
 
 
@@ -3949,10 +3883,26 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer V0hBVFNBUFA6d2FVU0VS");
+                params.put("Cookie", "TS013f4d0e=0175b9c4a690ee000d09f27c739e8ddc6598c7da8e3b96ffc2c170e8d24c349a15cf26ed8188e9728e693bc57722ad375fc741c358");
+                return params;
+            }
 
         };
         RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
         requestQueue.add(stringRequest);
+
+    }
+
+
+    private void setArea() {
+
+
+
+
 
     }
 

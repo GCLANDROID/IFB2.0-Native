@@ -50,7 +50,7 @@ public class IncentiveCategoryBlockOneAdapter extends RecyclerView.Adapter<Incen
             public void onClick(View view) {
                 if (!itemList.get(i).getCategory().replaceAll(" ","").equalsIgnoreCase("Total") ){
                     if (!itemList.get(i).getEarningList().equals("")){
-                        ((IncentiveCalculationDetailsActivity)activity).getEarningDetails(itemList.get(i).getEarningList(),itemList.get(i).getCategory());
+                        //((IncentiveCalculationDetailsActivity)activity).getEarningDetails(itemList.get(i).getEarningList(),itemList.get(i).getCategory());
                     }
 
                 }
