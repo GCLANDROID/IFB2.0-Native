@@ -6,28 +6,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +34,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidbuts.multispinnerfilter.KeyPairBoolData;
+import com.androidbuts.multispinnerfilter.SingleSpinnerSearch;
+import com.androidbuts.multispinnerfilter.SpinnerListener;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
@@ -48,28 +48,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.Calendar;
+import java.util.List;
 
-import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
-import io.cordova.ifb.adapter.AttedanceReportAdapter;
 import io.cordova.ifb.adapter.ReferEarnReportAdapter;
 import io.cordova.ifb.module.ReferEarnModule;
-import io.cordova.ifb.module.ReportModule;
+import io.cordova.ifb.module.SpinnerItemModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.FindDocumentInformation;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.RealPathUtil;
 
 public class ReferEarnActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText etCanName, etCanMobNumber;
+    EditText etCanName, etCanMobNumber,etCanAadhaar;
     ImageView imgAttach, imgAttachPDF;
     Button btnSave;
     private static final int PICK_PDF_REQUEST = 10;
@@ -85,20 +83,66 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
     RecyclerView rvItem;
     FloatingActionButton fbAdd;
     LinearLayout llReferReport,lnRefer;
+    SingleSpinnerSearch spBranch;
+    ArrayList<SpinnerItemModule>moduleBranchList=new ArrayList<>();
+    ArrayList<KeyPairBoolData> keyBranchList = new ArrayList<>();
+    String branchID="";
+    Spinner spYear,spMonth;
+    Button btnShow;
+    ArrayList<String>monthList=new ArrayList<>();
+    ArrayList<String>yearList=new ArrayList<>();
+    TextView tvRank,tvMTD,tvYTD;
+    String financialYear,month,year;
+    int y;
+    String mID,yID;
+    LinearLayout llYTD,llMTD,llMTDActive,llMTDInActive,llYTDActive,llYTDInActive;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_refer_earn);
         initView();
-        getItem();
+        setBranchList();
     }
 
     private void initView() {
         prefManager = new PrefManager(ReferEarnActivity.this);
+        spMonth=(Spinner)findViewById(R.id.spMonth);
+        spYear=(Spinner)findViewById(R.id.spYear);
+        btnShow=(Button)findViewById(R.id.btnShow);
+        tvRank=(TextView)findViewById(R.id.tvRank);
+        tvYTD=(TextView)findViewById(R.id.tvYTD);
+        tvMTD=(TextView)findViewById(R.id.tvMTD);
+
+        llYTD=(LinearLayout)findViewById(R.id.llYTD);
+        llMTD=(LinearLayout)findViewById(R.id.llMTD);
+        llMTDActive=(LinearLayout)findViewById(R.id.llMTDActive);
+        llMTDInActive=(LinearLayout)findViewById(R.id.llMTDInActive);
+        llYTDActive=(LinearLayout)findViewById(R.id.llYTDActive);
+        llYTDInActive=(LinearLayout)findViewById(R.id.llYTDInActive);
+
+        monthList.add("January");
+        monthList.add("February");
+        monthList.add("March");
+        monthList.add("April");
+        monthList.add("May");
+        monthList.add("June");
+        monthList.add("July");
+        monthList.add("August");
+        monthList.add("September");
+        monthList.add("October");
+        monthList.add("November");
+        monthList.add("December");
+        yearList.add("2024-2025");
+        yearList.add("2025-2026");
+        yearList.add("2026-2027");
+        yearList.add("2027-2028");
+        yearList.add("2028-2029");
+
         etCanName = (EditText) findViewById(R.id.etCanName);
         etCanMobNumber = (EditText) findViewById(R.id.etCanMobNumber);
-
+        etCanAadhaar=(EditText)findViewById(R.id.etCanAadhaar);
         imgAttach = (ImageView) findViewById(R.id.imgAttach);
         imgAttachPDF = (ImageView) findViewById(R.id.imgAttachPDF);
         imgBack = (ImageView) findViewById(R.id.imgBack);
@@ -126,6 +170,120 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         imgBack.setOnClickListener(this);
         imgHome.setOnClickListener(this);
         fbAdd.setOnClickListener(this);
+        llMTD.setOnClickListener(this);
+        llYTD.setOnClickListener(this);
+
+        spBranch=(SingleSpinnerSearch) findViewById(R.id.spBranch);
+
+
+        spBranch.setItems(keyBranchList, -1, new SpinnerListener() {
+
+            @Override
+            public void onItemsSelected(List<KeyPairBoolData> items) {
+
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).isSelected()) {
+
+                        branchID = items.get(i).getId();
+
+
+
+
+                    }
+                }
+            }
+
+
+        });
+
+        y = Calendar.getInstance().get(Calendar.YEAR);
+        year = String.valueOf(y);
+        Log.d("year", year);
+
+        int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        Log.d("month", String.valueOf(m));
+        if (m == 1) {
+            month = "January";
+        } else if (m == 2) {
+            month = "February";
+        } else if (m == 3) {
+            month = "March";
+        } else if (m == 4) {
+            month = "April";
+        } else if (m == 5) {
+            month = "May";
+        } else if (m == 6) {
+            month = "June";
+        } else if (m == 7) {
+            month = "July";
+        } else if (m == 8) {
+            month = "August";
+        } else if (m == 9) {
+            month = "September";
+        } else if (m == 10) {
+            month = "October";
+        } else if (m == 11) {
+            month = "November";
+        } else if (m == 12) {
+            month = "December";
+        }
+        if(month.equals("January")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else if (month.equals("February")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else if (month.equals("March")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else {
+            int futureyear = y + 1;
+            financialYear = year+"-"+futureyear;
+        }
+
+        ArrayAdapter<String> monthAdapter = new ArrayAdapter<String>
+                (ReferEarnActivity.this, android.R.layout.simple_spinner_item,
+                        monthList); //selected item will look like a spinner set from XML
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spMonth.setAdapter(monthAdapter);
+
+        int pos=monthList.indexOf(month);
+        spMonth.setSelection(pos);
+
+
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<String>
+                (ReferEarnActivity.this, android.R.layout.simple_spinner_item,
+                        yearList); //selected item will look like a spinner set from XML
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spYear.setAdapter(yearAdapter);
+
+        int yearpos=yearList.indexOf(financialYear);
+        spYear.setSelection(yearpos);
+
+        spMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mID=monthList.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        spYear.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                yID=yearList.get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        btnShow.setOnClickListener(this);
 
 
     }
@@ -138,8 +296,15 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         } else if (view == btnSave) {
             if (etCanName.getText().toString().length() > 0) {
                 if (etCanMobNumber.getText().toString().length() == 10) {
+
                     if (pdfflag == 1) {
-                        uploadCV();
+                        if (!branchID.equals("")){
+                            aadhaarValidation();
+                        }else {
+                            Toast.makeText(ReferEarnActivity.this, "Please select your referred branch", Toast.LENGTH_SHORT).show();
+
+                        }
+
 
                     } else {
                         Toast.makeText(ReferEarnActivity.this, "Please Enter Candidate's Resume/CV", Toast.LENGTH_SHORT).show();
@@ -163,6 +328,12 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         }else if (view == fbAdd) {
           llReferReport.setVisibility(View.GONE);
           lnRefer.setVisibility(View.VISIBLE);
+        }else if (view == btnShow) {
+           getCoonolidatedItem();
+        }else if (view == llMTD) {
+            getMTDItem();
+        }else if (view == llYTD) {
+            getYTDItem();
         }
 
     }
@@ -251,10 +422,12 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         pd.dismiss();
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeReferal")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeReferalV2")
                 .addMultipartParameter("EmployeeID", prefManager.getUserId())
                 .addMultipartParameter("CandidateName", etCanName.getText().toString())
                 .addMultipartParameter("CandidateMobile", etCanMobNumber.getText().toString())
+                .addMultipartParameter("Aadhar", etCanAadhaar.getText().toString())
+                .addMultipartParameter("BranchID", branchID)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .addMultipartFile("CV", pdfFile)
 
@@ -334,11 +507,88 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         alerDialog1.show();
     }
 
-    private void getItem() {
+    private void getCoonolidatedItem() {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/gclEmployeeReferal?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/get_EmployeeReferralReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputReport", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("responseAttendance", response);
+
+
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONObject ReferralDetails = job1.optJSONObject("ReferralDetails");
+                                String ReferralRank=ReferralDetails.optString("ReferralRank");
+                                String CSR_Referral_YTD=ReferralDetails.optString("CSR_Referral_YTD");
+                                String CSR_Referral_MTD=ReferralDetails.optString("CSR_Referral_MTD");
+                                tvRank.setText(ReferralRank);
+                                tvMTD.setText(CSR_Referral_MTD);
+                                tvYTD.setText(CSR_Referral_YTD);
+
+
+                                llLoader.setVisibility(View.VISIBLE);
+                                llMain.setVisibility(View.GONE);
+                                llNoData.setVisibility(View.GONE);
+
+                                getMTDItem();
+
+
+
+
+                            } else {
+                                llLoader.setVisibility(View.GONE);
+                                llMain.setVisibility(View.GONE);
+                                llNoData.setVisibility(View.VISIBLE);
+
+
+                                Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ReferEarnActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                llLoader.setVisibility(View.GONE);
+                llMain.setVisibility(View.GONE);
+                llNoData.setVisibility(View.VISIBLE);
+
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void getMTDItem() {
+        llLoader.setVisibility(View.VISIBLE);
+        llMain.setVisibility(View.GONE);
+        llNoData.setVisibility(View.GONE);
+        String surl = AppController.APIURL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&Operation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -356,32 +606,146 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
 
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             if (responseStatus) {
-                                //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String CandidateName = obj.optString("CandidateName");
-                                    String CandidateMobile = obj.optString("CandidateMobile");
-                                    String Approval_Status = obj.optString("Approval_Status");
-                                    String Doc_URL = obj.optString("Doc_URL");
-
-                                    ReferEarnModule earnModule = new ReferEarnModule();
-                                    earnModule.setReferCanMob(CandidateMobile);
-                                    earnModule.setReferCanName(CandidateName);
-                                    earnModule.setStatus(Approval_Status);
-                                    earnModule.setDocLink(Doc_URL);
+                                JSONArray ReferralEmployee=job1.optJSONArray("ReferralEmployee");
+                                for (int i=0;i<ReferralEmployee.length();i++){
+                                    JSONObject referalEmpObj=ReferralEmployee.optJSONObject(i);
+                                    String Reffered_CSR_Name=referalEmpObj.optString("Reffered_CSR_Name");
+                                    String Reffered_CSR_Number=referalEmpObj.optString("Reffered_CSR_Number");
+                                    String CSR_ONboarded_Date=referalEmpObj.optString("CSR_ONboarded_Date");
+                                    String ReferralEligabledate=referalEmpObj.optString("ReferralEligabledate");
+                                    String CSR_Current_Status=referalEmpObj.optString("CSR_Current_Status");
+                                    String Referral_Amount=referalEmpObj.optString("Referral_Amount");
+                                    String Referral_Amount_Paid_date=referalEmpObj.optString("Referral_Amount_Paid_date");
+                                    String CSR_EXIT_Date=referalEmpObj.optString("CSR_EXIT_Date");
+                                    ReferEarnModule earnModule=new ReferEarnModule();
+                                    earnModule.setReferCanName(Reffered_CSR_Name);
+                                    earnModule.setReferCanMob(Reffered_CSR_Number);
+                                    earnModule.setCSR_ONboarded_Date(CSR_ONboarded_Date);
+                                    earnModule.setReferralEligabledate(ReferralEligabledate);
+                                    earnModule.setCSR_Current_Status(CSR_Current_Status);
+                                    earnModule.setReferral_Amount(Referral_Amount);
+                                    earnModule.setReferral_Amount_Paid_date(Referral_Amount_Paid_date);
+                                    earnModule.setCSR_EXIT_Date(CSR_EXIT_Date);
+                                    earnModule.setReffered_Month(mID);
                                     itemList.add(earnModule);
 
-
                                 }
+
+                                llMTDActive.setVisibility(View.VISIBLE);
+                                llMTDInActive.setVisibility(View.GONE);
+
+                                llYTDActive.setVisibility(View.GONE);
+                                llYTDInActive.setVisibility(View.VISIBLE);
+                                setAdapter();
+
+
 
                                 llLoader.setVisibility(View.GONE);
                                 llMain.setVisibility(View.VISIBLE);
                                 llNoData.setVisibility(View.GONE);
 
+
+
+
+                            } else {
+                                llLoader.setVisibility(View.GONE);
+                                llMain.setVisibility(View.GONE);
+                                llNoData.setVisibility(View.VISIBLE);
+
+
+                                Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ReferEarnActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                llLoader.setVisibility(View.GONE);
+                llMain.setVisibility(View.GONE);
+                llNoData.setVisibility(View.VISIBLE);
+
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+
+    private void getYTDItem() {
+        llLoader.setVisibility(View.VISIBLE);
+        llMain.setVisibility(View.GONE);
+        llNoData.setVisibility(View.GONE);
+        String surl = AppController.APIURL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month=%&AEMEmployeeID="+prefManager.getUserId()+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputReport", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("responseAttendance", response);
+
+                        itemList.clear();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                JSONArray ReferralEmployee=job1.optJSONArray("ReferralEmployee");
+                                for (int i=0;i<ReferralEmployee.length();i++){
+                                    JSONObject referalEmpObj=ReferralEmployee.optJSONObject(i);
+                                    String Reffered_CSR_Name=referalEmpObj.optString("Reffered_CSR_Name");
+                                    String Reffered_CSR_Number=referalEmpObj.optString("Reffered_CSR_Number");
+                                    String CSR_ONboarded_Date=referalEmpObj.optString("CSR_ONboarded_Date");
+                                    String ReferralEligabledate=referalEmpObj.optString("ReferralEligabledate");
+                                    String CSR_Current_Status=referalEmpObj.optString("CSR_Current_Status");
+                                    String Referral_Amount=referalEmpObj.optString("Referral_Amount");
+                                    String Referral_Amount_Paid_date=referalEmpObj.optString("Referral_Amount_Paid_date");
+                                    String CSR_EXIT_Date=referalEmpObj.optString("CSR_EXIT_Date");
+                                    String Reffered_Month=referalEmpObj.optString("Reffered_Month");
+                                    ReferEarnModule earnModule=new ReferEarnModule();
+                                    earnModule.setReferCanName(Reffered_CSR_Name);
+                                    earnModule.setReferCanMob(Reffered_CSR_Number);
+                                    earnModule.setCSR_ONboarded_Date(CSR_ONboarded_Date);
+                                    earnModule.setReferralEligabledate(ReferralEligabledate);
+                                    earnModule.setCSR_Current_Status(CSR_Current_Status);
+                                    earnModule.setReferral_Amount(Referral_Amount);
+                                    earnModule.setReferral_Amount_Paid_date(Referral_Amount_Paid_date);
+                                    earnModule.setCSR_EXIT_Date(CSR_EXIT_Date);
+                                    earnModule.setReffered_Month(Reffered_Month);
+                                    itemList.add(earnModule);
+
+                                }
                                 setAdapter();
-                                /*llNodata.setVisibility(View.GONE);
-                                llAgain.setVisibility(View.GONE);*/
+
+
+                                llMTDActive.setVisibility(View.GONE);
+                                llMTDInActive.setVisibility(View.VISIBLE);
+
+                                llYTDActive.setVisibility(View.VISIBLE);
+                                llYTDInActive.setVisibility(View.GONE);
+
+
+                                llLoader.setVisibility(View.GONE);
+                                llMain.setVisibility(View.VISIBLE);
+                                llNoData.setVisibility(View.GONE);
+
+
+
 
                             } else {
                                 llLoader.setVisibility(View.GONE);
@@ -422,5 +786,99 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         ReferEarnReportAdapter aAdapter = new ReferEarnReportAdapter(itemList,ReferEarnActivity.this);
         rvItem.setAdapter(aAdapter);
 
+    }
+
+
+    private void setBranchList() {
+        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=333&ID=0&ID1=0&ID2=" + prefManager.getBranchId() + "&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("modelinput", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseModel", response);
+                        progressBar.dismiss();
+
+                        moduleBranchList.clear();
+                        keyBranchList.clear();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String value = obj.optString("value");
+                                    String id = obj.optString("id");
+
+                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
+                                    moduleBranchList.add(itemModule);
+
+                                }
+
+                                for (int j = 0; j < moduleBranchList.size(); j++) {
+                                    KeyPairBoolData h = new KeyPairBoolData();
+                                    h.setName(moduleBranchList.get(j).getItem());
+                                    h.setId(moduleBranchList.get(j).getItemId());
+                                    h.setSelected(false);
+                                    keyBranchList.add(h);
+
+                                }
+
+
+                            } else {
+
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(ReferEarnActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+
+                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.d("errort", "model");
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+    private void aadhaarValidation(){
+        if (etCanAadhaar.getText().toString().length()>0){
+            if (isValidAadhaar(etCanAadhaar.getText().toString())) {
+                uploadCV();
+            } else {
+                Toast.makeText(ReferEarnActivity.this, "Please Enter 12 digits valid Aadhaar Number", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            uploadCV();
+        }
+
+    }
+
+    public boolean isValidAadhaar(String aadhaarNumber) {
+        // Check if it's a 12-digit number and doesn't start with 0 or 1
+        return aadhaarNumber != null && aadhaarNumber.matches("^[2-9]{1}[0-9]{11}$");
     }
 }
