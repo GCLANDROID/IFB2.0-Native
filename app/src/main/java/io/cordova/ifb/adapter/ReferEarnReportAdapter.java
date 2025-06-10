@@ -41,6 +41,7 @@ public class ReferEarnReportAdapter extends RecyclerView.Adapter<ReferEarnReport
         myViewHolder.tvOnboarded.setText(itemList.get(i).getCSR_ONboarded_Date());
         myViewHolder.tvEligable.setText(itemList.get(i).getReferralEligabledate());
         myViewHolder.tvAmount.setText(itemList.get(i).getReferral_Amount());
+        myViewHolder.tvCanAadhaar.setText(itemList.get(i).getCandidateAadhar());
         myViewHolder.tvPaid.setText(itemList.get(i).getReferral_Amount_Paid_date());
         myViewHolder.tvExit.setText(itemList.get(i).getCSR_EXIT_Date());
         if (itemList.get(i).getCSR_Current_Status().equals("")){
@@ -69,7 +70,7 @@ public class ReferEarnReportAdapter extends RecyclerView.Adapter<ReferEarnReport
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCanName,tvCanMob,tvStatus,tvMonth,tvOnboarded,tvEligable,tvAmount,tvPaid,tvExit;
+        TextView tvCanName,tvCanMob,tvStatus,tvMonth,tvOnboarded,tvEligable,tvAmount,tvPaid,tvExit,tvCanAadhaar;
         LinearLayout lLCSRStatus,llActiveStatus,llInActiveStaus;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -83,6 +84,7 @@ public class ReferEarnReportAdapter extends RecyclerView.Adapter<ReferEarnReport
             tvAmount=(TextView)itemView.findViewById(R.id.tvAmount);
             tvPaid=(TextView)itemView.findViewById(R.id.tvPaid);
             tvExit=(TextView)itemView.findViewById(R.id.tvExit);
+            tvCanAadhaar=(TextView)itemView.findViewById(R.id.tvCanAadhaar);
 
             lLCSRStatus=(LinearLayout) itemView.findViewById(R.id.lLCSRStatus);
             llActiveStatus=(LinearLayout) itemView.findViewById(R.id.llActiveStatus);

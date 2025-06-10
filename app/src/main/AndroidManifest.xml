@@ -145,6 +145,8 @@
         <activity android:name=".activity.CustomerDetailsActivity" />
         <activity android:name=".activity.CallingReportActivity" />
         <activity android:name=".activity.CustomerCallingManaeActivity" />
+        <activity android:name=".utility.CameraActivity"
+            android:screenOrientation="userPortrait"></activity>
         <activity
             android:name=".activity.DocDashBaordActivity"
             android:screenOrientation="userPortrait" />

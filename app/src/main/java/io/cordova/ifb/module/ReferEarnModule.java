@@ -1,7 +1,7 @@
 package io.cordova.ifb.module;
 
 public class ReferEarnModule {
-    String referCanName,referCanMob,Reffered_Month,CSR_ONboarded_Date,ReferralEligabledate,CSR_Current_Status,Referral_Amount,Referral_Amount_Paid_date,CSR_EXIT_Date;
+    String referCanName,referCanMob,Reffered_Month,CSR_ONboarded_Date,ReferralEligabledate,CSR_Current_Status,Referral_Amount,Referral_Amount_Paid_date,CSR_EXIT_Date,CandidateAadhar;
 
     public String getReferCanName() {
         return referCanName;
@@ -73,5 +73,13 @@ public class ReferEarnModule {
 
     public void setCSR_EXIT_Date(String CSR_EXIT_Date) {
         this.CSR_EXIT_Date = CSR_EXIT_Date;
+    }
+
+    public String getCandidateAadhar() {
+        return CandidateAadhar;
+    }
+
+    public void setCandidateAadhar(String candidateAadhar) {
+        CandidateAadhar = candidateAadhar;
     }
 }

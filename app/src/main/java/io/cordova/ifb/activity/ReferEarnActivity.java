@@ -617,6 +617,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                                     String Referral_Amount=referalEmpObj.optString("Referral_Amount");
                                     String Referral_Amount_Paid_date=referalEmpObj.optString("Referral_Amount_Paid_date");
                                     String CSR_EXIT_Date=referalEmpObj.optString("CSR_EXIT_Date");
+                                    String CandidateAadhar=referalEmpObj.optString("CandidateAadhar");
                                     ReferEarnModule earnModule=new ReferEarnModule();
                                     earnModule.setReferCanName(Reffered_CSR_Name);
                                     earnModule.setReferCanMob(Reffered_CSR_Number);
@@ -626,6 +627,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                                     earnModule.setReferral_Amount(Referral_Amount);
                                     earnModule.setReferral_Amount_Paid_date(Referral_Amount_Paid_date);
                                     earnModule.setCSR_EXIT_Date(CSR_EXIT_Date);
+                                    earnModule.setCandidateAadhar(CandidateAadhar);
                                     earnModule.setReffered_Month(mID);
                                     itemList.add(earnModule);
 
@@ -717,6 +719,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                                     String Referral_Amount_Paid_date=referalEmpObj.optString("Referral_Amount_Paid_date");
                                     String CSR_EXIT_Date=referalEmpObj.optString("CSR_EXIT_Date");
                                     String Reffered_Month=referalEmpObj.optString("Reffered_Month");
+                                    String CandidateAadhar=referalEmpObj.optString("CandidateAadhar");
                                     ReferEarnModule earnModule=new ReferEarnModule();
                                     earnModule.setReferCanName(Reffered_CSR_Name);
                                     earnModule.setReferCanMob(Reffered_CSR_Number);
@@ -727,6 +730,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                                     earnModule.setReferral_Amount_Paid_date(Referral_Amount_Paid_date);
                                     earnModule.setCSR_EXIT_Date(CSR_EXIT_Date);
                                     earnModule.setReffered_Month(Reffered_Month);
+                                    earnModule.setCandidateAadhar(CandidateAadhar);
                                     itemList.add(earnModule);
 
                                 }

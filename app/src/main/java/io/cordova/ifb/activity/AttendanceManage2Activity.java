@@ -95,6 +95,7 @@ import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
+import io.cordova.ifb.utility.CameraActivity;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 
@@ -175,7 +176,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     File pictureFile;
     AlertDialog alert1, cameraAlert;
     String androidID;
-
+    private static final int SELFIE_CAMERA_REQUEST = 3;
     ArrayList<ModelSpinnerModel> CounterList = new ArrayList<>();
     ArrayList<KeyPairBoolData> keyCounterList = new ArrayList<>();
     SingleSpinnerSearch spOtherCounter;
@@ -1244,7 +1245,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         llCustomCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LongImageBackCameraActivity.launch(AttendanceManage2Activity.this);
+                Intent intent = new Intent(AttendanceManage2Activity.this, CameraActivity.class);
+                startActivityForResult(intent, SELFIE_CAMERA_REQUEST);
 
             }
         });
@@ -1395,7 +1397,20 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                 }
                 break;
+            case SELFIE_CAMERA_REQUEST:
 
+                if (requestCode == SELFIE_CAMERA_REQUEST && resultCode == RESULT_OK) {
+                    imageUri = data.getParcelableExtra("imageUri");
+                    file = new File(data.getStringExtra("imagePath"));
+                    try {
+                        compressedImageFile = new Compressor(this).compressToFile(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    cameraAlert.dismiss();
+                    imgImage.setImageURI(imageUri);
+                }
+                break;
 
         }
 

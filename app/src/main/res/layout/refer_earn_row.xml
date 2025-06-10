@@ -66,7 +66,6 @@
             android:text="Referred CSR Name:"
             android:textColor="@color/white"></TextView>
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -84,11 +83,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:layout_weight="1"
-            android:text="Referred Month:"
+            android:text="Aadhaar Number:"
             android:textColor="@color/black"></TextView>
 
         <TextView
-            android:id="@+id/tvMonth"
+            android:id="@+id/tvCanAadhaar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -113,11 +112,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:layout_weight="1"
-            android:text="Current Status"
+            android:text="Referred Month:"
             android:textColor="@color/white"></TextView>
 
         <TextView
-            android:id="@+id/tvStatus"
+            android:id="@+id/tvMonth"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -128,19 +127,48 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/greentwo"
+        android:padding="10dp">
+
+        <View
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center"
+            android:background="@color/black"></View>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="1"
+            android:text="Current Status"
+            android:textColor="@color/black"></TextView>
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:text="Referred CSR Name:"
+            android:textColor="@color/black"></TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/lLCSRStatus">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/greentwo"
+            android:background="@color/green"
             android:padding="10dp">
 
             <View
                 android:layout_width="5dp"
                 android:layout_height="5dp"
                 android:layout_gravity="center"
-                android:background="@color/black"></View>
+                android:background="@color/white"></View>
 
             <TextView
                 android:layout_width="0dp"
@@ -148,7 +176,7 @@
                 android:layout_marginLeft="2dp"
                 android:layout_weight="1"
                 android:text="Onboarded On:"
-                android:textColor="@color/black"></TextView>
+                android:textColor="@color/white"></TextView>
 
             <TextView
                 android:id="@+id/tvOnboarded"
@@ -157,7 +185,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:text="Referred CSR Name:"
-                android:textColor="@color/black"></TextView>
+                android:textColor="@color/white"></TextView>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -165,6 +193,35 @@
             android:orientation="vertical"
             android:id="@+id/llActiveStatus">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/greentwo"
+                android:padding="10dp">
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_gravity="center"
+                    android:background="@color/black"></View>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1"
+                    android:text="Referral Eligible Date"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/tvEligable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:text="Referred CSR Name:"
+                    android:textColor="@color/black"></TextView>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,11 +239,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
                     android:layout_weight="1"
-                    android:text="Referral Eligible Date"
+                    android:text="Referral Amount:"
                     android:textColor="@color/white"></TextView>
 
                 <TextView
-                    android:id="@+id/tvEligable"
+                    android:id="@+id/tvAmount"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
@@ -211,37 +268,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
                     android:layout_weight="1"
-                    android:text="Referral Amount:"
-                    android:textColor="@color/black"></TextView>
-
-                <TextView
-                    android:id="@+id/tvAmount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:text="Referred CSR Name:"
-                    android:textColor="@color/black"></TextView>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/green"
-                android:padding="10dp">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:layout_gravity="center"
-                    android:background="@color/white"></View>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
-                    android:layout_weight="1"
                     android:text="Amount Paid Date"
-                    android:textColor="@color/white"></TextView>
+                    android:textColor="@color/black"></TextView>
 
                 <TextView
                     android:id="@+id/tvPaid"
@@ -250,7 +278,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="Referred CSR Name:"
-                    android:textColor="@color/white"></TextView>
+                    android:textColor="@color/black"></TextView>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout

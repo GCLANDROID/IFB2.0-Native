@@ -105,6 +105,7 @@ import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
+import io.cordova.ifb.utility.CameraActivity;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 
@@ -166,6 +167,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
     private String encodedImage;
     private Uri imageUri;
     private static final int CAMERA_REQUEST = 1;
+    private static final int SELFIE_CAMERA_REQUEST = 3;
     File file, compressedImageFile, file1;
     File dFile;
     private static final int REQUEST_GALLERY_CODE = 200;
@@ -377,6 +379,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
 
             // other 'case' lines to check for other
@@ -1157,7 +1160,8 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
         llCustomCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LongImageBackCameraActivity.launch(AttendanceCheckOutActivity.this);
+                Intent intent = new Intent(AttendanceCheckOutActivity.this, CameraActivity.class);
+                startActivityForResult(intent, SELFIE_CAMERA_REQUEST);
 
             }
         });
@@ -1240,43 +1244,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
 
                 }
                 break;
-            case REQUEST_GALLERY_CODE:
-                if (resultCode == Activity.RESULT_OK) {
-                    InputStream imageStream = null;
-                    try {
-                        try {
-                            uri = data.getData();
-                            String filePath = getRealPathFromURIPath(uri, AttendanceCheckOutActivity.this);
-                            file = new File(filePath);
-                            try {
-                                compressedImageFile = new Compressor(this).compressToFile(file);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            //  Log.d(TAG, "filePath=" + filePath);
-                            imageStream = getContentResolver().openInputStream(uri);
-                            Bitmap bm = cropToSquare(BitmapFactory.decodeStream(imageStream));
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bm.compress(Bitmap.CompressFormat.JPEG, 10, baos); //bm is the bitmap object
-                            byte[] b = baos.toByteArray();
-                            encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-                            imgImage.setImageBitmap(bm);
-                            cameraAlert.dismiss();
-                            String contentType = "image/jpg";
-                            String[] brkDown = filePath.split("/");
-                            String name = brkDown[5];
-                            stringFile = name + "_" + encodedImage + "_" + contentType;
 
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } catch (OutOfMemoryError e) {
-                        e.printStackTrace();
-                    }
-
-                }
-                break;
 
             case LongImageBackCameraActivity.LONG_IMAGE_RESULT_CODE_BACK:
 
@@ -1308,6 +1276,21 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
 
                 }
                 break;
+
+            case SELFIE_CAMERA_REQUEST:
+
+            if (requestCode == SELFIE_CAMERA_REQUEST && resultCode == RESULT_OK) {
+                imageUri = data.getParcelableExtra("imageUri");
+                file = new File(data.getStringExtra("imagePath"));
+                try {
+                    compressedImageFile = new Compressor(this).compressToFile(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                cameraAlert.dismiss();
+                imgImage.setImageURI(imageUri);
+            }
+            break;
 
 
         }
