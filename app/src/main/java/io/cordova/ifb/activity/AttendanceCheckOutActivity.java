@@ -279,7 +279,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
             public void run() {
                 alertDialog.dismiss();
             }
-        }, 20000);
+        }, 6000);
 
         workingStatusList.add("Own Mapped Counter");
         workingStatusList.add("Other Counter");
@@ -1287,6 +1287,8 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                stringFile = imageUri + "_" + imageUri + "_" + "png";
                 cameraAlert.dismiss();
                 imgImage.setImageURI(imageUri);
             }

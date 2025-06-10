@@ -278,7 +278,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             public void run() {
                 alertDialog.dismiss();
             }
-        }, 20000);
+        }, 6000);
 
         workingStatusList.add("Own Mapped Counter");
         workingStatusList.add("Other Counter");
@@ -1409,6 +1409,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     }
                     cameraAlert.dismiss();
                     imgImage.setImageURI(imageUri);
+                    stringFile = imageUri + "_" + imageUri + "_" + "png";
                 }
                 break;
 
