@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Referred CSR Name:"
+            android:text=""
             android:textColor="@color/black"></TextView>
     </LinearLayout>
 
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Referred CSR Name:"
+            android:text=""
             android:textColor="@color/white"></TextView>
     </LinearLayout>
     <LinearLayout
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Referred CSR Name:"
+            android:text=""
             android:textColor="@color/black"></TextView>
     </LinearLayout>
     <LinearLayout
@@ -121,7 +121,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Referred CSR Name:"
+            android:text=""
             android:textColor="@color/white"></TextView>
     </LinearLayout>
     <LinearLayout
@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="Referred CSR Name:"
+            android:text=""
             android:textColor="@color/black"></TextView>
     </LinearLayout>
     <LinearLayout
@@ -184,7 +184,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Referred CSR Name:"
+                android:text=""
                 android:textColor="@color/white"></TextView>
         </LinearLayout>
         <LinearLayout
@@ -219,7 +219,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:text="Referred CSR Name:"
+                    android:text=""
                     android:textColor="@color/black"></TextView>
             </LinearLayout>
             <LinearLayout
@@ -248,7 +248,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:text="Referred CSR Name:"
+                    android:text=""
                     android:textColor="@color/white"></TextView>
             </LinearLayout>
             <LinearLayout
@@ -277,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
-                    android:text="Referred CSR Name:"
+                    android:text=""
                     android:textColor="@color/black"></TextView>
             </LinearLayout>
         </LinearLayout>
@@ -309,7 +309,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Referred CSR Name:"
+                android:text=""
                 android:textColor="@color/white"></TextView>
         </LinearLayout>
     </LinearLayout>

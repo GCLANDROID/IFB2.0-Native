@@ -4,11 +4,15 @@ import android.util.Log;
 
 public class FindDocumentInformation {
     private static final String TAG = "FindDocumentName";
-    public static String FileNameFromURL(String fileURL){
+    public static String FileNameFromURL(String fileURL) {
         String NAME = "";
-        String arrayURL[] = fileURL.split("/");
-        Log.e(TAG, "FileNameFromURL: Number of Split: "+arrayURL.length);
-        NAME = arrayURL[(arrayURL.length)-1];
+        if (fileURL != null && !fileURL.isEmpty()) {
+            String[] arrayURL = fileURL.split("/");
+            Log.e(TAG, "FileNameFromURL: Number of Split: " + arrayURL.length);
+            NAME = arrayURL[arrayURL.length - 1];
+        } else {
+            Log.e(TAG, "FileNameFromURL: fileURL is null or empty");
+        }
         return NAME;
     }
 

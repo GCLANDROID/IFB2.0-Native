@@ -299,7 +299,7 @@ public class LoginActivity extends AppCompatActivity {
                                     String UserID = obj.optString("UserID");
                                     prefManager.saveUserId(UserID);
                                     String MasterID = obj.optString("MasterID");
-                                    prefManager.saveMasterId(MasterID);
+                                    prefManager.saveMasterId(etUserName.getText().toString());
                                     String Target = obj.optString("Target");
                                     prefManager.saveTarget(Target);
                                     String Pending = obj.optString("Pending");
@@ -378,9 +378,20 @@ public class LoginActivity extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();*/
 
-                                    Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                    /*Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
                                     startActivity(intent);
-                                    finish();
+                                    finish();*/
+                                    if (etPassword.getText().toString().equalsIgnoreCase("password")){
+                                        Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }else {
+                                        Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+
                                 }else {
                                     Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
                                     startActivity(intent);

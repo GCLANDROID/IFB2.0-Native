@@ -15,5 +15,11 @@
         <item name="android:layout_margin">0dp</item>
         <item name="android:padding">0dp</item>
     </style>
+    <style name="RuleText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FF0000</item> <!-- Red by default -->
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:drawableStart">@drawable/ic_close</item>
+    </style>
 
 </resources>
