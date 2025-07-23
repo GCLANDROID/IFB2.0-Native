@@ -729,100 +729,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         requestQueue.add(stringRequest);
     }
 
-    private void attendencePunch() {
-        String surl =  AppController.APIURL+"api/post_EmployeeAttendance?LoginID=" + prefManager.getUserId() + "&password=" + prefManager.getPassword() + "&ClientID=" + prefManager.getClintId() + "&SecurityCode=" + prefManager.getSecurityCode() + "&Longitude=" + longt + "&Latitude=" + lat + "&IMEI=" + android_id + "&DeviceID=" + refreshedToken + "&DeviceName=" + deviceName + "&SalesPoin_Longitude=" + counterLong + "&SalesPoint_Latitude=" + counterLat + "&Attendance_Distance_GAP=" + dis + "&Address=" + address1;
-        Log.d("punchurl", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLeave", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            responseText = job1.optString("responseText");
-                            showText=responseText;
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            postWorkingStatus();
 
 
-                            // boolean _status = job1.getBoolean("status");
 
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-
-    }
-
-    private void wfhPunch() {
-        String surl =  AppController.APIURL+"api/post_EmployeeAttendanceWithWFHCounter?LoginID=" + prefManager.getUserId() + "&ClientID=" + prefManager.getClintId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("punchurl", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLeave", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            postWorkingStatus();
-
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-
-    }
 
 
     private void successAlert() {
@@ -946,7 +855,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     if (workStatusFlag.equals(0) || workStatusFlag.equals(2) || workStatusFlag.equals(3)) {
 
                             if (!stringFile.equals("")) {
-                                postAttenWithImage();
+                                btnOk.setEnabled(false);
+                                postAttenWithImage(btnOk);
                             } else {
                                 Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
@@ -955,7 +865,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     } else {
                         if (!stringFile.equals("")){
                             if (!counterid.equals("")){
-                                postAttenWithImage();
+                                btnOk.setEnabled(false);
+                                postAttenWithImage(btnOk);
                             }else {
                                 Toast.makeText(AttendanceManage2Activity.this, "Please select other counter name", Toast.LENGTH_LONG).show();
 
@@ -1099,7 +1010,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             return true;
     }
 
-    private void postWorkingStatus() {
+    private void postWorkingStatus(Button btnOk) {
 
         final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
         pd.setMessage("Loading..");
@@ -1138,9 +1049,11 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
                             successAlert();
+                            btnOk.setEnabled(true);
                             pd.dismiss();
 
                         } else {
+                            btnOk.setEnabled(true);
                             pd.dismiss();
                             Toast.makeText(AttendanceManage2Activity.this, responseText, Toast.LENGTH_LONG).show();
 
@@ -1454,7 +1367,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         return cropImg;
     }
 
-    private void postAttenWithImage() {
+    private void postAttenWithImage(Button btnOk) {
 
         final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
         pd.setMessage("Loading..");
@@ -1502,10 +1415,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         boolean responseStatus = job1.optBoolean("responseStatus");
                            if (responseStatus) {
 
-                               postWorkingStatus();
+                               postWorkingStatus(btnOk);
+
+
                                pd.dismiss();
                            }else {
                                pd.dismiss();
+                               btnOk.setEnabled(true);
                                successAlert();
                            }
 

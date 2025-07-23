@@ -2,6 +2,7 @@ package io.cordova.ifb.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -9,10 +10,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowInsetsController;
 
 import java.util.Calendar;
 
@@ -38,6 +41,7 @@ public class NewDashboardActivity extends AppCompatActivity {
     }
 
     private void initView(){
+
         preference=new PrefManager(NewDashboardActivity.this);
         Calendar c = Calendar.getInstance();
         int timeOfDay = c.get(Calendar.HOUR_OF_DAY);

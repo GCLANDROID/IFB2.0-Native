@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -36,6 +38,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.ViewCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -77,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     int verCode;
     String IFBMandatory,IFBVersion;
     TextView tvShow, tvHide;
+    String IsChangePassword;
 
 
     //  नाम
@@ -91,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void initialize() {
+
         prefManager = new PrefManager(LoginActivity.this);
         connectionCheck = new NetworkConnectionCheck(LoginActivity.this);
         llLogin = (TextView) findViewById(R.id.btnLogin);
@@ -359,6 +364,8 @@ public class LoginActivity extends AppCompatActivity {
 
                                     String SalesPointID=obj.optString("SalesPointID");
                                     prefManager.saveSalesPointID(SalesPointID);
+
+                                     IsChangePassword=obj.optString("IsChangePassword");
                                    // Firebase(UserName);
                                 }
                                 if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS") ){
@@ -382,9 +389,16 @@ public class LoginActivity extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();*/
                                     if (etPassword.getText().toString().equalsIgnoreCase("password")){
-                                        Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
-                                        startActivity(intent);
-                                        finish();
+                                        if (IsChangePassword.equalsIgnoreCase("1") || IsChangePassword.equalsIgnoreCase("true") || IsChangePassword.equalsIgnoreCase("True")) {
+                                            Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                        else {
+                                            Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     }else {
                                         Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
                                         startActivity(intent);

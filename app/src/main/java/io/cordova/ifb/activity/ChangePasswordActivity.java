@@ -1,12 +1,14 @@
 package io.cordova.ifb.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -59,6 +62,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     }
 
     private void initView(){
+
         prefManager = new PrefManager(this);
         etOld = findViewById(R.id.etOld);
         etNew = findViewById(R.id.etNew);
