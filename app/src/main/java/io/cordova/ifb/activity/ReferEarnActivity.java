@@ -340,7 +340,14 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
 
     private void showFileChooser() {
         Intent intent = new Intent();
-        intent.setType("application/pdf");
+        //intent.setType("application/pdf");
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {
+                "application/pdf",                // PDF
+                "image/*",                        // Images (jpg, png, etc.)
+                "application/msword",            // .doc
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // .docx
+        });
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Pdf"), PICK_PDF_REQUEST);
     }
