@@ -496,8 +496,7 @@
                                     android:id="@+id/imgAttachPDF"
                                     android:layout_width="50dp"
                                     android:layout_height="50dp"
-                                    android:src="@drawable/pdf"
-                                    app:tint="@color/red"></ImageView>
+                                    android:src="@drawable/pdf"/>
                             </LinearLayout>
                         </LinearLayout>
                         <LinearLayout

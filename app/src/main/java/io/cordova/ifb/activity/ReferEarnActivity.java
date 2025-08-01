@@ -3,6 +3,7 @@ package io.cordova.ifb.activity;
 import static android.os.Build.VERSION.SDK_INT;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,8 +11,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -48,6 +51,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -67,6 +71,7 @@ import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.RealPathUtil;
 
 public class ReferEarnActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = "ReferEarnActivity";
     EditText etCanName, etCanMobNumber,etCanAadhaar;
     ImageView imgAttach, imgAttachPDF;
     Button btnSave;
@@ -341,6 +346,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
     private void showFileChooser() {
         Intent intent = new Intent();
         //intent.setType("application/pdf");
+
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {
                 "application/pdf",                // PDF
@@ -349,6 +355,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // .docx
         });
         intent.setAction(Intent.ACTION_GET_CONTENT);
+        //intent.setAction(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent, "Select Pdf"), PICK_PDF_REQUEST);
     }
 
@@ -360,23 +367,78 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
             case PICK_PDF_REQUEST:
                 if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
                     Uri uri = data.getData();
-                    pdfFilePath = getRealPath(ReferEarnActivity.this, uri);
+                  /*  pdfFilePath = getRealPath(ReferEarnActivity.this, uri);
+                    Log.e(TAG, "pdfFilePath: "+pdfFilePath);
                     pdfFileName = FindDocumentInformation.FileNameFromURL(pdfFilePath);
-                    pdfFile = convertInputStreamToFile(uri, pdfFileName);
-
+                    Log.e(TAG, "pdfFileName: "+pdfFileName);*/
+                    //if (pdfFileName.isEmpty() || pdfFileName == null) {
+                        Log.e(TAG, "onActivityResult: " + uri.getPath());
+                        if (uri != null) {
+                            try {
+                                //  Get file name
+                                String fileName = getFileName(uri);
+                                //  Open InputStream from URI
+                                ///InputStream inputStream = getContentResolver().openInputStream(uri);
+                                //  Read bytes if needed
+                                //byte[] fileBytes = readBytes(inputStream);
+                                //Log.d("File Info", "Name: " + fileName + ", Size: " + fileBytes.length);
+                                // Do whatever: upload, preview, save locally, etc.
+                                pdfFile = convertInputStreamToFile(uri, fileName);
+                                Log.e(TAG, "onActivityResult: "+pdfFile.getAbsolutePath());
+                                pdfFileName = fileName;
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "Error reading file", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    /*} else {
+                        pdfFile = convertInputStreamToFile(uri, pdfFileName);
+                        Log.e(TAG, "onActivityResult: "+pdfFile.getAbsolutePath());
+                    }*/
+                    if (pdfFileName.contains("pdf")){
+                        imgAttachPDF.setImageResource(R.drawable.pdf);
+                        imgAttachPDF.setImageTintList(ContextCompat.getColorStateList(ReferEarnActivity.this, R.color.red));
+                    } else if(pdfFileName.contains("docx")){
+                        imgAttachPDF.setImageResource(R.drawable.docx_file);
+                        imgAttachPDF.setImageTintList(null);
+                    } else if(pdfFileName.contains("doc")){
+                        imgAttachPDF.setImageResource(R.drawable.doc_1);
+                        imgAttachPDF.setImageTintList(null);
+                    } else {
+                        imgAttachPDF.setImageResource(R.drawable.img);
+                        imgAttachPDF.setImageTintList(null);
+                    }
                     imgAttachPDF.setVisibility(View.VISIBLE);
-
                     pdfflag = 1;
-
                 }
-
-
                 break;
 
 
         }
 
 
+    }
+
+    private byte[] readBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+        int len;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
+    }
+
+    private String getFileName(Uri uri) {
+        String result = null;
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            result = cursor.getString(nameIndex);
+            cursor.close();
+        }
+        return result != null ? result : "unknown_file";
     }
 
     public static String getRealPath(Context context, Uri fileUri) {
