@@ -351,6 +351,11 @@ public class LoginActivity extends AppCompatActivity {
                                     String SalesPartyCode=obj.optString("SalesPartyCode");
                                     prefManager.saveSalesPartyCode(SalesPartyCode);
 
+                                    String CSRSurveyURL=obj.optString("CSRSurveyURL");
+                                    prefManager.saveCSRSurveyURL(CSRSurveyURL);
+                                    String IsFillCSRSurvey=obj.optString("IsFillCSRSurvey");
+                                    prefManager.saveIsFillCSRSurvey(IsFillCSRSurvey);
+
                                     String CustomerSop=obj.optString("CustomerSop");
                                     prefManager.saveCustomerSOPImage(CustomerSop);
 

@@ -100,30 +100,10 @@
                 android:textColor="@color/color5"
                 android:text="AIR CONDITIONER>"/>
         </LinearLayout>
+
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/color8"></LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
-                <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/black"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"></LinearLayout>
-        <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:orientation="horizontal"
@@ -1552,30 +1532,9 @@
                 android:textColor="@color/color5"
                 android:text="CLOTHES DRYER>"/>
         </LinearLayout>
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/color8"></LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
-                <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/black"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"></LinearLayout>
-        <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:orientation="horizontal"
@@ -1595,6 +1554,7 @@
                     android:text="IFB"/>
             </LinearLayout>
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
@@ -1773,7 +1733,7 @@
             android:layout_height="1dp"
             android:background="@android:color/black"></LinearLayout>
 
-        //dishwasher
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -1795,32 +1755,11 @@
                 android:textColor="@color/color5"
                 android:text="DISHWASHER>"/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/color8"></LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
-                <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/black"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"></LinearLayout>
+
         //1
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:orientation="horizontal"
@@ -2336,32 +2275,10 @@
                 android:textColor="@color/color5"
                 android:text="MICRO OVEN>"/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/color8"></LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
-                <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/black"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"></LinearLayout>
 
         //1
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -3170,32 +3087,10 @@
                 android:textColor="@color/color5"
                 android:text="KITCHEN APPLIAENCES>"/>
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/color8"></LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
-                <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/black"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"></LinearLayout>
 
         //1
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:orientation="horizontal"

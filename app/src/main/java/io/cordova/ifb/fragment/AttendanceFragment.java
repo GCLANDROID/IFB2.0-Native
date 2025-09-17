@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -65,6 +66,7 @@ import io.cordova.ifb.activity.AttendanceDashBoardActivity;
 import io.cordova.ifb.activity.AttendanceManage2Activity;
 import io.cordova.ifb.activity.AttendanceManageActivity;
 import io.cordova.ifb.activity.DashBoardActivity;
+import io.cordova.ifb.activity.SurveyActivity;
 import io.cordova.ifb.activity.VaccineDashboardActivity;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.GPSTracker;
@@ -118,6 +120,11 @@ public class AttendanceFragment extends Fragment {
 
     private void initialize() {
         prefManager = new PrefManager(getContext());
+
+        if (prefManager.getIsFillCSRSurvey().equals("1")){
+           showAlert();
+
+        }
 
         int y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -994,6 +1001,27 @@ public class AttendanceFragment extends Fragment {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
+    }
+
+
+    private void showAlert() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage("We appreciate you! Please complete a quick survey so we can keep improving.");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("Start",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        arg0.dismiss();
+                        Intent intent=new Intent(getContext(), SurveyActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                });
+        alertDialogBuilder.show();
+
+
     }
 
 

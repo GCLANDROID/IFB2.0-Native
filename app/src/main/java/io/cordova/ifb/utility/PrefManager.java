@@ -1439,6 +1439,24 @@ public class PrefManager {
     }
 
 
+    public void saveIsFillCSRSurvey(String IsFillCSRSurvey){
+        _editorPref.putString("IsFillCSRSurvey", IsFillCSRSurvey);
+        _editorPref.commit();
+    }
+
+    public String getIsFillCSRSurvey(){
+        return _pref.getString("IsFillCSRSurvey","");
+    }
+
+    public void saveCSRSurveyURL(String CSRSurveyURL){
+        _editorPref.putString("CSRSurveyURL", CSRSurveyURL);
+        _editorPref.commit();
+    }
+
+    public String getCSRSurveyURL(){
+        return _pref.getString("CSRSurveyURL","");
+    }
+
 
 
 

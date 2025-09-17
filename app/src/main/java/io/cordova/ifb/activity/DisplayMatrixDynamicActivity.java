@@ -2764,7 +2764,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
 
                                                                                                                                                                                                                                         postDisplaymatrix();
                                                                                                                                                                                                                                     } else {
-                                                                                                                                                                                                                                        ifbAlert();
+                                                                                                                                                                                                                                        postDisplaymatrix();
 
                                                                                                                                                                                                                                     }
 
