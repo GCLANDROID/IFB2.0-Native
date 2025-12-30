@@ -471,6 +471,7 @@
                          />
 
                     <EditText
+                        android:maxLength="10"
                         android:id="@+id/etHouse"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -505,6 +506,7 @@
                         />
 
                     <EditText
+                        android:maxLength="40"
                         android:id="@+id/etStreetName"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -540,6 +542,7 @@
                          />
 
                     <EditText
+                        android:maxLength="40"
                         android:id="@+id/etLandMark"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -547,6 +550,42 @@
                         android:background="@null"
                         android:digits="1234567890abcdefghijklmnopqrstuvwxyz()/.- 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ()-/"
                         android:hint="Enter Landmark"
+                        android:singleLine="true"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@android:color/black"></LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+                    <TextView
+                        android:text="More Address Details"
+                        android:id="@+id/tvMoreAddress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="@android:color/black"
+                        />
+
+                    <EditText
+                        android:maxLength="40"
+                        android:id="@+id/etMoreAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@null"
+                        android:digits="1234567890abcdefghijklmnopqrstuvwxyz()/.- 1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ()-/"
+                        android:hint="Enter More Address Details"
                         android:singleLine="true"
                         android:textAppearance="?android:textAppearanceSmall"
                         android:textColor="@android:color/black" />

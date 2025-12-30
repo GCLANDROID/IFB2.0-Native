@@ -8,14 +8,28 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsetsController;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -26,18 +40,22 @@ import io.cordova.ifb.fragment.HomeFragment;
 import io.cordova.ifb.fragment.MoreFragment;
 import io.cordova.ifb.fragment.SalesManagementFragment;
 import io.cordova.ifb.test.MainTestActivity;
+import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
 
 public class NewDashboardActivity extends AppCompatActivity {
     ActivityNewDashboardBinding binding;
     PrefManager preference;
     boolean mslideState;
+    String Date,Status,Time,LogoutTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding= DataBindingUtil.setContentView(this,R.layout.activity_new_dashboard);
         initView();
-        loadHomeFragment();
+        cuurentAttendanceStatus();
+
     }
 
     private void initView(){
@@ -117,6 +135,9 @@ public class NewDashboardActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         HomeFragment pfragment=new HomeFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Time", Time);
+        pfragment.setArguments(bundle);
         transaction.replace(R.id.frameLayout, pfragment);
         transaction.commit();
 
@@ -156,6 +177,13 @@ public class NewDashboardActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         AttendanceFragment pfragment=new AttendanceFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Date", Date);
+        bundle.putString("Time", Time);
+        bundle.putString("Status", Status);
+        bundle.putString("LogoutTime", LogoutTime);
+
+        pfragment.setArguments(bundle);
         transaction.replace(R.id.frameLayout, pfragment);
         transaction.commit();
 
@@ -194,6 +222,9 @@ public class NewDashboardActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         SalesManagementFragment pfragment=new SalesManagementFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Time", Time);
+        pfragment.setArguments(bundle);
         transaction.replace(R.id.frameLayout, pfragment);
         transaction.commit();
 
@@ -261,6 +292,67 @@ public class NewDashboardActivity extends AppCompatActivity {
 
 
 
+    }
+
+
+    private void cuurentAttendanceStatus() {
+        final ProgressDialog progressDialog = new ProgressDialog(NewDashboardActivity.this);
+        progressDialog.setMessage("Loading..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        String surl = AppController.APIURL+"api/SelfAttendanceToDay?LoginID=" + preference.getUserId() + "&SecurityCode=" + preference.getSecurityCode();
+        Log.d("inputcheck", surl);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("responseAttendance", response);
+                        progressDialog.dismiss();
+
+                        // attendabceInfiList.clear();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+
+                            //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+                            JSONArray responseData = job1.optJSONArray("responseData");
+
+                            JSONObject obj = responseData.getJSONObject(0);
+                             Date=obj.optString("Date");
+                             Status=obj.optString("Status");
+                             Time=obj.optString("Time");
+                             LogoutTime=obj.optString("LogoutTime");
+
+
+                            loadHomeFragment();
+
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(NewDashboardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+
+                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(NewDashboardActivity.this);
+        requestQueue.add(stringRequest);
     }
 
 

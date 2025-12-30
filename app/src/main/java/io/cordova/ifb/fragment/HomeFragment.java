@@ -34,10 +34,13 @@ import org.naishadhparmar.zcustomcalendar.CustomCalendar;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import io.cordova.ifb.R;
@@ -70,6 +73,7 @@ public class HomeFragment extends Fragment  {
     ArrayList<String>presentCount=new ArrayList<>();
     ArrayList<String>absentCount=new ArrayList<>();
     String monthlYSold,monthlyPending;
+    TextView tvCheckOutTime;
 
 
     @Override
@@ -84,6 +88,7 @@ public class HomeFragment extends Fragment  {
 
     private void initView(){
          prefManager=new PrefManager(getContext());
+        tvCheckOutTime=view.findViewById(R.id.tvCheckOutTime);
 
 
         y = Calendar.getInstance().get(Calendar.YEAR);
@@ -240,6 +245,15 @@ public class HomeFragment extends Fragment  {
 
         getItemForNotification();
         setPieData();
+
+        if (getArguments() != null) {
+
+            String Time = getArguments().getString("Time");
+
+
+            handleCheckoutTime(Time);
+
+        }
 
 
     }
@@ -469,6 +483,67 @@ public class HomeFragment extends Fragment  {
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(stringRequest);
 
+    }
+
+    private void handleCheckoutTime(String apiTime) {
+
+        try {
+            // Parse only TIME from API
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("h:mma", Locale.getDefault());
+            Date checkInDate = inputFormat.parse(apiTime);
+
+            // Get today's date
+            Calendar today = Calendar.getInstance();
+
+            // Create calendar with TODAY + API TIME
+            Calendar checkoutLimitCal = Calendar.getInstance();
+            checkoutLimitCal.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            checkoutLimitCal.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            checkoutLimitCal.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            // Set hour & minute from API time
+            Calendar apiTimeCal = Calendar.getInstance();
+            apiTimeCal.setTime(checkInDate);
+
+            checkoutLimitCal.set(Calendar.HOUR_OF_DAY, apiTimeCal.get(Calendar.HOUR_OF_DAY));
+            checkoutLimitCal.set(Calendar.MINUTE, apiTimeCal.get(Calendar.MINUTE));
+            checkoutLimitCal.set(Calendar.SECOND, 0);
+
+            // Add 9 hours 15 minutes
+            checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
+            checkoutLimitCal.add(Calendar.MINUTE, 15);
+
+            // Current time
+            Calendar now = Calendar.getInstance();
+
+            // Display format
+            SimpleDateFormat displayFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            String checkoutLimitTime =
+                    displayFormat.format(checkoutLimitCal.getTime());
+
+            if (now.before(checkoutLimitCal)) {
+                // ✅ Checkout allowed
+                tvCheckOutTime.setText(
+                        "Checkout is allowed until " + checkoutLimitTime +
+                                " today. Post " + checkoutLimitTime +
+                                ", the checkout option will be automatically disabled."
+                );
+
+
+            } else {
+                // ❌ Checkout blocked
+                tvCheckOutTime.setText(
+                        "The stipulated checkout time has passed. Your checkout is now blocked."
+                );
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

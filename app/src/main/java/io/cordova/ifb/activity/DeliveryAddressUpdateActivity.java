@@ -94,7 +94,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     String refNo;
     PrefManager prefManager;
     EditText etRemark;
-    AlertDialog alerDialog1;
+    AlertDialog alerDialog1,existingAddressFlag;
     Button btnUpdate;
     AlertDialog alert1;
     private String encodedImage;
@@ -163,7 +163,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     String selectedpedestial;
     String pedestial = "N";
     String altmob;
-    TextView tvAltMob, tvEmail, tvPinCode, tvState, tvStateName, tvCityName, tvArea, tvStreet, tvLand, tvScheme, tvCity, tvHouse;
+    TextView tvAltMob, tvEmail, tvPinCode, tvState, tvStateName, tvCityName, tvArea, tvStreet, tvLand, tvScheme, tvCity, tvHouse,tvMoreAddress;
     AlertDialog alet1;
     String invalidEmail;
 
@@ -192,6 +192,9 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     String currentDate, sucessText;
     String Ref_Status = "N";
     Uri image_uri;
+    String crmArea;
+    EditText etMoreAddress;
+    String AddressUpdateFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,6 +227,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         tvSalesDate = (TextView) findViewById(R.id.tvSalesDate);
         refNo = getIntent().getStringExtra("refNo");
         etRemark = (EditText) findViewById(R.id.etRemark);
+        etMoreAddress=(EditText)findViewById(R.id.etMoreAddress);
         btnUpdate = (Button) findViewById(R.id.btnUpdate);
         imgCamera = (ImageView) findViewById(R.id.imgCamera);
         imgPic = (ImageView) findViewById(R.id.imgPic);
@@ -639,6 +643,24 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             }
         });
 
+        etLandMark.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    AddressUpdateFlag="Y";
+                }
+            }
+        });
+
+        etMoreAddress.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    AddressUpdateFlag="Y";
+                }
+            }
+        });
+
 
         imgIDUScanner.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -769,7 +791,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                             if (etStreetName.getText().toString().replaceAll(" ", "").length() > 0) {
                                                 if (etLandMark.getText().toString().replaceAll(" ", "").length() > 0) {
 
-                                                    emailcheck1();
+                                                    addressConfirmation(etMoreAddress.getText().toString(),tvCityName.getText().toString(),etPinCode.getText().toString(),areaName,etStreetName.getText().toString(),etLandMark.getText().toString(),etHouse.getText().toString());
                                                 } else {
                                                     Toast.makeText(DeliveryAddressUpdateActivity.this, "Please Enter Landmark.", Toast.LENGTH_LONG).show();
 
@@ -997,7 +1019,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV7")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV8")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1043,6 +1065,8 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 .addMultipartParameter("DisplayMatrix_Sold", displaySoldID)
                 .addMultipartParameter("CSD_Sales", csdSales)
                 .addMultipartParameter("PedestalSales", pedestial)
+                .addMultipartParameter("DeliveryAddress2", etMoreAddress.getText().toString())
+                .addMultipartParameter("AddressUpdateFlag", AddressUpdateFlag)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -1377,7 +1401,10 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     String FirstName = object.optString("FirstName");
                                     String LastName = object.optString("LastName");
                                     String DeliveryAddress = object.optString("DeliveryAddress");
-                                    String StreetName = object.optString("StreetName");
+                                    String Landmark = object.optString("Landmark");
+                                    String Area = object.optString("Area");
+                                    String HouseNo=object.optString("HouseNo");
+
                                     String CustomerPinCode = object.optString("CustomerPinCode");
                                     String City = object.optString("City");
                                     String StateName = object.optString("StateName");
@@ -1391,6 +1418,8 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     String installationBy = object.optString("InstallationBy");
                                     String WiFiDeviceStatus = object.optString("WiFiDeviceStatus");
                                     String RELIANCEFLAG = object.optString("RELIANCEFLAG");
+                                    String DeliveryAddress2 = object.optString("DeliveryAddress2");
+                                    String AddressUpdateFlag = object.optString("AddressUpdateFlag");
                                     RcnModel rcnModel = new RcnModel();
                                     rcnModel.setToken(TokenNo);
                                     rcnModel.setSerNumber(SerialNo);
@@ -1402,7 +1431,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     csrOBJ.put("CUSTOMERFIRSTNAME", FirstName);
                                     csrOBJ.put("CUSTOMERLASTNAME", LastName);
                                     csrOBJ.put("ADDRESS", DeliveryAddress);
-                                    csrOBJ.put("STREET", StreetName);
+                                    csrOBJ.put("STREET", Area);
                                     csrOBJ.put("PINCODE", CustomerPinCode);
                                     csrOBJ.put("CITY", City);
                                     csrOBJ.put("STATE", StateName);
@@ -1422,6 +1451,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                     csrOBJ.put("ODUSERIAL", SerialNo2);
                                     csrOBJ.put("WIFI", WiFiDeviceStatus);
                                     csrOBJ.put("FILECREATED", currentDate);
+                                    csrOBJ.put("ADDRESS2", DeliveryAddress2);
+                                    csrOBJ.put("HOUSENO", HouseNo);
+                                    csrOBJ.put("LANDMARK", Landmark);
+                                    csrOBJ.put("ADDRESSUPDATEDFLAG", AddressUpdateFlag);
+
+
                                     if (prefManager.getUserCode().equals("IFBAPPL00001")) {
                                         successAlert(sucessText, "2");
                                     } else {
@@ -2411,11 +2446,17 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
         pd.show();
+        //https://ifbapi.ifbsupport.com/api/CSRDATA
+        //.addHeaders("Authorization", auth)
+        //https://csrapifb.azurewebsites.net/api/CSRDATA
+
 
         AndroidNetworking.post("https://ifbapi.ifbsupport.com/api/CSRDATA")
 
                 .addJSONObjectBody(jsonObject)
                 .addHeaders("Authorization", auth)
+                .addHeaders("Content-Type", "application/json")
+                //.addHeaders("Cookie","ARRAffinity=92ca53ad8db4fbb93d4d3b7d8ab54dcf8ffecb2d731f25b0e91ad575d7534c3f;ARRAffinitySameSite=92ca53ad8db4fbb93d4d3b7d8ab54dcf8ffecb2d731f25b0e91ad575d7534c3f")
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -3844,7 +3885,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                 STATENAME = obj.getString("State").toUpperCase();
                                 Log.d("statename", STATENAME);
                                 PINCODE = obj.optString("PinCode");
-                                REGIONNAME = obj.optString("Town");
+                                REGIONNAME = obj.optString("City");
                                 String Area = obj.optString("Area");
                                 area.add(Area);
 
@@ -3861,11 +3902,14 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                             spArea.setVisibility(View.VISIBLE);
 
 
+
                             ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
                                     (DeliveryAddressUpdateActivity.this, android.R.layout.simple_spinner_item,
                                             area); //selected item will look like a spinner set from XML
                             spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             spArea.setAdapter(spinnerArrayAdapter);
+                            int pos=area.indexOf(crmArea);
+                            spArea.setSelection(pos);
 
                             // boolean _status = job1.getBoolean("status");
 
@@ -3945,7 +3989,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
                                 }
 
-                                setCity();
+                                //setCity();
 
                                 //  getInformationForFiftySales();
 
@@ -4166,16 +4210,38 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                 if (Data.length() > 0) {
                                     JSONObject jobj = Data.getJSONObject(0);
                                     String emailID = jobj.optString("zzemail");
-                                    etEmailId.setText(emailID);
+                                   // etEmailId.setText(emailID);
                                     String postalCode = jobj.optString("zzpost_code1");
-                                    etPinCode.setText(postalCode);
-                                    String landMark = jobj.optString("zzstr_suppl1");
-                                    etLandMark.setText(landMark);
-                                    String street = jobj.optString("zzstreet");
-                                    etStreetName.setText(street);
+
+
+
+                                    String area = jobj.optString("zzstreet");
+
+
+                                    String street = jobj.optString("zzstr_suppl1");
+
+
+
+
+                                    String landMark = jobj.optString("zzstr_suppl3");
+
+
+                                    String city1 = jobj.optString("city1");
+
+
+                                    String addressTwo = jobj.optString("zzstr_suppl2");
+
+
 
                                     String House_num1 = jobj.optString("House_num1");
-                                    etHouse.setText(House_num1);
+
+
+                                    existingAddressAlert(addressTwo,city1,postalCode,area,street,landMark,House_num1);
+
+
+
+                                }else {
+                                    AddressUpdateFlag="N";
                                 }
                             }
 
@@ -4324,6 +4390,155 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
+
+
+    private void existingAddressAlert( String addressTwo,String city,String pincode,String area,String streetName,String landMark,String House_num1) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DeliveryAddressUpdateActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_existing_address, null);
+        dialogBuilder.setView(dialogView);
+
+       /* TextView tvState = (TextView) dialogView.findViewById(R.id.tvState);
+        tvState.setText(state);*/
+
+        TextView tvCity = (TextView) dialogView.findViewById(R.id.tvCity);
+        tvCity.setText(city);
+
+        TextView tvArea = (TextView) dialogView.findViewById(R.id.tvArea);
+        tvArea.setText(area);
+
+        TextView tvPincode = (TextView) dialogView.findViewById(R.id.tvPincode);
+        tvPincode.setText(pincode);
+
+
+
+        TextView tvAddressTwo = (TextView) dialogView.findViewById(R.id.tvAddressTwo);
+        tvAddressTwo.setText(addressTwo);
+
+        TextView tvStreetName = (TextView) dialogView.findViewById(R.id.tvStreetName);
+        tvStreetName.setText(streetName);
+
+        TextView tvLandMark = (TextView) dialogView.findViewById(R.id.tvLandMark);
+        tvLandMark.setText(landMark);
+
+        Button btnContinue=(Button)dialogView.findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                etPinCode.setText(pincode);
+                etPinCode.setEnabled(false);
+                crmArea=area;
+                etStreetName.setText(streetName);
+                etStreetName.setEnabled(false);
+                etLandMark.setText(landMark);
+                REGIONNAME=city;
+                tvCityName.setText(REGIONNAME);
+                etHouse.setText(House_num1);
+                etHouse.setEnabled(false);
+                etMoreAddress.setText(addressTwo);
+                pincodecheck(pincode);
+                existingAddressFlag.dismiss();
+                AddressUpdateFlag="N";
+            }
+        });
+
+        Button btnChange=(Button)dialogView.findViewById(R.id.btnChange);
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                existingAddressFlag.dismiss();
+                AddressUpdateFlag="Y";
+                etPinCode.setText(pincode);
+                crmArea=area;
+                etStreetName.setText(streetName);
+                etLandMark.setText(landMark);
+                REGIONNAME=city;
+                tvCityName.setText(REGIONNAME);
+                etHouse.setText(House_num1);
+                etMoreAddress.setText(addressTwo);
+                pincodecheck(pincode);
+            }
+        });
+
+
+
+
+        existingAddressFlag = dialogBuilder.create();
+        existingAddressFlag.setCancelable(false);
+        Window window = existingAddressFlag.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        existingAddressFlag.show();
+    }
+
+
+    private void addressConfirmation( String addressTwo,String city,String pincode,String area,String streetName,String landMark,String House_num1) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DeliveryAddressUpdateActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_address_confirmation, null);
+        dialogBuilder.setView(dialogView);
+
+       /* TextView tvState = (TextView) dialogView.findViewById(R.id.tvState);
+        tvState.setText(state);*/
+
+        TextView tvCity = (TextView) dialogView.findViewById(R.id.tvCity);
+        tvCity.setText(city);
+
+        TextView tvArea = (TextView) dialogView.findViewById(R.id.tvArea);
+        tvArea.setText(area);
+
+        TextView tvPincode = (TextView) dialogView.findViewById(R.id.tvPincode);
+        tvPincode.setText(pincode);
+
+
+        TextView tvHouseNo = (TextView) dialogView.findViewById(R.id.tvHouseNo);
+        tvHouseNo.setText(House_num1);
+
+
+
+        TextView tvAddressTwo = (TextView) dialogView.findViewById(R.id.tvAddressTwo);
+        tvAddressTwo.setText(addressTwo);
+
+        TextView tvStreetName = (TextView) dialogView.findViewById(R.id.tvStreetName);
+        tvStreetName.setText(streetName);
+
+        TextView tvLandMark = (TextView) dialogView.findViewById(R.id.tvLandMark);
+        tvLandMark.setText(landMark);
+
+        Button btnContinue=(Button)dialogView.findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                existingAddressFlag.dismiss();
+                emailcheck1();
+            }
+        });
+
+        Button btnChange=(Button)dialogView.findViewById(R.id.btnChange);
+        btnChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                existingAddressFlag.dismiss();
+                etPinCode.setEnabled(true);
+                etStreetName.setEnabled(true);
+                etHouse.setEnabled(true);
+                AddressUpdateFlag="Y";
+
+
+            }
+        });
+
+
+
+
+        existingAddressFlag = dialogBuilder.create();
+        existingAddressFlag.setCancelable(false);
+        Window window = existingAddressFlag.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        existingAddressFlag.show();
     }
 
 

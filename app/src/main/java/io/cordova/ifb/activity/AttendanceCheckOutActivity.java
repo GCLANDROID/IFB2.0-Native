@@ -152,7 +152,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
     private static final int LOC_PERM_REQ_CODE = 1;
     ArrayList<String> workingStatusList = new ArrayList<>();
     ArrayList<String> numberList = new ArrayList<>();
-    String workingStaus;
+    String workingStaus = "Own Mapped Counter";
     String number;
     String deviceName;
     String android_id;
@@ -182,7 +182,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
     ArrayList<KeyPairBoolData> keyCounterList = new ArrayList<>();
     SingleSpinnerSearch spOtherCounter;
     String counterid="";
-    String workStatusFlag;
+    String workStatusFlag = "0";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -199,6 +199,7 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceCheckOutActivity.this);
+        counterid = prefManager.getSalesPointID();
         connectionCheck = new NetworkConnectionCheck(AttendanceCheckOutActivity.this);
         mLocationRequest = new LocationRequest();
         mLocationRequest = LocationRequest.create()
@@ -281,8 +282,8 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
             }
         }, 6000);
 
-        workingStatusList.add("Own Mapped Counter");
-        workingStatusList.add("Other Counter");
+        //workingStatusList.add("Own Mapped Counter");
+        //workingStatusList.add("Other Counter");
         workingStatusList.add("IFB Meet – Training");
         workingStatusList.add("Branch Office – Training");
 
@@ -624,7 +625,13 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
 
                 } else {
                     // attendencePunch();
-                    wfhAlert();
+                    if (!stringFile.equals("")) {
+
+                        postAttenWithImage();
+                    } else {
+                        Toast.makeText(AttendanceCheckOutActivity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+
+                    }
                 }
 
 
@@ -795,22 +802,15 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 workingStaus = workingStatusList.get(position);
-                workStatusFlag= String.valueOf(position);
-                if (workingStaus.equals("Own Mapped Counter") || workingStaus.equals("Other Counter")) {
-                    spNumber.setSelection(0);
-                    spNumber.setEnabled(false);
-                } else {
-                    spNumber.setSelection(1);
-                    spNumber.setEnabled(false);
+                workStatusFlag = String.valueOf(position);
+
+                if (workingStaus.equals("IFB Meet – Training")) {
+                    workStatusFlag = "2";
+                } else if (workingStaus.equals("Branch Office – Training")) {
+                    workStatusFlag = "3";
                 }
 
-                if (position==0 || position==2 ||position==3){
-                    llOtherCounter.setVisibility(View.GONE);
-                    counterid=prefManager.getSalesPointID();
-                }else {
-                    llOtherCounter.setVisibility(View.VISIBLE);
-                    counterid="";
-                }
+
             }
 
             @Override
@@ -858,30 +858,14 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
             @Override
             public void onClick(View v) {
 
-                if (workStatusFlag.equals(0) || workStatusFlag.equals(2) || workStatusFlag.equals(3)) {
 
-                            if (!stringFile.equals("")) {
-                                postAttenWithImage();
-                            } else {
-                                Toast.makeText(AttendanceCheckOutActivity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+                if (!stringFile.equals("")) {
 
-                            }
+                    postAttenWithImage();
+                } else {
+                    Toast.makeText(AttendanceCheckOutActivity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
-                    } else {
-                        if (!stringFile.equals("")){
-                            if (!counterid.equals("")){
-                                postAttenWithImage();
-                            }else {
-                                Toast.makeText(AttendanceCheckOutActivity.this, "Please select other counter name", Toast.LENGTH_LONG).show();
-
-                            }
-
-                        }else {
-                            Toast.makeText(AttendanceCheckOutActivity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
-
-                        }
-
-                    }
+                }
 
 
                 alertDialog2.dismiss();
@@ -1383,8 +1367,18 @@ public class AttendanceCheckOutActivity extends AppCompatActivity implements OnM
                         Log.d("responseText", responseText);
                         boolean responseStatus = job1.optBoolean("responseStatus");
 
-                            postWorkingStatus();
+                        if (responseStatus) {
+
+                            successAlert();
+
+
                             pd.dismiss();
+                        } else {
+                            pd.dismiss();
+
+                            wfhAlert();
+                        }
+
 
 
 

@@ -54,7 +54,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -104,7 +106,7 @@ public class AttendanceFragment extends Fragment {
     int attFalg;
     String financialYear, year, month;
     LinearLayout llADD;
-    TextView tvStatus,tvMonthAttendance;
+    TextView tvStatus,tvMonthAttendance,tvCheckOutTime;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -176,7 +178,9 @@ public class AttendanceFragment extends Fragment {
         llADD=(LinearLayout)view.findViewById(R.id.llADD);
         llReport = (LinearLayout) view.findViewById(R.id.llReport);
         llManage = (LinearLayout) view.findViewById(R.id.llManage);
+        updateManageLayoutStatus();
         llCheckOut = (LinearLayout) view.findViewById(R.id.llCheckOut);
+        updateManageLayoutStatusForCheckOut();
         llLeave = (LinearLayout) view.findViewById(R.id.llLeave);
         llLeaveEnc = (LinearLayout)view. findViewById(R.id.llLeaveEnc);
         llVaccination = (LinearLayout) view.findViewById(R.id.llVaccination);
@@ -199,6 +203,30 @@ public class AttendanceFragment extends Fragment {
         address = getCompleteAddressString(latitude, longitude);
         tvStatus=(TextView) view.findViewById(R.id.tvStatus);
         tvMonthAttendance=(TextView) view.findViewById(R.id.tvMonthAttendance);
+        tvCheckOutTime=(TextView) view.findViewById(R.id.tvCheckOutTime);
+
+        if (getArguments() != null) {
+            String Date = getArguments().getString("Date");
+            String Time = getArguments().getString("Time");
+            String Status = getArguments().getString("Status");
+            String LogoutTime = getArguments().getString("LogoutTime");
+
+            handleCheckoutTime(Time);
+            if (Status.equalsIgnoreCase("P")){
+                tvStatus.setText("Attendance Status of "+Date+" : Present (In : "+Time+" - Out : "+LogoutTime+" )");
+            }else if (Status.equalsIgnoreCase("A")){
+                tvStatus.setText("Attendance Status of "+Date+" : Absent");
+            }else if (Status.equalsIgnoreCase("WO")){
+                tvStatus.setText("Attendance Status of "+Date+" : Weekly OFF");
+            }else if (Status.equalsIgnoreCase("H")){
+                tvStatus.setText("Attendance Status of "+Date+" : Holiday");
+            }else if (Status.equalsIgnoreCase("CL") || Status.equalsIgnoreCase("SL")||Status.equalsIgnoreCase("PL")||Status.equalsIgnoreCase("CO")){
+                tvStatus.setText("Attendance Status of "+Date+" : On Leave");
+            }else {
+                tvStatus.setText("Attendance Status of "+Date+" :  Not Marked");
+            }
+
+        }
 
     }
 
@@ -243,6 +271,7 @@ public class AttendanceFragment extends Fragment {
                 if (connectionCheck.isGPSEnabled()) {
                     if (responseCode.equals("1")) {
                         getCounetrCoordinates();
+
                     } else {
                         salecheckalert();
                     }
@@ -908,7 +937,7 @@ public class AttendanceFragment extends Fragment {
                             }
 
 
-                            cuurentAttendanceStatus();
+                           // cuurentAttendanceStatus();
 
 
                         } catch (JSONException e) {
@@ -964,20 +993,7 @@ public class AttendanceFragment extends Fragment {
                             String Date=obj.optString("Date");
                             String Status=obj.optString("Status");
                             String Time=obj.optString("Time");
-                            String LogoutTime=obj.optString("LogoutTime");
-                            if (Status.equalsIgnoreCase("P")){
-                                tvStatus.setText("Attendance Status of "+Date+" : Present (In : "+Time+" - Out : "+LogoutTime+" )");
-                            }else if (Status.equalsIgnoreCase("A")){
-                                tvStatus.setText("Attendance Status of "+Date+" : Absent");
-                            }else if (Status.equalsIgnoreCase("WO")){
-                                tvStatus.setText("Attendance Status of "+Date+" : Weekly OFF");
-                            }else if (Status.equalsIgnoreCase("H")){
-                                tvStatus.setText("Attendance Status of "+Date+" : Holiday");
-                            }else if (Status.equalsIgnoreCase("CL") || Status.equalsIgnoreCase("SL")||Status.equalsIgnoreCase("PL")||Status.equalsIgnoreCase("CO")){
-                                tvStatus.setText("Attendance Status of "+Date+" : On Leave");
-                            }else {
-                                tvStatus.setText("Attendance Status of "+Date+" :  Not Marked");
-                            }
+
 
 
 
@@ -1022,6 +1038,104 @@ public class AttendanceFragment extends Fragment {
         alertDialogBuilder.show();
 
 
+    }
+
+
+    private void updateManageLayoutStatus() {
+
+        Calendar calendar = Calendar.getInstance();
+
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        // Enable at 10:00 AM and after
+        if (currentHour > 10 || (currentHour == 10 && currentMinute >= 0)) {
+            llManage.setEnabled(true);
+            llManage.setAlpha(1.0f);
+        } else {
+            llManage.setEnabled(false);
+            llManage.setAlpha(0.5f);
+        }
+    }
+
+
+    private void updateManageLayoutStatusForCheckOut() {
+
+        Calendar calendar = Calendar.getInstance();
+
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY); // 0–23
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        // Enable at 2:00 PM and after
+        if (currentHour > 14 || (currentHour == 14 && currentMinute >= 0)) {
+            llCheckOut.setEnabled(true);
+            llCheckOut.setAlpha(1.0f);
+        } else {
+            llCheckOut.setEnabled(false);
+            llCheckOut.setAlpha(0.5f);
+        }
+    }
+
+    private void handleCheckoutTime(String apiTime) {
+
+        try {
+            // Parse only TIME from API
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("h:mma", Locale.getDefault());
+            Date checkInDate = inputFormat.parse(apiTime);
+
+            // Get today's date
+            Calendar today = Calendar.getInstance();
+
+            // Create calendar with TODAY + API TIME
+            Calendar checkoutLimitCal = Calendar.getInstance();
+            checkoutLimitCal.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            checkoutLimitCal.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            checkoutLimitCal.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            // Set hour & minute from API time
+            Calendar apiTimeCal = Calendar.getInstance();
+            apiTimeCal.setTime(checkInDate);
+
+            checkoutLimitCal.set(Calendar.HOUR_OF_DAY, apiTimeCal.get(Calendar.HOUR_OF_DAY));
+            checkoutLimitCal.set(Calendar.MINUTE, apiTimeCal.get(Calendar.MINUTE));
+            checkoutLimitCal.set(Calendar.SECOND, 0);
+
+            // Add 9 hours 15 minutes
+            checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
+            checkoutLimitCal.add(Calendar.MINUTE, 15);
+
+            // Current time
+            Calendar now = Calendar.getInstance();
+
+            // Display format
+            SimpleDateFormat displayFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            String checkoutLimitTime =
+                    displayFormat.format(checkoutLimitCal.getTime());
+
+            if (now.before(checkoutLimitCal)) {
+                // ✅ Checkout allowed
+                tvCheckOutTime.setText(
+                        "Checkout is allowed until " + checkoutLimitTime +
+                                " today. Post " + checkoutLimitTime +
+                                ", the checkout option will be automatically disabled."
+                );
+
+
+            } else {
+                // ❌ Checkout blocked
+                tvCheckOutTime.setText(
+                        "The stipulated checkout time has passed. Your checkout is now blocked."
+                );
+                llCheckOut.setEnabled(false);
+                llCheckOut.setAlpha(0.5f);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

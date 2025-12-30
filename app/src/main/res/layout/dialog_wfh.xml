@@ -25,11 +25,13 @@
         android:orientation="vertical"
         android:padding="10dp">
         <TextView
+            android:textStyle="bold"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="@color/text_color"
-            android:text="Today Working Status?"></TextView>
+            android:textColor="@color/red"
+            android:text="Sorry, you are out of the designated area. Please select the reason for not being at your counter."></TextView>
         <LinearLayout
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
@@ -66,6 +68,7 @@
             </LinearLayout>
         </LinearLayout>
        <LinearLayout
+           android:visibility="gone"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:layout_marginTop="10dp">
@@ -106,7 +109,7 @@
             android:layout_height="50dp"
             android:background="@drawable/lldesign3"
             android:layout_gravity="center"
-            android:text="MARK"
+            android:text="SUBMIT"
             android:textColor="@color/color3"
             android:id="@+id/btnOk"/>
     </LinearLayout>

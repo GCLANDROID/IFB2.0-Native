@@ -151,7 +151,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private static final int LOC_PERM_REQ_CODE = 1;
     ArrayList<String> workingStatusList = new ArrayList<>();
     ArrayList<String> numberList = new ArrayList<>();
-    String workingStaus;
+    String workingStaus = "Own Mapped Counter";
     String number;
     String deviceName;
     String android_id;
@@ -180,8 +180,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     ArrayList<ModelSpinnerModel> CounterList = new ArrayList<>();
     ArrayList<KeyPairBoolData> keyCounterList = new ArrayList<>();
     SingleSpinnerSearch spOtherCounter;
-    String counterid="";
-    String workStatusFlag;
+    String counterid = "";
+    String workStatusFlag = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,7 +198,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
-        counterid=prefManager.getSalesPointID();
+
+        counterid = prefManager.getSalesPointID();
         connectionCheck = new NetworkConnectionCheck(AttendanceManage2Activity.this);
         mLocationRequest = new LocationRequest();
         mLocationRequest = LocationRequest.create()
@@ -280,11 +281,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             }
         }, 6000);
 
-        workingStatusList.add("Own Mapped Counter");
-        workingStatusList.add("Other Counter");
+        //workingStatusList.add("Own Mapped Counter");
+        //workingStatusList.add("Other Counter");
         workingStatusList.add("IFB Meet – Training");
         workingStatusList.add("Branch Office – Training");
-
 
 
         numberList.add("15");
@@ -307,10 +307,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 return;
             }
             androidID = telephonyManager.getDeviceId();
-        }else {
-            androidID=android_id;
+        } else {
+            androidID = android_id;
         }
-        refreshedToken =androidID ;
+        refreshedToken = androidID;
         counterLat = Double.parseDouble(getIntent().getStringExtra("counterlat"));
         counterLong = Double.parseDouble(getIntent().getStringExtra("counterlong"));
         radius = getIntent().getIntExtra("radius", 0);
@@ -626,7 +626,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                 } else {
                     // attendencePunch();
-                    wfhAlert();
+                    if (!stringFile.equals("")) {
+                        postAttenWithImage();
+                    }else {
+                        Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+
+                    }
                 }
 
 
@@ -647,7 +652,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private void attendenceCheck() {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputcheck", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -683,11 +688,11 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                     llStatus.setVisibility(View.GONE);
                                     lnCamera.setVisibility(View.VISIBLE);
                                 } else {
-                                    if (prefManager.getUserId().equals("AEMP000480000001")){
+                                    if (prefManager.getUserId().equals("AEMP000480000001")) {
                                         llPunch.setVisibility(View.VISIBLE);
                                         llStatus.setVisibility(View.GONE);
                                         lnCamera.setVisibility(View.VISIBLE);
-                                    }else {
+                                    } else {
                                         llPunch.setVisibility(View.GONE);
                                         llStatus.setVisibility(View.VISIBLE);
                                         lnCamera.setVisibility(View.GONE);
@@ -728,10 +733,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
         requestQueue.add(stringRequest);
     }
-
-
-
-
 
 
     private void successAlert() {
@@ -780,28 +781,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         numberList); //selected item will look like a spinner set from XML
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spNumber.setAdapter(spinnerArrayAdapter1);
-        LinearLayout llOtherCounter=(LinearLayout)dialogView.findViewById(R.id.llOtherCounter);
+        LinearLayout llOtherCounter = (LinearLayout) dialogView.findViewById(R.id.llOtherCounter);
 
         spWorkingStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 workingStaus = workingStatusList.get(position);
-                workStatusFlag= String.valueOf(position);
+                workStatusFlag = String.valueOf(position);
 
-                if (workingStaus.equals("Own Mapped Counter") || workingStaus.equals("Other Counter")) {
-                    spNumber.setSelection(0);
-                    spNumber.setEnabled(false);
-                } else {
-                    spNumber.setSelection(0);
-                    spNumber.setEnabled(false);
-                }
-
-                if (position==0 || position==2 ||position==3){
-                    llOtherCounter.setVisibility(View.GONE);
-                    counterid=prefManager.getSalesPointID();
-                }else {
-                    llOtherCounter.setVisibility(View.VISIBLE);
-                    counterid="";
+                if (workingStaus.equals("IFB Meet – Training")) {
+                    workStatusFlag = "2";
+                } else if (workingStaus.equals("Branch Office – Training")) {
+                    workStatusFlag = "3";
                 }
 
 
@@ -838,7 +829,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         Log.d("modelId", counterid);
 
 
-
                     }
                 }
             }
@@ -852,32 +842,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             @Override
             public void onClick(View v) {
 
-                    if (workStatusFlag.equals(0) || workStatusFlag.equals(2) || workStatusFlag.equals(3)) {
 
-                            if (!stringFile.equals("")) {
-                                btnOk.setEnabled(false);
-                                postAttenWithImage(btnOk);
-                            } else {
-                                Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+                if (!stringFile.equals("")) {
 
-                            }
+                    postAttenWithImage();
+                } else {
+                    Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
-                    } else {
-                        if (!stringFile.equals("")){
-                            if (!counterid.equals("")){
-                                btnOk.setEnabled(false);
-                                postAttenWithImage(btnOk);
-                            }else {
-                                Toast.makeText(AttendanceManage2Activity.this, "Please select other counter name", Toast.LENGTH_LONG).show();
-
-                            }
-
-                        }else {
-                            Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
-
-                        }
-
-                    }
+                }
 
 
                 alertDialog2.dismiss();
@@ -1010,14 +982,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             return true;
     }
 
-    private void postWorkingStatus(Button btnOk) {
+    private void postWorkingStatus() {
 
         final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
         pd.dismiss();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeWFHCounterManage")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeWFHCounterManage")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("Attendance_Type", workingStaus)
                 .addMultipartParameter("Calling_Data", number)
@@ -1049,11 +1021,11 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
                             successAlert();
-                            btnOk.setEnabled(true);
+
                             pd.dismiss();
 
                         } else {
-                            btnOk.setEnabled(true);
+
                             pd.dismiss();
                             Toast.makeText(AttendanceManage2Activity.this, responseText, Toast.LENGTH_LONG).show();
 
@@ -1367,14 +1339,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         return cropImg;
     }
 
-    private void postAttenWithImage(Button btnOk) {
+    private void postAttenWithImage() {
 
         final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
         pd.setMessage("Loading..");
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeAttendanceWithSelfy_V2")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeAttendanceWithSelfy_V2")
                 .addMultipartParameter("ClientID", prefManager.getClintId())
                 .addMultipartParameter("LoginID", prefManager.getUserId())
                 .addMultipartParameter("Password", prefManager.getPassword())
@@ -1410,22 +1382,20 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         String responseText = job1.optString("responseText");
-                        showText=responseText;
+                        showText = responseText;
                         Log.d("responseText", responseText);
                         boolean responseStatus = job1.optBoolean("responseStatus");
-                           if (responseStatus) {
+                        if (responseStatus) {
 
-                               postWorkingStatus(btnOk);
-
-
-                               pd.dismiss();
-                           }else {
-                               pd.dismiss();
-                               btnOk.setEnabled(true);
-                               successAlert();
-                           }
+                            successAlert();
 
 
+                            pd.dismiss();
+                        } else {
+                            pd.dismiss();
+
+                            wfhAlert();
+                        }
 
 
                         // boolean _status = job1.getBoolean("status");
@@ -1444,7 +1414,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
 
     private void setOtherCounter() {
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=17SM&ID="+prefManager.getUserId()+"&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=17SM&ID=" + prefManager.getUserId() + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("counterurl", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
