@@ -2,6 +2,7 @@ package io.cordova.ifb.fragment;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +31,11 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.activity.CompSalesDashboardActivity;
@@ -101,6 +107,20 @@ public class SalesManagementFragment extends Fragment {
         llReplenished=(LinearLayout)view.findViewById(R.id.llReplenished);
         llCallUpdation=(LinearLayout)view.findViewById(R.id.llCallUpdation);
         llRefInfo=(LinearLayout) view.findViewById(R.id.llRefInfo);
+
+        if (getArguments() != null) {
+
+            String Time = getArguments().getString("Time");
+
+            if (!Time.equals("")) {
+
+                handleCheckoutTime(Time);
+            }
+
+
+
+
+        }
 
     }
 
@@ -428,5 +448,81 @@ public class SalesManagementFragment extends Fragment {
         Uri uri = Uri.parse(prefManager.getWebSales()); // missing 'http://' will cause crashed
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
+    }
+
+    private void handleCheckoutTime(String apiTime) {
+
+        try {
+            // Parse only TIME from API
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("h:mma", Locale.getDefault());
+            Date checkInDate = inputFormat.parse(apiTime);
+
+            // Get today's date
+            Calendar today = Calendar.getInstance();
+
+            // Create calendar with TODAY + API TIME
+            Calendar checkoutLimitCal = Calendar.getInstance();
+            checkoutLimitCal.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            checkoutLimitCal.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            checkoutLimitCal.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            // Set hour & minute from API time
+            Calendar apiTimeCal = Calendar.getInstance();
+            apiTimeCal.setTime(checkInDate);
+
+            checkoutLimitCal.set(Calendar.HOUR_OF_DAY, apiTimeCal.get(Calendar.HOUR_OF_DAY));
+            checkoutLimitCal.set(Calendar.MINUTE, apiTimeCal.get(Calendar.MINUTE));
+            checkoutLimitCal.set(Calendar.SECOND, 0);
+
+            // Add 9 hours 15 minutes
+            checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
+            checkoutLimitCal.add(Calendar.MINUTE, 15);
+
+            // Current time
+            Calendar now = Calendar.getInstance();
+
+            // Display format
+            SimpleDateFormat displayFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            String checkoutLimitTime =
+                    displayFormat.format(checkoutLimitCal.getTime());
+
+            if (now.before(checkoutLimitCal)) {
+                // ✅ Checkout allowed
+                String message= "You can check out until " + checkoutLimitTime +
+                        " today. Post " + checkoutLimitTime +
+                        ", the checkout option will be automatically disabled.";
+                showAlertForCheckOut(message);
+
+
+            } else {
+                // ❌ Checkout blocked
+
+                String message= "The stipulated checkout time has passed. Your checkout is now blocked.";
+                showAlertForCheckOut(message);
+
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showAlertForCheckOut(String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage(message);
+        alertDialogBuilder.setPositiveButton("ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        arg0.dismiss();
+                    }
+                });
+        alertDialogBuilder.show();
+
+
     }
 }
