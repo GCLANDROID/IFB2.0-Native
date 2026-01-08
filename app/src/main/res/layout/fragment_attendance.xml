@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.AttendanceFragment">
 
     <LinearLayout
@@ -10,6 +11,105 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
+
+            android:id="@+id/llChekcinout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/lldesign"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/background_color"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your stipulated shift duration is calculated as per the applicable working hours policy. Please ensure adherence to the defined shift timings in line with organisational guidelines"></TextView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/clockicon"
+                            app:tint="@color/black"></ImageView>
+                        <TextView
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:id="@+id/tvCheckIN"></TextView>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginLeft="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/android_text_color"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:text="Check In"></TextView>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:gravity="center">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/black"></View>
+                </LinearLayout>
+                <LinearLayout
+                    android:gravity="right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/wallclock"></ImageView>
+                        <TextView
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:id="@+id/tvCheckOut"></TextView>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginLeft="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/android_text_color"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:text="Shift Over Time"></TextView>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
             android:orientation="horizontal"
             android:padding="10dp"
             android:backgroundTint="@color/orange_two"
@@ -37,6 +137,23 @@
                 android:text="Click here for Monthly Attendance"
                 android:textSize="12sp"
                 android:id="@+id/tvMonthAttendance"></TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/llCheckOutMessage"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/attendance_notice_design">
+            <TextView
+                android:id="@+id/tvCheckOutTime"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/red"
+                android:padding="14dp"></TextView>
+
         </LinearLayout>
         <LinearLayout
             android:layout_marginTop="20dp"
@@ -69,7 +186,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="Attendance \n Manage"
+                    android:text="Chec In/Out"
                     android:textColor="@android:color/black"
                     android:textSize="10sp" />
 
@@ -236,14 +353,15 @@
 
         </LinearLayout>
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="1"
             android:weightSum="3">
             <LinearLayout
                 android:visibility="gone"
                 android:id="@+id/llADD"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -271,30 +389,26 @@
 
             </LinearLayout>
 
+
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/llCheckOutCount"
                 android:layout_margin="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/attendance_notice_design">
+                android:background="@drawable/attendance_checkout_count_design">
                 <TextView
-                    android:id="@+id/tvCheckOutTime"
-                    android:textStyle="bold"
+                    android:id="@+id/tvCheckCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/red"
+                    android:textSize="14sp"
+                    android:textColor="@color/black"
                     android:padding="14dp"></TextView>
 
             </LinearLayout>
+
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"></LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"></LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

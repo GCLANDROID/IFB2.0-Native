@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/lldesign7"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:gravity="right">
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/imgCancel"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/cancelicon"
+            app:tint="@color/red"></ImageView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lnChangeScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Have you sold any IFB product today?"
+                android:textColor="@color/color3"
+                android:textSize="14sp"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/lldesign7">
+
+                <Spinner
+                    android:id="@+id/spSold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></Spinner>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/llsoldDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select the number of products sold."
+                android:textColor="@color/color3"
+                android:textSize="14sp"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/lldesign7">
+
+                <Spinner
+                    android:id="@+id/spNumbers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></Spinner>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:layout_marginTop="20dp"
+            android:background="@drawable/lldesign"
+            android:backgroundTint="@color/black"
+            android:layout_gravity="center"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/btnSubmit"
+            android:textColor="@color/white"
+            android:text="Submit"></Button>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llRequestedScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Requested IMEI Number:"
+                android:textColor="@color/color3"
+                android:textSize="14sp"></TextView>
+
+            <TextView
+                android:id="@+id/tvRequestedNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color5"
+                android:textSize="14sp"></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requested On:"
+                android:textColor="@color/color3"
+                android:textSize="14sp"></TextView>
+
+            <TextView
+                android:id="@+id/tvRequestedOn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/color5"
+                android:textSize="14sp"></TextView>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1459,22 +1459,44 @@ public class PrefManager {
 
 
 
+    public void saveCheckInHr(int CheckInHr){
+        _editorPref.putInt("CheckInHr", CheckInHr);
+        _editorPref.commit();
+    }
+
+    public int getCheckInHr(){
+        return _pref.getInt("CheckInHr",0);
+    }
 
 
+    public void saveCheckInMin(int CheckInMin){
+        _editorPref.putInt("CheckInMin", CheckInMin);
+        _editorPref.commit();
+    }
+
+    public int getCheckInMin(){
+        return _pref.getInt("CheckInMin",0);
+    }
 
 
+    public void saveCheckOutHr(int CheckOutHr){
+        _editorPref.putInt("CheckOutHr", CheckOutHr);
+        _editorPref.commit();
+    }
+
+    public int getCheckOutHr(){
+        return _pref.getInt("CheckOutHr",0);
+    }
 
 
+    public void saveCheckOutMin(int CheckOutMin){
+        _editorPref.putInt("CheckOutMin", CheckOutMin);
+        _editorPref.commit();
+    }
 
-
-
-
-
-
-
-
-
-
+    public int getCheckOutMin(){
+        return _pref.getInt("CheckOutMin",0);
+    }
 
 
 

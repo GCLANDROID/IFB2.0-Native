@@ -28,11 +28,15 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +50,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 
 
 import org.json.JSONArray;
@@ -53,6 +62,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
 import io.cordova.ifb.R;
@@ -64,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView llLogin;
     EditText etSceurityCode, etUserName, etPassword;
     String version = "";
-    AlertDialog alertDialog,al1;
+    AlertDialog alertDialog, al1, deviceDialog;
     NetworkConnectionCheck connectionCheck;
     PrefManager prefManager;
     String year;
@@ -73,14 +83,16 @@ public class LoginActivity extends AppCompatActivity {
     String refreshedToken;
     String playversion;
     String secerutycodde;
-    LinearLayout llLoader,llMain,llAgain;
+    LinearLayout llLoader, llMain, llAgain;
     String phnonenumber;
     boolean responseStatus;
-    String android_id;
+    String android_id ;
     int verCode;
-    String IFBMandatory,IFBVersion;
+    String IFBMandatory, IFBVersion;
     TextView tvShow, tvHide;
     String IsChangePassword;
+    String reason = "";
+    AlertDialog alerDialog1;
 
 
     //  नाम
@@ -106,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             PackageInfo pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
             version = pInfo.versionName;
-             verCode = pInfo.versionCode;
+            verCode = pInfo.versionCode;
             Log.d("sddk", version);
             Log.d("sdkl", String.valueOf(version));
         } catch (PackageManager.NameNotFoundException e) {
@@ -115,23 +127,22 @@ public class LoginActivity extends AppCompatActivity {
 
         ckRemeber = (CheckBox) findViewById(R.id.ckRemember);
 
-            etUserName.setText(prefManager.getUserCode());
-            etPassword.setText(prefManager.getPassword());
-            etSceurityCode.setText(prefManager.getSecurityCode());
+        etUserName.setText(prefManager.getUserCode());
+        etPassword.setText(prefManager.getPassword());
+        etSceurityCode.setText(prefManager.getSecurityCode());
 
 
-        secerutycodde=etSceurityCode.getText().toString().toUpperCase();
-        llAgain=(LinearLayout)findViewById(R.id.llAgain);
-        llLoader=(LinearLayout)findViewById(R.id.llLoader);
-        llMain=(LinearLayout)findViewById(R.id.llMain);
+        secerutycodde = etSceurityCode.getText().toString().toUpperCase();
+        llAgain = (LinearLayout) findViewById(R.id.llAgain);
+        llLoader = (LinearLayout) findViewById(R.id.llLoader);
+        llMain = (LinearLayout) findViewById(R.id.llMain);
         phnonenumber = "okkk";
-        refreshedToken="1000";
+        //refreshedToken=getAndroidID(LoginActivity.this);;
+
+        refreshedToken = "1222";
 
 
-
-
-        android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+        android_id = getAndroidID(LoginActivity.this);
         if (android_id.equals("")) {
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -146,14 +157,11 @@ public class LoginActivity extends AppCompatActivity {
             }
             android_id = telephonyManager.getDeviceId();
         }else {
-            android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                    Settings.Secure.ANDROID_ID);
+            android_id = getAndroidID(LoginActivity.this);
         }
 
         tvShow = (TextView) findViewById(R.id.tvShow);
         tvHide = (TextView) findViewById(R.id.tvHide);
-
-
 
 
     }
@@ -192,14 +200,13 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (etSceurityCode.getText().toString().length()>0){
-                    secerutycodde=etSceurityCode.getText().toString().toUpperCase();
-                    Log.d("secerutycodde",secerutycodde);
+                if (etSceurityCode.getText().toString().length() > 0) {
+                    secerutycodde = etSceurityCode.getText().toString().toUpperCase();
+                    Log.d("secerutycodde", secerutycodde);
                 }
 
             }
         });
-
 
 
         llLogin.setOnClickListener(new View.OnClickListener() {
@@ -211,14 +218,14 @@ public class LoginActivity extends AppCompatActivity {
                             if (connectionCheck.isNetworkAvailable()) {
                                 if (version.equals(IFBVersion)) {
 
-                                        loginFunction();
+                                    loginFunction();
 
 
-                                }else {
+                                } else {
                                     if (IFBMandatory.equals("Y")) {
                                         upDateAlert(IFBVersion);
                                         Toast.makeText(getApplicationContext(), "Please update your app", Toast.LENGTH_LONG).show();
-                                    }else {
+                                    } else {
                                         loginFunction();
                                     }
                                 }
@@ -263,9 +270,10 @@ public class LoginActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");;
+        String base64 = Base64.encodeToString(data, Base64.DEFAULT).replaceAll("\\s+", "");
+        ;
 
-        String surl = AppController.APIURL+ "api/GCLAuthenticateWithEncryption?LoginID=" + etUserName.getText().toString() + "&password=" +base64+"&IMEI="+android_id +"&SecurityCode=" + secerutycodde + "&DeviceID="+refreshedToken +"&DeviceType="+version;
+        String surl = AppController.APIURL + "api/GCLAuthenticateWithEncryptionV1?LoginID=" + etUserName.getText().toString() + "&password=" + base64 + "&IMEI=" + android_id + "&SecurityCode=" + secerutycodde + "&DeviceID=" + android_id + "&DeviceType=" + version;
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -292,7 +300,7 @@ public class LoginActivity extends AppCompatActivity {
                                     prefManager.saveEmpName(UserName);
                                     String LastLogin = obj.optString("LastLogin");
                                     prefManager.saveLoginTime(LastLogin);
-                                    String Counter= obj.optString("Counter");
+                                    String Counter = obj.optString("Counter");
                                     prefManager.saveCounter(Counter);
                                     String BranchId = obj.optString("BranchId");
                                     prefManager.saveBranchId(BranchId);
@@ -311,12 +319,12 @@ public class LoginActivity extends AppCompatActivity {
                                     prefManager.savePending(Pending);
                                     String MonthlyTarget = obj.optString("MonthlyTarget");
                                     prefManager.saveMonthlyTarget(MonthlyTarget);
-                                    String Sold=obj.optString("Sold");
+                                    String Sold = obj.optString("Sold");
                                     prefManager.saveSold(Sold);
-                                    String Approved=obj.optString("Approved");
+                                    String Approved = obj.optString("Approved");
                                     prefManager.saveApproved(Approved);
 
-                                    String Rejected=obj.optString("Rejected");
+                                    String Rejected = obj.optString("Rejected");
                                     prefManager.saveRejected(Rejected);
 
                                     String SecurityCode = obj.optString("SecurityCode");
@@ -325,59 +333,72 @@ public class LoginActivity extends AppCompatActivity {
                                     prefManager.savePassword(Password);
                                     String WebSalesURL = obj.optString("WebSalesURL");
                                     prefManager.saveWebSales(WebSalesURL);
-                                    String Code=obj.optString("Code");
+                                    String Code = obj.optString("Code");
                                     prefManager.saveUserCode(Code);
-                                    String ZoneID=obj.optString("ZoneID");
+                                    String ZoneID = obj.optString("ZoneID");
                                     prefManager.saveZoneId(ZoneID);
-                                    String HRDeskURL=obj.optString("HRDeskURL");
+                                    String HRDeskURL = obj.optString("HRDeskURL");
                                     prefManager.saveHRDeskURL(HRDeskURL);
-                                    String ManualURL=obj.optString("ManualURL");
+                                    String ManualURL = obj.optString("ManualURL");
                                     prefManager.saveManualURL(ManualURL);
-                                    String LeaveURL=obj.optString("LeaveURL");
+                                    String LeaveURL = obj.optString("LeaveURL");
                                     prefManager.saveLeaveURL(LeaveURL);
-                                    String LeaveEncahURL=obj.optString("LeaveEncahURL");
+                                    String LeaveEncahURL = obj.optString("LeaveEncahURL");
                                     prefManager.saveLeaveEncahURL(LeaveEncahURL);
-                                    String DigitalDocFlag=obj.optString("DigitalDocFlag");
+                                    String DigitalDocFlag = obj.optString("DigitalDocFlag");
                                     prefManager.saveDocFlag(DigitalDocFlag);
-                                    String DailyActivityFlag=obj.optString("DailyActivityFlag");
+                                    String DailyActivityFlag = obj.optString("DailyActivityFlag");
                                     prefManager.saveDailyLogFlag(DailyActivityFlag);
-                                    String CustomerVisitFlag=obj.optString("CustomerVisitFlag");
+                                    String CustomerVisitFlag = obj.optString("CustomerVisitFlag");
                                     prefManager.saveCVFlag(CustomerVisitFlag);
-                                    String SalesInvCopyImgFlag=obj.optString("SalesInvCopyImgFlag");
+                                    String SalesInvCopyImgFlag = obj.optString("SalesInvCopyImgFlag");
                                     prefManager.saveInvoiceFlag(SalesInvCopyImgFlag);
                                     prefManager.saveRemberFlag("1");
-                                    String SubDearlerType=obj.optString("SubDearlerType");
+                                    String SubDearlerType = obj.optString("SubDearlerType");
                                     prefManager.saveSubDealerType(SubDearlerType);
-                                    String SalesPartyCode=obj.optString("SalesPartyCode");
+                                    String SalesPartyCode = obj.optString("SalesPartyCode");
                                     prefManager.saveSalesPartyCode(SalesPartyCode);
 
-                                    String CSRSurveyURL=obj.optString("CSRSurveyURL");
+                                    String CSRSurveyURL = obj.optString("CSRSurveyURL");
                                     prefManager.saveCSRSurveyURL(CSRSurveyURL);
-                                    String IsFillCSRSurvey=obj.optString("IsFillCSRSurvey");
+                                    String IsFillCSRSurvey = obj.optString("IsFillCSRSurvey");
                                     prefManager.saveIsFillCSRSurvey(IsFillCSRSurvey);
 
-                                    String CustomerSop=obj.optString("CustomerSop");
+                                    String CustomerSop = obj.optString("CustomerSop");
                                     prefManager.saveCustomerSOPImage(CustomerSop);
 
 
-                                    String Notify_Remarks=obj.optString("Notify_Remarks");
+                                    String Notify_Remarks = obj.optString("Notify_Remarks");
                                     prefManager.saveNotify(Notify_Remarks);
 
 
-                                    String Notify_URL=obj.optString("Notify_URL");
+                                    String Notify_URL = obj.optString("Notify_URL");
                                     prefManager.saveNotifyUrl(Notify_URL);
 
-                                    String SalesPointID=obj.optString("SalesPointID");
+                                    String SalesPointID = obj.optString("SalesPointID");
                                     prefManager.saveSalesPointID(SalesPointID);
 
-                                     IsChangePassword=obj.optString("IsChangePassword");
-                                   // Firebase(UserName);
+                                    IsChangePassword = obj.optString("IsChangePassword");
+
+                                    int minCheckInHour = Integer.parseInt(obj.getString("MINCheckinhrs"));
+                                    int minCheckInMinute = Integer.parseInt(obj.getString("MINCheckinmin"));
+                                    prefManager.saveCheckInHr(minCheckInHour);
+                                    prefManager.saveCheckInMin(minCheckInMinute);
+
+                                    int minCheckOutHour = Integer.parseInt(obj.getString("MINCheckouthrs"));
+                                    int minCheckOutMinute = Integer.parseInt(obj.getString("MINCheckoutmin"));
+
+                                    prefManager.saveCheckOutHr(minCheckOutHour);
+                                    prefManager.saveCheckOutMin(minCheckOutMinute);
+
+
+                                    // Firebase(UserName);
                                 }
-                                if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS") ){
+                                if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS")) {
                                     Intent intent = new Intent(LoginActivity.this, INDDashbaordActivity.class);
                                     startActivity(intent);
                                     finish();
-                                }else if (prefManager.getUserTypeId().equals("IFBUT1000127")){
+                                } else if (prefManager.getUserTypeId().equals("IFBUT1000127")) {
                                     /*Intent intent = new Intent(LoginActivity.this, KAEnqueryActivity.class);
                                     startActivity(intent);
                                     finish();*/
@@ -385,7 +406,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
                                     startActivity(intent);
                                     finish();
-                                }else if (prefManager.getUserTypeId().equals("IFBMM1000011") || prefManager.getUserTypeId().equals("IFBUT1000135") || prefManager.getUserTypeId().equals("IFBUT1000134") || prefManager.getUserTypeId().equals("IFBUT1000133")|| prefManager.getUserTypeId().equals("FBMM1000004")|| prefManager.getUserTypeId().equals("IFBUT1000136")){
+                                } else if (prefManager.getUserTypeId().equals("IFBMM1000011") || prefManager.getUserTypeId().equals("IFBUT1000135") || prefManager.getUserTypeId().equals("IFBUT1000134") || prefManager.getUserTypeId().equals("IFBUT1000133") || prefManager.getUserTypeId().equals("FBMM1000004") || prefManager.getUserTypeId().equals("IFBUT1000136")) {
                                     /*Intent intent = new Intent(LoginActivity.this, KAEnqueryActivity.class);
                                     startActivity(intent);
                                     finish();*/
@@ -393,32 +414,41 @@ public class LoginActivity extends AppCompatActivity {
                                     /*Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
                                     startActivity(intent);
                                     finish();*/
-                                    if (etPassword.getText().toString().equalsIgnoreCase("password")){
+                                    if (etPassword.getText().toString().equalsIgnoreCase("password")) {
                                         if (IsChangePassword.equalsIgnoreCase("1") || IsChangePassword.equalsIgnoreCase("true") || IsChangePassword.equalsIgnoreCase("True")) {
                                             Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
                                             startActivity(intent);
                                             finish();
-                                        }
-                                        else {
+                                        } else {
                                             Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
                                             startActivity(intent);
                                             finish();
                                         }
-                                    }else {
+                                    } else {
                                         Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }
 
 
-                                }else {
+                                } else {
                                     Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
 
                             } else {
-                                shoeDialog();
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                JSONObject frstOBJ = responseData.getJSONObject(0);
+                                String ErrorCode = frstOBJ.getString("ErrorCode");
+                                String Msg = frstOBJ.getString("Msg");
+                                if (ErrorCode.equals("3")) {
+                                    deviceChangeDialog(responseText + " Please send a request to change your device.", etUserName.getText().toString(), etSceurityCode.getText().toString());
+
+                                } else {
+                                    shoeDialog(Msg);
+                                }
+
 
                             }
 
@@ -427,7 +457,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                           // Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                            // Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
                         }
 
                     }
@@ -448,12 +478,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-    private void shoeDialog() {
+    private void shoeDialog(String Msg) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(LoginActivity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.credential_dialog, null);
         dialogBuilder.setView(dialogView);
+        TextView tvError = dialogView.findViewById(R.id.tvError);
+        tvError.setText(Msg);
         Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -467,6 +498,93 @@ public class LoginActivity extends AppCompatActivity {
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
         alertDialog.show();
+    }
+
+
+    private void deviceChangeDialog(String Msg, String loginID, String securityCode) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(LoginActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_devicechange, null);
+        dialogBuilder.setView(dialogView);
+        TextView tvError = dialogView.findViewById(R.id.tvError);
+        tvError.setText(Msg);
+        Button btnSend = (Button) dialogView.findViewById(R.id.btnSend);
+
+        EditText etLoginID = dialogView.findViewById(R.id.etLoginID);
+        etLoginID.setText(loginID);
+        EditText etSecurityCode = dialogView.findViewById(R.id.etSecurityCode);
+        etSecurityCode.setText(securityCode);
+        EditText etRemarks = dialogView.findViewById(R.id.etRemarks);
+        Spinner spReason = dialogView.findViewById(R.id.spReason);
+
+        ArrayList<String> yesnolist = new ArrayList<>();
+        yesnolist.add("Please Select");
+        yesnolist.add("My mobile phone was lost");
+        yesnolist.add("I have changed my mobile phone");
+        yesnolist.add("Others");
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                (LoginActivity.this, android.R.layout.simple_spinner_item,
+                        yesnolist); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spReason.setAdapter(spinnerArrayAdapter);
+
+        spReason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    reason = yesnolist.get(i);
+                    etRemarks.setText(reason);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (etLoginID.getText().toString().length()>0){
+                    if (etSecurityCode.getText().toString().length()>0 ){
+                        if (!reason.equals("")){
+                            if (etRemarks.getText().toString().length()>0){
+                                postDeviceID(etLoginID.getText().toString().trim(), reason,etRemarks.getText().toString().trim(), etSecurityCode.getText().toString().trim());
+
+                            }else {
+                                Toast.makeText(LoginActivity.this, "Please enter remarks", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }else {
+                            Toast.makeText(LoginActivity.this, "Please select reason", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Please enter security code", Toast.LENGTH_SHORT).show();
+                    }
+
+                }else {
+                    Toast.makeText(LoginActivity.this, "Please enter login ID", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        ImageView imgCancel = dialogView.findViewById(R.id.imgCancel);
+        imgCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deviceDialog.dismiss();
+            }
+        });
+
+
+        deviceDialog = dialogBuilder.create();
+        deviceDialog.setCancelable(true);
+        Window window = deviceDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        deviceDialog.show();
     }
 
     private void showAlert() {
@@ -485,10 +603,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkBersion() {
-        String surl = AppController.APIURL+"api/ApkVersionChecking";
-       llLoader.setVisibility(View.VISIBLE);
-       llMain.setVisibility(View.GONE);
-       llAgain.setVisibility(View.GONE);
+        String surl = AppController.APIURL + "api/ApkVersionChecking";
+        llLoader.setVisibility(View.VISIBLE);
+        llMain.setVisibility(View.GONE);
+        llAgain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
@@ -501,7 +619,7 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
-                            boolean responseStatus=job1.optBoolean("responseStatus");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
                             if (responseStatus) {
                                 JSONArray responseData = job1.optJSONArray("responseData");
                                 for (int i = 0; i < responseData.length(); i++) {
@@ -512,9 +630,6 @@ public class LoginActivity extends AppCompatActivity {
 
                                 }
                             }
-
-
-
 
 
                             // boolean _status = job1.getBoolean("status")
@@ -543,16 +658,16 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void upDateAlert(String updateVersion){
+    private void upDateAlert(String updateVersion) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(LoginActivity.this, R.style.CustomDialogNew);
-        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialog_update_alert, null);
         dialogBuilder.setView(dialogView);
-        Button btnOk=(Button)dialogView.findViewById(R.id.btnOk);
-        TextView tvUpdateVersion=(TextView)dialogView.findViewById(R.id.tvUpdateVersion);
-        tvUpdateVersion.setText("New Version "+updateVersion+" is available in Play Store");
-        TextView tvCurrentVersion=(TextView)dialogView.findViewById(R.id.tvCurrentVersion);
-        tvCurrentVersion.setText("Current App Version is "+version);
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
+        TextView tvUpdateVersion = (TextView) dialogView.findViewById(R.id.tvUpdateVersion);
+        tvUpdateVersion.setText("New Version " + updateVersion + " is available in Play Store");
+        TextView tvCurrentVersion = (TextView) dialogView.findViewById(R.id.tvCurrentVersion);
+        tvCurrentVersion.setText("Current App Version is " + version);
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -573,11 +688,10 @@ public class LoginActivity extends AppCompatActivity {
                 deleteAppData();
 
 
-
             }
         });
 
-        Button btnSkip=(Button)dialogView.findViewById(R.id.btnSkip);
+        Button btnSkip = (Button) dialogView.findViewById(R.id.btnSkip);
 
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -599,11 +713,110 @@ public class LoginActivity extends AppCompatActivity {
             // clearing app data
             String packageName = getApplicationContext().getPackageName();
             Runtime runtime = Runtime.getRuntime();
-            runtime.exec("pm clear "+packageName);
+            runtime.exec("pm clear " + packageName);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private String getAndroidID(Context context) {
+        return Settings.Secure.getString(
+                context.getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
+    }
+
+
+    private void postDeviceID(String Code, String Reason, String Remarks, String SecurityCode) {
+
+        final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeMobileIMEIChnageRequest")
+                .addMultipartParameter("Code", Code)
+                .addMultipartParameter("IMEI", android_id)
+                .addMultipartParameter("Reason", Reason)
+                .addMultipartParameter("Remarks", Remarks)
+                .addMultipartParameter("SecurityCode", SecurityCode)
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String responseText = job1.optString("responseText");
+
+
+                        boolean responseStatus = job1.optBoolean("responseStatus");
+                        if (responseStatus) {
+                            deviceDialog.dismiss();
+                            successAlert(responseText);
+
+
+
+                        } else {
+                            pd.dismiss();
+                            Toast.makeText(LoginActivity.this, responseText, Toast.LENGTH_LONG).show();
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(LoginActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private void successAlert(String showText) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(LoginActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_success, null);
+        dialogBuilder.setView(dialogView);
+        TextView tvInvalidDate = (TextView) dialogView.findViewById(R.id.tvSuccess);
+        tvInvalidDate.setText(showText);
+
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alerDialog1.dismiss();
+
+
+
+            }
+        });
+
+        alerDialog1 = dialogBuilder.create();
+        alerDialog1.setCancelable(true);
+        Window window = alerDialog1.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alerDialog1.show();
     }
 
 

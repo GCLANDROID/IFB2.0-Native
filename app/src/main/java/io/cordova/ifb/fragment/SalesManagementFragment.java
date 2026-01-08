@@ -114,7 +114,7 @@ public class SalesManagementFragment extends Fragment {
 
             if (!Time.equals("")) {
 
-                handleCheckoutTime(Time);
+                //handleCheckoutTime(Time);
             }
 
 

@@ -86,8 +86,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -135,7 +137,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     LinearLayout llStatus;
     TextView tvStatus;
     ImageView imgBack;
-    AlertDialog alerDialog1, alertDialog2;
+    AlertDialog alerDialog1, alertDialog2, noSalesDialog;
     String responseText = "";
     String showText;
     ImageView imgHome;
@@ -182,6 +184,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     SingleSpinnerSearch spOtherCounter;
     String counterid = "";
     String workStatusFlag = "0";
+    TextView tvCheckIN, tvCheckOut;
+    LinearLayout llChekcinout, llPunchOut;
+    int minCheckInTime;
+    int minCheckOutTime;
+    int currentTime;
+    String soldValue = "";
+    String yesNo="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +208,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
 
+        minCheckInTime = prefManager.getCheckInHr() * 60 + prefManager.getCheckInMin();
+        minCheckOutTime = prefManager.getCheckOutHr() * 60 + prefManager.getCheckOutMin();
+
+        Calendar now = Calendar.getInstance();
+        currentTime = now.get(Calendar.HOUR_OF_DAY) * 60
+                + now.get(Calendar.MINUTE);
+
+
         counterid = prefManager.getSalesPointID();
         connectionCheck = new NetworkConnectionCheck(AttendanceManage2Activity.this);
         mLocationRequest = new LocationRequest();
@@ -211,6 +228,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         llPunch = (LinearLayout) findViewById(R.id.llPunch);
         llStatus = (LinearLayout) findViewById(R.id.llStatus);
         lnCamera = (LinearLayout) findViewById(R.id.lnCamera);
+        llChekcinout = findViewById(R.id.llChekcinout);
+        llPunchOut = findViewById(R.id.llPunchOut);
         tvStatus = (TextView) findViewById(R.id.tvStatus);
 
         imgCamera = (ImageView) findViewById(R.id.imgCamera);
@@ -283,8 +302,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
         //workingStatusList.add("Own Mapped Counter");
         //workingStatusList.add("Other Counter");
+        workingStatusList.add("Please Select Working Status");
         workingStatusList.add("IFB Meet – Training");
         workingStatusList.add("Branch Office – Training");
+        workingStatusList.add("IFB Exhibitions");
 
 
         numberList.add("15");
@@ -315,6 +336,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         counterLong = Double.parseDouble(getIntent().getStringExtra("counterlong"));
         radius = getIntent().getIntExtra("radius", 0);
         attFlag = getIntent().getIntExtra("attFlag", 0);
+        tvCheckIN = findViewById(R.id.tvCheckIN);
+        tvCheckOut = findViewById(R.id.tvCheckOut);
+        updateManageLayoutStatusForCheckOut();
 
 
     }
@@ -628,7 +652,30 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     // attendencePunch();
                     if (!stringFile.equals("")) {
                         postAttenWithImage();
-                    }else {
+                    } else {
+                        Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+
+                    }
+                }
+
+
+            }
+        });
+
+        llPunchOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isMockSettingsON(AttendanceManage2Activity.this)) {
+                    Toast.makeText(AttendanceManage2Activity.this, "You are using mock location", Toast.LENGTH_LONG).show();
+
+                } else {
+                    // attendencePunch();
+                    if (!stringFile.equals("")) {
+                        //API with call to check open pop up or call post attendance
+                        //noSalesAlert();
+                        //postAttenWithImage();
+                        checkSalesEntry();
+                    } else {
                         Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
                     }
@@ -652,7 +699,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private void attendenceCheck() {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIURL + "api/SelfAttendanceToDay?LoginID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputcheck", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -672,44 +719,46 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             if (responseStatus) {
                                 //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
                                 JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    ReportType = obj.optString("ReportType");
-                                    Log.d("reporttype", ReportType);
-                                    Status = obj.optString("Status");
-                                    tvStatus.setText(Status);
 
+                                JSONObject obj = responseData.getJSONObject(0);
+                                String Date = obj.optString("Date");
+                                Status = obj.optString("Status");
+                                String Time = obj.optString("Time");
+                                String LogoutTime = obj.optString("LogoutTime");
+
+                                if (!Time.equals("")) {
+                                    tvCheckIN.setText(Time);
+                                    handleCheckoutTime(Time);
+                                    llChekcinout.setVisibility(View.VISIBLE);
+                                    llPunchOut.setVisibility(View.VISIBLE);
+                                    llPunch.setVisibility(View.GONE);
+                                } else {
+                                    llChekcinout.setVisibility(View.GONE);
+                                    llPunchOut.setVisibility(View.GONE);
+                                    llPunch.setVisibility(View.VISIBLE);
                                 }
+
+                                if (!LogoutTime.equals("")) {
+                                    tvCheckOut.setText(LogoutTime);
+                                }
+
 
                                 llLoader.setVisibility(View.GONE);
                                 llMain.setVisibility(View.VISIBLE);
-                                if (ReportType.equals("0")) {
-                                    llPunch.setVisibility(View.VISIBLE);
-                                    llStatus.setVisibility(View.GONE);
-                                    lnCamera.setVisibility(View.VISIBLE);
-                                } else {
-                                    if (prefManager.getUserId().equals("AEMP000480000001")) {
-                                        llPunch.setVisibility(View.VISIBLE);
-                                        llStatus.setVisibility(View.GONE);
-                                        lnCamera.setVisibility(View.VISIBLE);
-                                    } else {
-                                        llPunch.setVisibility(View.GONE);
-                                        llStatus.setVisibility(View.VISIBLE);
-                                        lnCamera.setVisibility(View.GONE);
-                                    }
 
-
-                                }
 
                             } else {
                                 llLoader.setVisibility(View.VISIBLE);
                                 llMain.setVisibility(View.GONE);
+                                llChekcinout.setVisibility(View.GONE);
+                                llPunchOut.setVisibility(View.GONE);
+                                llPunch.setVisibility(View.VISIBLE);
 
                                 //  Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
 
                             }
 
-                            setOtherCounter();
+                            //  setOtherCounter();
 
 
                         } catch (JSONException e) {
@@ -786,14 +835,19 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         spWorkingStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                workingStaus = workingStatusList.get(position);
-                workStatusFlag = String.valueOf(position);
+                if (position>0){
+                    workingStaus = workingStatusList.get(position);
+                    workStatusFlag = String.valueOf(position);
 
-                if (workingStaus.equals("IFB Meet – Training")) {
-                    workStatusFlag = "2";
-                } else if (workingStaus.equals("Branch Office – Training")) {
-                    workStatusFlag = "3";
+                    if (workingStaus.equals("IFB Meet – Training")) {
+                        workStatusFlag = "2";
+                    } else if (workingStaus.equals("Branch Office – Training")) {
+                        workStatusFlag = "3";
+                    } else if (workingStaus.equals("IFB Exhibitions")) {
+                        workStatusFlag = "4";
+                    }
                 }
+
 
 
             }
@@ -1487,6 +1541,318 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
         requestQueue.add(stringRequest);
 
+    }
+
+    private void handleCheckoutTime(String apiTime) {
+
+        try {
+            // Parse only TIME from API
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("h:mma", Locale.getDefault());
+            Date checkInDate = inputFormat.parse(apiTime);
+
+            // Get today's date
+            Calendar today = Calendar.getInstance();
+
+            // Create calendar with TODAY + API TIME
+            Calendar checkoutLimitCal = Calendar.getInstance();
+            checkoutLimitCal.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            checkoutLimitCal.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            checkoutLimitCal.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            // Set hour & minute from API time
+            Calendar apiTimeCal = Calendar.getInstance();
+            apiTimeCal.setTime(checkInDate);
+
+            checkoutLimitCal.set(Calendar.HOUR_OF_DAY, apiTimeCal.get(Calendar.HOUR_OF_DAY));
+            checkoutLimitCal.set(Calendar.MINUTE, apiTimeCal.get(Calendar.MINUTE));
+            checkoutLimitCal.set(Calendar.SECOND, 0);
+
+            // Add 9 hours 15 minutes
+            checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
+            checkoutLimitCal.add(Calendar.MINUTE, 00);
+
+            // Current time
+            Calendar now = Calendar.getInstance();
+
+            // Display format
+            SimpleDateFormat displayFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            String checkoutLimitTime =
+                    displayFormat.format(checkoutLimitCal.getTime());
+
+            if (now.before(checkoutLimitCal)) {
+                tvCheckOut.setText(checkoutLimitTime);
+                // ✅ Checkout allowed
+//                tvCheckOutTime.setText(
+//                        "You can check out until " + checkoutLimitTime +
+//                                " today. Post " + checkoutLimitTime +
+//                                ", the checkout option will be automatically disabled."
+//                );
+
+
+            } else {
+
+
+
+                // ❌ Checkout blocked
+
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateManageLayoutStatusForCheckOut() {
+
+
+        // Enable at 2:00 PM and after
+        if (currentTime >= minCheckOutTime) {
+            llPunchOut.setEnabled(true);
+            llPunchOut.setAlpha(1.0f);
+        } else {
+            llPunchOut.setEnabled(false);
+            llPunchOut.setAlpha(0.5f);
+
+        }
+    }
+
+
+    private void noSalesAlert() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialogcheckoutsales, null);
+        dialogBuilder.setView(dialogView);
+        Spinner spSold = (Spinner) dialogView.findViewById(R.id.spSold);
+        Spinner spNumber = (Spinner) dialogView.findViewById(R.id.spNumbers);
+        LinearLayout llSoldDetails = dialogView.findViewById(R.id.llsoldDetails);
+        ArrayList<String> yesnolist = new ArrayList<>();
+        yesnolist.add("Please Select");
+        yesnolist.add("Yes");
+        yesnolist.add("No");
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                (AttendanceManage2Activity.this, android.R.layout.simple_spinner_item,
+                        yesnolist); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spSold.setAdapter(spinnerArrayAdapter);
+
+
+        ArrayList<String> numberList = new ArrayList<>();
+        numberList.add("Please Select");
+        numberList.add("1");
+        numberList.add("2");
+        numberList.add("3");
+        numberList.add("4");
+        numberList.add("5");
+        numberList.add("6");
+        numberList.add("7");
+        numberList.add("8");
+        numberList.add("9");
+        numberList.add("10");
+
+        ArrayAdapter<String> spinnerNumberArrayAdapter = new ArrayAdapter<String>
+                (AttendanceManage2Activity.this, android.R.layout.simple_spinner_item,
+                        numberList); //selected item will look like a spinner set from XML
+        spinnerNumberArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spNumber.setAdapter(spinnerNumberArrayAdapter);
+
+        spSold.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    yesNo= yesnolist.get(i);
+                    if (i == 1) {
+                        llSoldDetails.setVisibility(View.VISIBLE);
+                        soldValue = "";
+                    } else {
+                        // set send value 0
+                        soldValue = "0";
+                        llSoldDetails.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        spNumber.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+
+                    // set send value 0
+                    soldValue = numberList.get(i);
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+        Button btnSubmit = (Button) dialogView.findViewById(R.id.btnSubmit);
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!yesNo.equals("")){
+                    if (!soldValue.equals("")){
+                        noSalesDialog.dismiss();
+                        postSalesEntry(soldValue);
+
+                    }else {
+                        Toast.makeText(AttendanceManage2Activity.this, "Please select how many product you sold today", Toast.LENGTH_SHORT).show();
+
+                    }
+
+                }else {
+                    Toast.makeText(AttendanceManage2Activity.this, "Please select have you sold any IFB product", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        noSalesDialog = dialogBuilder.create();
+        noSalesDialog.setCancelable(false);
+        Window window = noSalesDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        noSalesDialog.show();
+    }
+
+
+    private void checkSalesEntry() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/EmployeeCheckOutDailySales")
+                .addQueryParameter("Code", prefManager.getMasterId())
+                .addQueryParameter("SalesCount", "0")
+                .addQueryParameter("Operation", "1")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            JSONObject frstOBJ = responseData.getJSONObject(0);
+                            String ErrorCode = frstOBJ.getString("ErrorCode");
+                            String Msg = frstOBJ.getString("Msg");
+                            if (ErrorCode.equals("0")){
+                                noSalesAlert();
+                            }else {
+                                postAttenWithImage();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void postSalesEntry(String count) {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/EmployeeCheckOutDailySales")
+                .addQueryParameter("Code", prefManager.getMasterId())
+                .addQueryParameter("SalesCount", count)
+                .addQueryParameter("Operation", "2")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            JSONObject frstOBJ = responseData.getJSONObject(0);
+                            String ErrorCode = frstOBJ.getString("ErrorCode");
+                            String Msg = frstOBJ.getString("Msg");
+                            if (ErrorCode.equals("1")){
+
+                                Toast.makeText(AttendanceManage2Activity.this, Msg, Toast.LENGTH_LONG).show();
+                            }else {
+                                postAttenWithImage();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
 

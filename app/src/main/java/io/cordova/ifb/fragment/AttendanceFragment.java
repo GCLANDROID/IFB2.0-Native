@@ -120,10 +120,11 @@ public class AttendanceFragment extends Fragment {
     TextView tvStatus,tvMonthAttendance,tvCheckOutTime;
     ArrayList<CheckOutStatusModel>checkoutList=new ArrayList<>();
     TextView tvCheckCount;
-    LinearLayout llCheckOutCount,llCheckOutMessage;
+    LinearLayout llCheckOutCount,llCheckOutMessage,llChekcinout;
     int minCheckInTime;
     int minCheckOutTime;
     int currentTime;
+    TextView tvCheckIN,tvCheckOut;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,6 +140,9 @@ public class AttendanceFragment extends Fragment {
 
     private void initialize() {
         prefManager = new PrefManager(getContext());
+        tvCheckOut=view.findViewById(R.id.tvCheckOut);
+        tvCheckIN=view.findViewById(R.id.tvCheckIN);
+        llChekcinout=(LinearLayout)view.findViewById(R.id.llChekcinout);
 
          minCheckInTime  = prefManager.getCheckInHr() * 60 + prefManager.getCheckInMin();
          minCheckOutTime = prefManager.getCheckOutHr() * 60 + prefManager.getCheckOutMin();
@@ -241,7 +245,10 @@ public class AttendanceFragment extends Fragment {
             String LogoutTime = getArguments().getString("LogoutTime");
             if (Time.equals("")) {
                 llCheckOutMessage.setVisibility(View.GONE);
+                llChekcinout.setVisibility(View.GONE);
 
+            }else {
+                tvCheckIN.setText(Time);
             }
 
             handleCheckoutTime(Time);
@@ -972,7 +979,7 @@ public class AttendanceFragment extends Fragment {
                             String ReportType = obj.optString("ReportType");
                             if (ReportType.equals("1")) {
                                 if (prefManager.getUserTypeId().equals("IFBMM1000011") ||prefManager.getUserTypeId().equals("IFBUT1000136") ) {
-                                    llCheckOut.setVisibility(View.VISIBLE);
+                                    llCheckOut.setVisibility(View.GONE);
                                 }else {
                                     llCheckOut.setVisibility(View.GONE);
                                 }
@@ -1043,7 +1050,7 @@ public class AttendanceFragment extends Fragment {
 
                                 }
                                 if (checkoutList.size()>0){
-                                    llCheckOutCount.setVisibility(View.VISIBLE);
+                                    llCheckOutCount.setVisibility(View.GONE);
                                 }else {
                                     llCheckOutCount.setVisibility(View.GONE);
                                 }
@@ -1075,6 +1082,8 @@ public class AttendanceFragment extends Fragment {
 
 
 
+                            }else {
+                                llCheckOutCount.setVisibility(View.GONE);
                             }
 
 
@@ -1186,7 +1195,7 @@ public class AttendanceFragment extends Fragment {
 
             // Add 9 hours 15 minutes
             checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
-            checkoutLimitCal.add(Calendar.MINUTE, 15);
+            checkoutLimitCal.add(Calendar.MINUTE, 00);
 
             // Current time
             Calendar now = Calendar.getInstance();
@@ -1200,17 +1209,21 @@ public class AttendanceFragment extends Fragment {
 
             if (now.before(checkoutLimitCal)) {
                 // ✅ Checkout allowed
-                tvCheckOutTime.setText(
-                        "You can check out until " + checkoutLimitTime +
-                                " today. Post " + checkoutLimitTime +
-                                ", the checkout option will be automatically disabled."
-                );
+//                tvCheckOutTime.setText(
+//                        "You can check out until " + checkoutLimitTime +
+//                                " today. Post " + checkoutLimitTime +
+//                                ", the checkout option will be automatically disabled."
+//                );
+
+                tvCheckOut.setText(checkoutLimitTime);
+                llCheckOutMessage.setVisibility(View.GONE);
 
 
             } else {
+                llCheckOutMessage.setVisibility(View.VISIBLE);
                 // ❌ Checkout blocked
                 tvCheckOutTime.setText(
-                        "The stipulated checkout time has passed. Your checkout is now blocked."
+                        "The stipulated checkout time has passed."
                 );
                 llCheckOut.setEnabled(false);
                 llCheckOut.setAlpha(0.5f);

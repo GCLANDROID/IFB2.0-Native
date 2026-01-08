@@ -96,10 +96,11 @@
         android:visibility="visible">
 
         <fragment
+
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
 
             />
@@ -126,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:gravity="center"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,6 +144,105 @@
                     android:textAppearance="?android:textAppearanceMedium"
                     android:textColor="@color/color4"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:id="@+id/llChekcinout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/lldesign"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/background_color"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your stipulated shift duration is calculated as per the applicable working hours policy. Please ensure adherence to the defined shift timings in line with organisational guidelines"></TextView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/clockicon"
+                            app:tint="@color/black"></ImageView>
+                        <TextView
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:id="@+id/tvCheckIN"></TextView>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginLeft="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/android_text_color"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:text="Check In"></TextView>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:gravity="center">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/black"></View>
+                </LinearLayout>
+                <LinearLayout
+                    android:gravity="right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:src="@drawable/wallclock"></ImageView>
+                        <TextView
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:id="@+id/tvCheckOut"></TextView>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginLeft="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/android_text_color"
+                        android:layout_marginTop="5dp"
+                        android:textSize="14sp"
+                        android:text="Shift Over Time"></TextView>
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
@@ -191,29 +291,69 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="50dp"
                         android:gravity="center"
-                        android:visibility="visible">
+                        android:visibility="visible"
+                        android:orientation="horizontal">
 
                         <LinearLayout
                             android:layout_width="190dp"
                             android:layout_height="85dp"
-                            android:background="@drawable/lldesign3"
+                            android:background="@drawable/lldesign"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:backgroundTint="@color/green">
 
                             <ImageView
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
-                                android:src="@drawable/pointericon" />
+                                android:src="@drawable/pointericon"
+                                app:tint="@color/white" />
 
                             <TextView
+                                android:layout_marginLeft="10dp"
                                 android:id="@+id/tvMark"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
                                 android:gravity="center"
-                                android:text="Mark Your Attendance"
+                                android:text="Check In"
                                 android:textAppearance="?android:textAppearanceSmall"
-                                android:textColor="@android:color/darker_gray"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <LinearLayout
+
+                        android:id="@+id/llPunchOut"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="50dp"
+                        android:gravity="center"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="190dp"
+                            android:layout_height="85dp"
+                            android:background="@drawable/lldesign"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:backgroundTint="@color/primary_dark">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/pointericon"
+                                app:tint="@color/white" />
+
+                            <TextView
+                                android:layout_marginLeft="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:gravity="center"
+                                android:text="Check Out"
+                                android:textAppearance="?android:textAppearanceSmall"
+                                android:textColor="@android:color/white"
                                 android:textStyle="bold" />
                         </LinearLayout>
 

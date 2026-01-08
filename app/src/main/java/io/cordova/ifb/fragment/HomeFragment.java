@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +75,8 @@ public class HomeFragment extends Fragment  {
     ArrayList<String>absentCount=new ArrayList<>();
     String monthlYSold,monthlyPending;
     TextView tvCheckOutTime;
+    LinearLayout llCheckOutMessage,llChekcinout;
+    TextView tvCheckIN,tvCheckOut;
 
 
     @Override
@@ -89,6 +92,10 @@ public class HomeFragment extends Fragment  {
     private void initView(){
          prefManager=new PrefManager(getContext());
         tvCheckOutTime=view.findViewById(R.id.tvCheckOutTime);
+        llCheckOutMessage=view.findViewById(R.id.llCheckOutMessage);
+        llChekcinout=view.findViewById(R.id.llChekcinout);
+        tvCheckIN=view.findViewById(R.id.tvCheckIN);
+        tvCheckOut=view.findViewById(R.id.tvCheckOut);
 
 
         y = Calendar.getInstance().get(Calendar.YEAR);
@@ -249,6 +256,14 @@ public class HomeFragment extends Fragment  {
         if (getArguments() != null) {
 
             String Time = getArguments().getString("Time");
+
+            if (Time.equals("")) {
+                llCheckOutMessage.setVisibility(View.GONE);
+                llChekcinout.setVisibility(View.GONE);
+
+            }else {
+                tvCheckIN.setText(Time);
+            }
 
 
             handleCheckoutTime(Time);
@@ -512,7 +527,7 @@ public class HomeFragment extends Fragment  {
 
             // Add 9 hours 15 minutes
             checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
-            checkoutLimitCal.add(Calendar.MINUTE, 15);
+            checkoutLimitCal.add(Calendar.MINUTE, 00);
 
             // Current time
             Calendar now = Calendar.getInstance();
@@ -525,18 +540,19 @@ public class HomeFragment extends Fragment  {
                     displayFormat.format(checkoutLimitCal.getTime());
 
             if (now.before(checkoutLimitCal)) {
+                tvCheckOut.setText(checkoutLimitTime);
                 // ✅ Checkout allowed
-                tvCheckOutTime.setText(
-                        "Checkout is allowed until " + checkoutLimitTime +
-                                " today. Post " + checkoutLimitTime +
-                                ", the checkout option will be automatically disabled."
-                );
+                llCheckOutMessage.setVisibility(View.GONE);
+                llChekcinout.setVisibility(View.VISIBLE);
 
 
             } else {
+                llCheckOutMessage.setVisibility(View.VISIBLE);
+                llChekcinout.setVisibility(View.VISIBLE);
+
                 // ❌ Checkout blocked
                 tvCheckOutTime.setText(
-                        "The stipulated checkout time has passed. Your checkout is now blocked."
+                        "The stipulated checkout time has passed."
                 );
 
             }
