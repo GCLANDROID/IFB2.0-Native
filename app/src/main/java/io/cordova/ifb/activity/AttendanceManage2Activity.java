@@ -35,6 +35,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -100,6 +101,7 @@ import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.CameraActivity;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
+import io.cordova.ifb.utility.Util;
 
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 
@@ -137,7 +139,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     LinearLayout llStatus;
     TextView tvStatus;
     ImageView imgBack;
-    AlertDialog alerDialog1, alertDialog2, noSalesDialog;
+    AlertDialog alerDialog1, alertDialog2, noSalesDialog,reasonDialog;
     String responseText = "";
     String showText;
     ImageView imgHome;
@@ -191,6 +193,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     int currentTime;
     String soldValue = "";
     String yesNo="";
+    boolean genoFence=true;
+    boolean checkinStatus=true;
+    LinearLayout llRegularize;
+    Button btnRegularize,btnAbsent;
+    TextView tvText;
+    String LastworkingDt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +215,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
+        llRegularize=(LinearLayout)findViewById(R.id.llRegularize);
+        btnRegularize=(Button)findViewById(R.id.btnRegularize);
+        btnAbsent=(Button)findViewById(R.id.btnAbsent);
+        tvText=(TextView)findViewById(R.id.tvText);
 
         minCheckInTime = prefManager.getCheckInHr() * 60 + prefManager.getCheckInMin();
         minCheckOutTime = prefManager.getCheckOutHr() * 60 + prefManager.getCheckOutMin();
@@ -302,7 +314,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
         //workingStatusList.add("Own Mapped Counter");
         //workingStatusList.add("Other Counter");
-        workingStatusList.add("Please Select Working Status");
+        workingStatusList.add("Please Select");
         workingStatusList.add("IFB Meet – Training");
         workingStatusList.add("Branch Office – Training");
         workingStatusList.add("IFB Exhibitions");
@@ -649,13 +661,19 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     Toast.makeText(AttendanceManage2Activity.this, "You are using mock location", Toast.LENGTH_LONG).show();
 
                 } else {
-                    // attendencePunch();
-                    if (!stringFile.equals("")) {
-                        postAttenWithImage();
-                    } else {
-                        Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
+                    if (checkinStatus){
+                        if (!stringFile.equals("")) {
+                            postAttenWithImage();
+                        } else {
+                            Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
+
+                        }
+                    }else {
+                        Toast.makeText(AttendanceManage2Activity.this, "Previous day attendance must be regularized before today’s check‑in.", Toast.LENGTH_LONG).show();
                     }
+                    // attendencePunch();
+
                 }
 
 
@@ -691,6 +709,27 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 Intent intent = new Intent(AttendanceManage2Activity.this, NewDashboardActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+            }
+        });
+        btnRegularize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (genoFence){
+                    reasonAlert();
+                }else {
+                    Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        btnAbsent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (genoFence){
+                    postNormalize("2","I accept & continue");
+                }else {
+                    Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -757,6 +796,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                 //  Toast.makeText(getApplicationContext(), "No data found", Toast.LENGTH_LONG).show();
 
                             }
+
+                            checkGeoFence();
 
                             //  setOtherCounter();
 
@@ -1835,6 +1876,224 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
+
+
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void checkGeoFence() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/CSRLatLongDistanceGAP")
+                .addQueryParameter("LoginID", prefManager.getMasterId())
+                .addQueryParameter("Longitude", longt)
+                .addQueryParameter("Latitude", lat)
+                .addQueryParameter("SalesPointID", counterid)
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            JSONObject frstOBJ = responseData.getJSONObject(0);
+                            String ErrorCode = frstOBJ.getString("ErrorCode");
+                            String Msg = frstOBJ.getString("Msg");
+                            if (ErrorCode.equals("0")){
+                               // genoFence=false;
+                                genoFence=true;
+
+                            }else {
+                                genoFence=true;
+                            }
+                            checkRegularize();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void checkRegularize() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/get_LoginCheck")
+                .addQueryParameter("EmployeeID", prefManager.getUserId())
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            JSONObject frstOBJ = responseData.getJSONObject(0);
+                             LastworkingDt = frstOBJ.optString("LastworkingDt");
+                            String ReturnVal = frstOBJ.getString("ReturnVal");
+                            if (ReturnVal.equals("22")){
+                                checkinStatus=false;
+                                llRegularize.setVisibility(View.VISIBLE);
+                                btnRegularize.setVisibility(View.VISIBLE);
+                                btnAbsent.setVisibility(View.GONE);
+                                tvText.setText("Checkout has not been recorded within the stipulated shift duration on "+ Util.changeAnyDateFormat(LastworkingDt,"yyyy-MM-dd","dd MMM,yyyy")+". Please ensure timely completion of check-out as per attendance guidelines.");
+                            }else if(ReturnVal.equals("23")){
+                                checkinStatus=false;
+                                llRegularize.setVisibility(View.VISIBLE);
+                                btnRegularize.setVisibility(View.GONE);
+                                btnAbsent.setVisibility(View.VISIBLE);
+                                tvText.setText("You have repeatedly not marked check out and exceeded missed check-out regularisation limits.");
+                            }else if (ReturnVal.equals("0")){
+                                checkinStatus=true;
+                                llRegularize.setVisibility(View.GONE);
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void reasonAlert() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialogforgortcheckout, null);
+        dialogBuilder.setView(dialogView);
+        EditText etReason=dialogView.findViewById(R.id.etReason);
+        Button btnSubmit=dialogView.findViewById(R.id.btnSubmit);
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (etReason.getText().toString().length()>1){
+                    reasonDialog.dismiss();
+                    postNormalize("1",etReason.getText().toString());
+                }else {
+                    Toast.makeText(AttendanceManage2Activity.this, "Please enter reason", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        reasonDialog = dialogBuilder.create();
+        reasonDialog.setCancelable(false);
+        Window window = reasonDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        reasonDialog.show();
+    }
+
+
+    private void postNormalize(String opereation,String remaks) {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/post_RegulariseAttendance")
+                .addQueryParameter("LoginID", prefManager.getUserId())
+                .addQueryParameter("LoginDate", LastworkingDt)
+                .addQueryParameter("Remarks", remaks)
+                .addQueryParameter("Operation", opereation)
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        checkRegularize();
 
 
 

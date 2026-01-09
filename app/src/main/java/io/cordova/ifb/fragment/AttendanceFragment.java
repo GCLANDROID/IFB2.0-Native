@@ -1223,7 +1223,7 @@ public class AttendanceFragment extends Fragment {
                 llCheckOutMessage.setVisibility(View.VISIBLE);
                 // ❌ Checkout blocked
                 tvCheckOutTime.setText(
-                        "The stipulated checkout time has passed."
+                        "Late check-out does not constitute approved overtime or additional compensation"
                 );
                 llCheckOut.setEnabled(false);
                 llCheckOut.setAlpha(0.5f);

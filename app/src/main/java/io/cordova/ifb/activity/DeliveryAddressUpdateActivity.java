@@ -647,7 +647,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(b){
-                    AddressUpdateFlag="Y";
+                    AddressUpdateFlag="U";
                 }
             }
         });
@@ -656,7 +656,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(b){
-                    AddressUpdateFlag="Y";
+                    AddressUpdateFlag="U";
                 }
             }
         });

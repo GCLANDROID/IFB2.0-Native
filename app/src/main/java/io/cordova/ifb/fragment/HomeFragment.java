@@ -552,7 +552,7 @@ public class HomeFragment extends Fragment  {
 
                 // ❌ Checkout blocked
                 tvCheckOutTime.setText(
-                        "The stipulated checkout time has passed."
+                        "Late check-out does not constitute approved overtime or additional compensation"
                 );
 
             }

@@ -147,7 +147,52 @@
             </LinearLayout>
 
         </LinearLayout>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/llRegularize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/lldesign"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/orange_two"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvText"
+                android:textSize="12sp"
+                android:layout_marginBottom="10dp"
+                 android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="right">
+                <Button
+                    android:id="@+id/btnRegularize"
+                    android:textColor="@color/white"
+                    android:text="Forgot to Mark Checkout"
+                    android:textSize="12sp"
+                    android:background="@color/orange"
+                    android:layout_width="140dp"
+                    android:padding="5dp"
+                    android:layout_height="40dp"></Button>
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/btnAbsent"
+                    android:textColor="@color/white"
+                    android:text="Accept &amp; Continue"
+                    android:textSize="12sp"
+                    android:background="@color/orange"
+                    android:layout_width="140dp"
+                    android:padding="5dp"
+                    android:layout_height="40dp"></Button>
+            </LinearLayout>
 
+
+        </LinearLayout>
         <LinearLayout
 
             android:id="@+id/llChekcinout"
@@ -295,11 +340,13 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
+
                             android:layout_width="190dp"
-                            android:layout_height="85dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/lldesign"
                             android:gravity="center"
-                            android:orientation="vertical"
+                            android:orientation="horizontal"
+                            android:padding="10dp"
                             android:backgroundTint="@color/green">
 
                             <ImageView
@@ -309,11 +356,10 @@
                                 app:tint="@color/white" />
 
                             <TextView
-                                android:layout_marginLeft="10dp"
+                                android:layout_marginLeft="5dp"
                                 android:id="@+id/tvMark"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
                                 android:gravity="center"
                                 android:text="Check In"
                                 android:textAppearance="?android:textAppearanceSmall"
@@ -332,8 +378,9 @@
                         android:visibility="gone">
 
                         <LinearLayout
+                            android:padding="8dp"
                             android:layout_width="190dp"
-                            android:layout_height="85dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/lldesign"
                             android:gravity="center"
                             android:orientation="horizontal"
