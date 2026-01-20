@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.activity.PlanogramActivity;
+import io.cordova.ifb.activity.PlanogramScanReportActivity;
 import io.cordova.ifb.module.PlanogramHygeneModel;
 import io.cordova.ifb.module.ScannedPlanogramBarcodeModel;
 
@@ -41,9 +42,9 @@ public class PlanopgrameHygeneAdapter extends RecyclerView.Adapter<PlanopgrameHy
 
 
                 if (!itemList.get(i).isExpanded()){
-                    ((PlanogramActivity)context).updateStatus(i,true);
+                    ((PlanogramScanReportActivity)context).updateStatus(i,true);
                 }else {
-                    ((PlanogramActivity)context).updateStatus(i,false);
+                    ((PlanogramScanReportActivity)context).updateStatus(i,false);
                 }
             }
         });

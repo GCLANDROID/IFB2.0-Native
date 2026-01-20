@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -93,6 +94,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
@@ -139,7 +141,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     LinearLayout llStatus;
     TextView tvStatus;
     ImageView imgBack;
-    AlertDialog alerDialog1, alertDialog2, noSalesDialog,reasonDialog;
+    AlertDialog alerDialog1, alertDialog2, noSalesDialog, reasonDialog;
     String responseText = "";
     String showText;
     ImageView imgHome;
@@ -192,12 +194,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     int minCheckOutTime;
     int currentTime;
     String soldValue = "";
-    String yesNo="";
-    boolean genoFence=true;
-    boolean checkinStatus=true;
-    LinearLayout llRegularize;
-    Button btnRegularize,btnAbsent;
-    TextView tvText;
+    String yesNo = "";
+    boolean genoFence = true;
+    boolean checkinStatus = true;
+    LinearLayout llRegularize, llBreak;
+    Button btnRegularize, btnAbsent;
+    TextView tvText, tvBreakText;
     String LastworkingDt;
 
     @Override
@@ -215,10 +217,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
-        llRegularize=(LinearLayout)findViewById(R.id.llRegularize);
-        btnRegularize=(Button)findViewById(R.id.btnRegularize);
-        btnAbsent=(Button)findViewById(R.id.btnAbsent);
-        tvText=(TextView)findViewById(R.id.tvText);
+        llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
+        llBreak = findViewById(R.id.llBreak);
+        btnRegularize = (Button) findViewById(R.id.btnRegularize);
+        btnAbsent = (Button) findViewById(R.id.btnAbsent);
+        tvText = (TextView) findViewById(R.id.tvText);
+        tvBreakText = (TextView) findViewById(R.id.tvBreakText);
 
         minCheckInTime = prefManager.getCheckInHr() * 60 + prefManager.getCheckInMin();
         minCheckOutTime = prefManager.getCheckOutHr() * 60 + prefManager.getCheckOutMin();
@@ -325,24 +329,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         deviceName = android.os.Build.MODEL.replaceAll("\\s+", "");
         Log.d("deviceName", deviceName);
 
-        android_id = Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-        if (android_id.equals("")) {
-            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            androidID = telephonyManager.getDeviceId();
-        } else {
-            androidID = android_id;
-        }
+        androidID = getAndroidID(AttendanceManage2Activity.this);
         refreshedToken = androidID;
         counterLat = Double.parseDouble(getIntent().getStringExtra("counterlat"));
         counterLong = Double.parseDouble(getIntent().getStringExtra("counterlong"));
@@ -662,14 +649,16 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                 } else {
 
-                    if (checkinStatus){
+
+                    if (checkinStatus) {
                         if (!stringFile.equals("")) {
+                            llPunch.setEnabled(false);
                             postAttenWithImage();
                         } else {
                             Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
                         }
-                    }else {
+                    } else {
                         Toast.makeText(AttendanceManage2Activity.this, "Previous day attendance must be regularized before today’s check‑in.", Toast.LENGTH_LONG).show();
                     }
                     // attendencePunch();
@@ -714,9 +703,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         btnRegularize.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (genoFence){
+                if (genoFence) {
                     reasonAlert();
-                }else {
+                } else {
                     Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
                 }
             }
@@ -725,11 +714,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         btnAbsent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (genoFence){
-                    postNormalize("2","I accept & continue");
-                }else {
+                if (genoFence) {
+                    postNormalize("2", "I accept & continue");
+                } else {
                     Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        llBreak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postBreakTime();
             }
         });
     }
@@ -771,10 +767,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                     llChekcinout.setVisibility(View.VISIBLE);
                                     llPunchOut.setVisibility(View.VISIBLE);
                                     llPunch.setVisibility(View.GONE);
+                                    llBreak.setVisibility(View.GONE);
+                                    checkBreakTime();
                                 } else {
                                     llChekcinout.setVisibility(View.GONE);
                                     llPunchOut.setVisibility(View.GONE);
                                     llPunch.setVisibility(View.VISIBLE);
+                                    llBreak.setVisibility(View.GONE);
                                 }
 
                                 if (!LogoutTime.equals("")) {
@@ -876,7 +875,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         spWorkingStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position>0){
+                if (position > 0) {
                     workingStaus = workingStatusList.get(position);
                     workStatusFlag = String.valueOf(position);
 
@@ -888,7 +887,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         workStatusFlag = "4";
                     }
                 }
-
 
 
             }
@@ -939,6 +937,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
 
                 if (!stringFile.equals("")) {
+                    btnOk.setEnabled(false);
 
                     postAttenWithImage();
                 } else {
@@ -1473,6 +1472,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     @Override
                     public void onResponse(JSONObject response) {
 
+                        llPunch.setEnabled(true);
+
 
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
@@ -1502,6 +1503,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     @Override
                     public void onError(ANError error) {
                         pd.dismiss();
+                        llPunch.setEnabled(true);
                         Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -1622,9 +1624,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
             String checkoutLimitTime =
                     displayFormat.format(checkoutLimitCal.getTime());
-
+            tvCheckOut.setText(checkoutLimitTime);
             if (now.before(checkoutLimitCal)) {
-                tvCheckOut.setText(checkoutLimitTime);
+
                 // ✅ Checkout allowed
 //                tvCheckOutTime.setText(
 //                        "You can check out until " + checkoutLimitTime +
@@ -1634,7 +1636,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
 
             } else {
-
 
 
                 // ❌ Checkout blocked
@@ -1705,7 +1706,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i > 0) {
-                    yesNo= yesnolist.get(i);
+                    yesNo = yesnolist.get(i);
                     if (i == 1) {
                         llSoldDetails.setVisibility(View.VISIBLE);
                         soldValue = "";
@@ -1746,17 +1747,17 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!yesNo.equals("")){
-                    if (!soldValue.equals("")){
+                if (!yesNo.equals("")) {
+                    if (!soldValue.equals("")) {
                         noSalesDialog.dismiss();
                         postSalesEntry(soldValue);
 
-                    }else {
+                    } else {
                         Toast.makeText(AttendanceManage2Activity.this, "Please select how many product you sold today", Toast.LENGTH_SHORT).show();
 
                     }
 
-                }else {
+                } else {
                     Toast.makeText(AttendanceManage2Activity.this, "Please select have you sold any IFB product", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -1805,17 +1806,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             JSONObject frstOBJ = responseData.getJSONObject(0);
                             String ErrorCode = frstOBJ.getString("ErrorCode");
                             String Msg = frstOBJ.getString("Msg");
-                            if (ErrorCode.equals("0")){
+                            if (ErrorCode.equals("0")) {
                                 noSalesAlert();
-                            }else {
+                            } else {
                                 postAttenWithImage();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-
-
 
 
                         // boolean _status = job1.getBoolean("status");
@@ -1867,18 +1865,15 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             JSONObject frstOBJ = responseData.getJSONObject(0);
                             String ErrorCode = frstOBJ.getString("ErrorCode");
                             String Msg = frstOBJ.getString("Msg");
-                            if (ErrorCode.equals("1")){
+                            if (ErrorCode.equals("1")) {
 
                                 Toast.makeText(AttendanceManage2Activity.this, Msg, Toast.LENGTH_LONG).show();
-                            }else {
+                            } else {
                                 postAttenWithImage();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-
-
 
 
                         // boolean _status = job1.getBoolean("status");
@@ -1931,20 +1926,17 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             JSONObject frstOBJ = responseData.getJSONObject(0);
                             String ErrorCode = frstOBJ.getString("ErrorCode");
                             String Msg = frstOBJ.getString("Msg");
-                            if (ErrorCode.equals("0")){
-                               // genoFence=false;
-                                genoFence=true;
+                            if (ErrorCode.equals("0")) {
+                                genoFence = false;
 
-                            }else {
-                                genoFence=true;
+
+                            } else {
+                                genoFence = true;
                             }
                             checkRegularize();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-
-
 
 
                         // boolean _status = job1.getBoolean("status");
@@ -1992,22 +1984,22 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             JSONObject job1 = response;
                             JSONArray responseData = job1.optJSONArray("responseData");
                             JSONObject frstOBJ = responseData.getJSONObject(0);
-                             LastworkingDt = frstOBJ.optString("LastworkingDt");
+                            LastworkingDt = frstOBJ.optString("LastworkingDt");
                             String ReturnVal = frstOBJ.getString("ReturnVal");
-                            if (ReturnVal.equals("22")){
-                                checkinStatus=false;
+                            if (ReturnVal.equals("22")) {
+                                checkinStatus = false;
                                 llRegularize.setVisibility(View.VISIBLE);
                                 btnRegularize.setVisibility(View.VISIBLE);
                                 btnAbsent.setVisibility(View.GONE);
-                                tvText.setText("Checkout has not been recorded within the stipulated shift duration on "+ Util.changeAnyDateFormat(LastworkingDt,"yyyy-MM-dd","dd MMM,yyyy")+". Please ensure timely completion of check-out as per attendance guidelines.");
-                            }else if(ReturnVal.equals("23")){
-                                checkinStatus=false;
+                                tvText.setText("Checkout has not been recorded within the stipulated shift duration on " + Util.changeAnyDateFormat(LastworkingDt, "yyyy-MM-dd", "dd MMM,yyyy") + ". Please ensure timely completion of check-out as per attendance guidelines.");
+                            } else if (ReturnVal.equals("23")) {
+                                checkinStatus = false;
                                 llRegularize.setVisibility(View.VISIBLE);
                                 btnRegularize.setVisibility(View.GONE);
                                 btnAbsent.setVisibility(View.VISIBLE);
                                 tvText.setText("You have repeatedly not marked check out and exceeded missed check-out regularisation limits.");
-                            }else if (ReturnVal.equals("0")){
-                                checkinStatus=true;
+                            } else if (ReturnVal.equals("0")) {
+                                checkinStatus = true;
                                 llRegularize.setVisibility(View.GONE);
                             }
 
@@ -2015,9 +2007,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-
-
 
 
                         // boolean _status = job1.getBoolean("status");
@@ -2041,15 +2030,15 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = inflater.inflate(R.layout.dialogforgortcheckout, null);
         dialogBuilder.setView(dialogView);
-        EditText etReason=dialogView.findViewById(R.id.etReason);
-        Button btnSubmit=dialogView.findViewById(R.id.btnSubmit);
+        EditText etReason = dialogView.findViewById(R.id.etReason);
+        Button btnSubmit = dialogView.findViewById(R.id.btnSubmit);
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (etReason.getText().toString().length()>1){
+                if (etReason.getText().toString().length() > 1) {
                     reasonDialog.dismiss();
-                    postNormalize("1",etReason.getText().toString());
-                }else {
+                    postNormalize("1", etReason.getText().toString());
+                } else {
                     Toast.makeText(AttendanceManage2Activity.this, "Please enter reason", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -2065,7 +2054,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     }
 
 
-    private void postNormalize(String opereation,String remaks) {
+    private void postNormalize(String opereation, String remaks) {
 
         final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
         pd.setMessage("Loading..");
@@ -2093,10 +2082,156 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     @Override
                     public void onResponse(JSONObject response) {
                         pd.dismiss();
+                        JSONObject job1 = response;
+                        boolean responseStatus = job1.optBoolean("responseStatus");
+                        if (responseStatus) {
+                            Toast.makeText(AttendanceManage2Activity.this, "Regularization request submitted successfully", Toast.LENGTH_SHORT).show();
+                        }
                         checkRegularize();
 
 
+                        // boolean _status = job1.getBoolean("status");
 
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    private String getAndroidID(Context context) {
+        String androidId = Settings.Secure.getString(
+                context.getContentResolver(),
+                Settings.Secure.ANDROID_ID
+        );
+
+        if (androidId == null || androidId.equals("0")) {
+            return getUniqueId(context);
+        }
+        return androidId;
+    }
+
+    public static String getUniqueId(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("device_prefs", Context.MODE_PRIVATE);
+        String uuid = prefs.getString("device_uuid", null);
+
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+            prefs.edit().putString("device_uuid", uuid).apply();
+        }
+        return uuid;
+    }
+
+
+    private void checkBreakTime() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/EmployeeBreakInOut")
+                .addQueryParameter("EmployeeID", prefManager.getUserId())
+                .addQueryParameter("Latitude", lat)
+                .addQueryParameter("Longitude", longt)
+                .addQueryParameter("Operation", "2")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            JSONObject frstOBJ = responseData.getJSONObject(0);
+
+                            String ReturnVal = frstOBJ.getString("returnval");
+                            if (ReturnVal.equals("1")) {
+                                tvBreakText.setText("Start Break");
+                                llPunchOut.setVisibility(View.VISIBLE);
+
+                            } else {
+                                tvBreakText.setText("End Break");
+                                llPunchOut.setVisibility(View.GONE);
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void postBreakTime() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIURL + "api/EmployeeBreakInOut")
+                .addQueryParameter("EmployeeID", prefManager.getUserId())
+                .addQueryParameter("Latitude", lat)
+                .addQueryParameter("Longitude", longt)
+                .addQueryParameter("Operation", "1")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                checkBreakTime();
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
 
                         // boolean _status = job1.getBoolean("status");

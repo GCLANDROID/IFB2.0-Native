@@ -373,12 +373,13 @@
                         android:id="@+id/llPunchOut"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="50dp"
+
                         android:gravity="center"
-                        android:visibility="gone">
+                        android:visibility="gone"
+                        >
 
                         <LinearLayout
-                            android:padding="8dp"
+                            android:padding="12dp"
                             android:layout_width="190dp"
                             android:layout_height="wrap_content"
                             android:background="@drawable/lldesign"
@@ -393,10 +394,10 @@
                                 app:tint="@color/white" />
 
                             <TextView
+                                android:layout_gravity="center"
                                 android:layout_marginLeft="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
                                 android:gravity="center"
                                 android:text="Check Out"
                                 android:textAppearance="?android:textAppearanceSmall"
@@ -407,6 +408,51 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/llBreak"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:visibility="gone"
+                        >
+
+                        <LinearLayout
+                            android:padding="12dp"
+                            android:layout_width="190dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/lldesign"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:backgroundTint="@color/orange_one">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:src="@drawable/lunchbreak"
+                                app:tint="@color/white" />
+
+                            <TextView
+                                android:id="@+id/tvBreakText"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="Break Start"
+                                android:textAppearance="?android:textAppearanceSmall"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+
+
+                    <LinearLayout
+                        android:visibility="gone"
                         android:id="@+id/llReport"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

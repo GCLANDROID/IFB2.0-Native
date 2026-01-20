@@ -52,13 +52,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Stack;
 
 import io.cordova.ifb.AndroidXCamera.AndroidXCameraActivity;
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.PlanopgrameHygeneAdapter;
+import io.cordova.ifb.adapter.ProductDisplayAdapter;
 import io.cordova.ifb.adapter.ScannedBarcodeAdapter;
 import io.cordova.ifb.databinding.ActivityPlanogramBinding;
 import io.cordova.ifb.module.PlanogramHygeneModel;
+import io.cordova.ifb.module.ProductDisplayModel;
 import io.cordova.ifb.module.ReportModule;
 import io.cordova.ifb.module.ScannedPlanogramBarcodeModel;
 import io.cordova.ifb.utility.AppController;
@@ -68,6 +71,7 @@ import io.cordova.ifb.utility.Util;
 public class PlanogramActivity extends AppCompatActivity {
     ActivityPlanogramBinding binding;
     private static final int SCANNER_REQUEST = 801;
+    private static final int SCANNER_REQUEST_DISPLAY = 803;
     ArrayList<ScannedPlanogramBarcodeModel>itemList=new ArrayList<>();
     String nosaledate;
     ArrayList<PlanogramHygeneModel>reportitemList=new ArrayList<>();
@@ -80,6 +84,8 @@ public class PlanogramActivity extends AppCompatActivity {
     String financialYear;
     PrefManager prefManager;
     int count=0;
+    ArrayList<ProductDisplayModel>productDisplayitemList=new ArrayList<>();
+    String productCode="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +113,7 @@ public class PlanogramActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 binding.llReport.setVisibility(View.GONE);
-                binding.llManage.setVisibility(View.VISIBLE);
+                binding.llManage.setVisibility(View.GONE);
 
                 Date c = Calendar.getInstance().getTime();
                 System.out.println("Current time => " + c);
@@ -118,7 +124,7 @@ public class PlanogramActivity extends AppCompatActivity {
             }
         });
 
-        binding.llScan.setOnClickListener(new View.OnClickListener() {
+        binding.llOtherScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /*Intent intent = new Intent(PlanogramActivity.this, ODUScannerActivity.class);
@@ -131,9 +137,24 @@ public class PlanogramActivity extends AppCompatActivity {
             }
         });
 
+        binding.llOtherScanReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PlanogramActivity.this,PlanogramScanReportActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+            }
+        });
+
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(PlanogramActivity.this, LinearLayoutManager.VERTICAL, false);
         binding.rvItem.setLayoutManager(layoutManager);
+
+
+        LinearLayoutManager layoutManager1
+                = new LinearLayoutManager(PlanogramActivity.this, LinearLayoutManager.VERTICAL, false);
+        binding.rvProduct.setLayoutManager(layoutManager1);
 
         binding.llSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,6 +326,8 @@ public class PlanogramActivity extends AppCompatActivity {
             }
         });
 
+        getDisplayProduct();
+
     }
 
 
@@ -430,6 +453,36 @@ public class PlanogramActivity extends AppCompatActivity {
 
 
 
+        }else if ((requestCode == SCANNER_REQUEST_DISPLAY)){
+            if (data != null) {
+                String resultData = data.getStringExtra("code");
+                //Toast.makeText(this, "Result: " + resultData, Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Scan Result");
+                builder.setMessage(resultData);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        //postBarcode(resultData);
+                        if (resultData.length() >= 6 && productCode.length() >= 6) {
+
+                            String scanFirst6 = resultData.substring(0, 6);
+                            String productLast6 = productCode.substring(productCode.length() - 6);
+
+                            if (scanFirst6.equals(productLast6)) {
+                                postDisplayProduct("1",productCode);
+                            } else {
+                                Toast.makeText(PlanogramActivity.this, "Incorrect product scanned", Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Toast.makeText(PlanogramActivity.this, "Invalid code length", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }).show();
+            }
         }
     }
 
@@ -639,5 +692,148 @@ public class PlanogramActivity extends AppCompatActivity {
             }).show();
         }
     });
+
+
+
+    private void getDisplayProduct() {
+
+        final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.post(AppController.APIURL + "api/post_IFBDisplayActual")
+                .addQueryParameter("Code", prefManager.getMasterId())
+                .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
+                .addQueryParameter("ModelCode", "")
+                .addQueryParameter("updFlag", "")
+                .addQueryParameter("Operation", "2")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        productDisplayitemList.clear();
+                        try {
+                            JSONObject job1 = response;
+                            JSONArray responseData = job1.optJSONArray("responseData");
+                            for (int i=0;i<responseData.length();i++){
+                                JSONObject object=responseData.optJSONObject(i);
+                                String ModelCode=object.optString("ModelCode");
+                                String ModelName=object.optString("ModelName");
+                                int IsScan=object.optInt("IsScan");
+                                int Display_Actual=object.optInt("Display_Actual");
+                                ProductDisplayModel model=new ProductDisplayModel();
+                                model.setModelName(ModelName);
+                                model.setModelCode(ModelCode);
+                                model.setIsScan(IsScan);
+                                model.setDisplay_Actual(Display_Actual);
+                                productDisplayitemList.add(model);
+                            }
+
+                            ProductDisplayAdapter adapter=new ProductDisplayAdapter(productDisplayitemList,PlanogramActivity.this);
+                            binding.rvProduct.setAdapter(adapter);
+
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(PlanogramActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    public void scanning(int pos){
+        Intent intent = new Intent(PlanogramActivity.this,BarcodeScannerActivity.class);
+        startActivityForResult(intent, SCANNER_REQUEST_DISPLAY);
+        productCode=productDisplayitemList.get(pos).getModelCode();
+
+    }
+
+
+    public void postDisplayProduct(String updateFlag,String modelCode) {
+
+        final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.post(AppController.APIURL + "api/post_IFBDisplayActual")
+                .addQueryParameter("Code", prefManager.getMasterId())
+                .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
+                .addQueryParameter("ModelCode", modelCode)
+                .addQueryParameter("updFlag", updateFlag)
+                .addQueryParameter("Operation", "1")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            productCode="";
+                            boolean responseStatus=job1.optBoolean("responseStatus");
+                            if (responseStatus){
+                                getDisplayProduct();
+                            }else {
+                                Toast.makeText(PlanogramActivity.this,job1.optString("responseText"),Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        Toast.makeText(PlanogramActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
 
 }

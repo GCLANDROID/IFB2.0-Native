@@ -538,9 +538,9 @@ public class HomeFragment extends Fragment  {
 
             String checkoutLimitTime =
                     displayFormat.format(checkoutLimitCal.getTime());
-
+            tvCheckOut.setText(checkoutLimitTime);
             if (now.before(checkoutLimitCal)) {
-                tvCheckOut.setText(checkoutLimitTime);
+
                 // ✅ Checkout allowed
                 llCheckOutMessage.setVisibility(View.GONE);
                 llChekcinout.setVisibility(View.VISIBLE);

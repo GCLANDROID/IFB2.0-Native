@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -63,6 +64,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 import io.cordova.ifb.R;
@@ -141,9 +143,9 @@ public class LoginActivity extends AppCompatActivity {
 
         refreshedToken = "1222";
 
-
-        android_id = getAndroidID(LoginActivity.this);
-        if (android_id.equals("")) {
+        android_id= "4d8a1830bbec98bf";
+       /* android_id = getAndroidID(LoginActivity.this);
+        if (android_id.equals("0")) {
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -158,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
             android_id = telephonyManager.getDeviceId();
         }else {
             android_id = getAndroidID(LoginActivity.this);
-        }
+        }*/
 
         tvShow = (TextView) findViewById(R.id.tvShow);
         tvHide = (TextView) findViewById(R.id.tvHide);
@@ -722,10 +724,15 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private String getAndroidID(Context context) {
-        return Settings.Secure.getString(
+        String androidId = Settings.Secure.getString(
                 context.getContentResolver(),
                 Settings.Secure.ANDROID_ID
         );
+
+        if (androidId == null || androidId.equals("0")) {
+            return getUniqueId(context);
+        }
+        return androidId;
     }
 
 
@@ -817,6 +824,18 @@ public class LoginActivity extends AppCompatActivity {
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
         alerDialog1.show();
+    }
+
+
+    public static String getUniqueId(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("device_prefs", Context.MODE_PRIVATE);
+        String uuid = prefs.getString("device_uuid", null);
+
+        if (uuid == null) {
+            uuid = UUID.randomUUID().toString();
+            prefs.edit().putString("device_uuid", uuid).apply();
+        }
+        return uuid;
     }
 
 

@@ -126,6 +126,7 @@ public class AttendanceFragment extends Fragment {
     int currentTime;
     TextView tvCheckIN,tvCheckOut;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -324,7 +325,13 @@ public class AttendanceFragment extends Fragment {
                         getCounetrCoordinates();
 
                     } else {
-                        salecheckalert();
+                       // salecheckalert();
+                        if (prefManager.getMasterId().equals("IFBAPPL00001")){
+                            getCounetrCoordinates();
+                        }else {
+                            salecheckalert();
+                        }
+
                     }
                 } else {
 
@@ -1206,7 +1213,7 @@ public class AttendanceFragment extends Fragment {
 
             String checkoutLimitTime =
                     displayFormat.format(checkoutLimitCal.getTime());
-
+            tvCheckOut.setText(checkoutLimitTime);
             if (now.before(checkoutLimitCal)) {
                 // ✅ Checkout allowed
 //                tvCheckOutTime.setText(
@@ -1215,7 +1222,7 @@ public class AttendanceFragment extends Fragment {
 //                                ", the checkout option will be automatically disabled."
 //                );
 
-                tvCheckOut.setText(checkoutLimitTime);
+
                 llCheckOutMessage.setVisibility(View.GONE);
 
 

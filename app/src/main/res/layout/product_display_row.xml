@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp"
+    android:layout_marginBottom="10dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/tvProductName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:text="DW NEPTUNE VX"></TextView>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <LinearLayout
+                android:visibility="visible"
+                android:id="@+id/llScanning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp">
+                <TextView
+                    android:id="@+id/tvYes"
+                    android:layout_width="80dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/lldesign7"
+                    android:gravity="center"
+                    android:text="Yes"
+                    android:backgroundTint="@color/green"
+                    android:textColor="@color/white"></TextView>
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/tvNo"
+                    android:layout_width="80dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/lldesign7"
+                    android:gravity="center"
+                    android:text="No"
+                    android:backgroundTint="@color/red"
+                    android:textColor="@color/white"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/llScanned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp">
+                <TextView
+                    android:id="@+id/tvScanned"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/lldesign7"
+                    android:gravity="center"
+                    android:text="Yes Available"
+                    android:backgroundTint="@color/primary_dark"
+                    android:textColor="@color/white"></TextView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        android:background="@color/red"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"></View>
+
+
+</LinearLayout>

@@ -244,6 +244,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_marginTop="10dp"
+                    android:background="@color/list_header"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:text="Sales Message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"></TextView>
+
+                    <TextView
+                        android:text="Dear Team, Kindly ensure that sales are punched on the same day of sale. Any delay in punching might impact incentive eligibility. Happy Selling!"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"></TextView>
+
+
+
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="10dp"
                     android:background="#FBF4C1"
                     android:orientation="vertical"
                     android:padding="10dp">
