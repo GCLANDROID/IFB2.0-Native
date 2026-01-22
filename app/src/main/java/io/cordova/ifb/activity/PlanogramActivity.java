@@ -86,6 +86,8 @@ public class PlanogramActivity extends AppCompatActivity {
     int count=0;
     ArrayList<ProductDisplayModel>productDisplayitemList=new ArrayList<>();
     String productCode="";
+    ArrayList<String>totlaList=new ArrayList<>();
+    ArrayList<String>doneList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -238,7 +240,7 @@ public class PlanogramActivity extends AppCompatActivity {
             financialYear = year+"-"+futureyear;
         }
 
-        getReportList("2");
+     //   getReportList("2");
 
         monthList.add("January");
         monthList.add("February");
@@ -327,6 +329,19 @@ public class PlanogramActivity extends AppCompatActivity {
         });
 
         getDisplayProduct();
+
+        binding.tvFinish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (totlaList.size()==doneList.size()){
+                    onBackPressed();
+                    Toast.makeText(PlanogramActivity.this, "Data has been saved successfully", Toast.LENGTH_SHORT).show();
+
+                }else {
+                    Toast.makeText(PlanogramActivity.this, "Please complete all the products", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 
@@ -725,30 +740,58 @@ public class PlanogramActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         pd.dismiss();
                         productDisplayitemList.clear();
+                        totlaList.clear();
+                        doneList.clear();
+
                         try {
                             JSONObject job1 = response;
                             JSONArray responseData = job1.optJSONArray("responseData");
-                            for (int i=0;i<responseData.length();i++){
-                                JSONObject object=responseData.optJSONObject(i);
-                                String ModelCode=object.optString("ModelCode");
-                                String ModelName=object.optString("ModelName");
-                                int IsScan=object.optInt("IsScan");
-                                int Display_Actual=object.optInt("Display_Actual");
-                                ProductDisplayModel model=new ProductDisplayModel();
-                                model.setModelName(ModelName);
-                                model.setModelCode(ModelCode);
-                                model.setIsScan(IsScan);
-                                model.setDisplay_Actual(Display_Actual);
-                                productDisplayitemList.add(model);
-                            }
 
-                            ProductDisplayAdapter adapter=new ProductDisplayAdapter(productDisplayitemList,PlanogramActivity.this);
-                            binding.rvProduct.setAdapter(adapter);
+                                for (int i=0;i<responseData.length();i++){
+                                    JSONObject object=responseData.optJSONObject(i);
+                                    String ModelCode=object.optString("ModelCode");
+                                    String ModelName=object.optString("ModelName");
+                                    int IsScan=object.optInt("IsScan");
+                                    int Display_Actual=object.optInt("Display_Actual");
+                                    ProductDisplayModel model=new ProductDisplayModel();
+                                    model.setModelName(ModelName);
+                                    model.setModelCode(ModelCode);
+                                    model.setIsScan(IsScan);
+                                    model.setDisplay_Actual(Display_Actual);
+                                    productDisplayitemList.add(model);
+                                    if (Display_Actual==1 || Display_Actual==0){
+                                        doneList.add(ModelName);
+                                    }
+
+                                    totlaList.add(ModelName);
+                                }
+
+                                binding.tvTotal.setText("Total Products: "+totlaList.size()+"");
+                                binding.tvDone.setText("Scanned Products: "+doneList.size()+"");
+                                binding.tvPending.setText("Pending Products: "+(totlaList.size()-doneList.size())+"");
+                                binding.tvPercentage.setText("Completion: "+(doneList.size()*100)/totlaList.size()+"%");
+
+
+                                ProductDisplayAdapter adapter=new ProductDisplayAdapter(productDisplayitemList,PlanogramActivity.this);
+                                binding.rvProduct.setAdapter(adapter);
+
+                                if (productDisplayitemList.size()>0){
+                                    binding.tvNoData.setVisibility(View.GONE);
+                                    binding.rvProduct.setVisibility(View.VISIBLE);
+                                }else {
+                                    binding.tvNoData.setVisibility(View.VISIBLE);
+                                    binding.rvProduct.setVisibility(View.GONE);
+                                }
+
+
 
 
 
                         } catch (Exception e) {
                             e.printStackTrace();
+                        binding.tvNoData.setVisibility(View.VISIBLE);
+                        binding.rvProduct.setVisibility(View.GONE);
+                        binding.llCount.setVisibility(View.GONE);
                         }
 
 

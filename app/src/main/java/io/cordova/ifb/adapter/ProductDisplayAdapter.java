@@ -53,6 +53,7 @@ public class ProductDisplayAdapter extends RecyclerView.Adapter<ProductDisplayAd
             public void onClick(View view) {
                 if (itemList.get(i).getIsScan() == 1) {
                     ((PlanogramActivity) context).scanning(i);
+                  //  ((PlanogramActivity) context).postDisplayProduct("1", itemList.get(i).getModelCode());
                 } else {
                     ((PlanogramActivity) context).postDisplayProduct("1", itemList.get(i).getModelCode());
                 }

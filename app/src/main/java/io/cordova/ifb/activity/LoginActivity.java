@@ -143,8 +143,8 @@ public class LoginActivity extends AppCompatActivity {
 
         refreshedToken = "1222";
 
-        android_id= "4d8a1830bbec98bf";
-       /* android_id = getAndroidID(LoginActivity.this);
+       // android_id= "eaa7676ae982a9d4";
+        android_id = getAndroidID(LoginActivity.this);
         if (android_id.equals("0")) {
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -160,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
             android_id = telephonyManager.getDeviceId();
         }else {
             android_id = getAndroidID(LoginActivity.this);
-        }*/
+        }
 
         tvShow = (TextView) findViewById(R.id.tvShow);
         tvHide = (TextView) findViewById(R.id.tvHide);
