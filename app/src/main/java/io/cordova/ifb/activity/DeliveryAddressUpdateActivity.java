@@ -195,6 +195,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     String crmArea;
     EditText etMoreAddress;
     String AddressUpdateFlag;
+    boolean isNewCustomer=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -647,7 +648,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(b){
-                    AddressUpdateFlag="U";
+                    if (isNewCustomer){
+                        AddressUpdateFlag="N";
+                    }else {
+                        AddressUpdateFlag="U";
+                    }
+
                 }
             }
         });
@@ -656,7 +662,11 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(b){
-                    AddressUpdateFlag="U";
+                    if (isNewCustomer){
+                        AddressUpdateFlag="N";
+                    }else {
+                        AddressUpdateFlag="U";
+                    }
                 }
             }
         });
@@ -4234,6 +4244,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
 
                                     String House_num1 = jobj.optString("House_num1");
+                                    isNewCustomer=false;
 
 
                                     existingAddressAlert(addressTwo,city1,postalCode,area,street,landMark,House_num1);
@@ -4241,6 +4252,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
 
                                 }else {
+                                    isNewCustomer=true;
                                     AddressUpdateFlag="N";
                                 }
                             }
