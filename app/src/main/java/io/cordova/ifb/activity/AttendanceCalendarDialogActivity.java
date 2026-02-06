@@ -2,6 +2,8 @@ package io.cordova.ifb.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,12 +28,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.naishadhparmar.zcustomcalendar.CustomCalendar;
+import org.naishadhparmar.zcustomcalendar.OnDateSelectedListener;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
 import org.naishadhparmar.zcustomcalendar.Property;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import io.cordova.ifb.R;
@@ -52,11 +59,13 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
     int date;
     ArrayList<String>presentCount=new ArrayList<>();
     ArrayList<String>absentCount=new ArrayList<>();
+    JSONArray attendanceArray;
+    ArrayList<String> dateList = new ArrayList<>();
+    String shiftOverTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         binding= DataBindingUtil.setContentView(this,R.layout.activity_attendance_report_dialog);
         this.setFinishOnTouchOutside(false);
         initView();
@@ -161,6 +170,113 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
         binding.customCalendar.setMapDescToProp(descHashMap);
         binding.customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.PREVIOUS, this);
         binding.customCalendar.setOnNavigationButtonClickedListener(CustomCalendar.NEXT, this);
+
+
+        binding.customCalendar.setOnDateSelectedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(View view, Calendar selectedDate, Object desc) {
+                String sDate = selectedDate.get(Calendar.DAY_OF_MONTH)
+                        + "/" + (selectedDate.get(Calendar.MONTH) + 1)
+                        + "/" + selectedDate.get(Calendar.YEAR);
+
+                String date = Util.changeAnyDateFormat(sDate, "dd/MM/yyyy", "dd-MM-yyyy");
+
+                int pos = dateList.indexOf(date);
+                Log.d("position", String.valueOf(pos));
+                JSONObject object = attendanceArray.optJSONObject(pos);
+                String PunchInTiming = object.optString("Time");
+                String PunchOutTiming = object.optString("LogoutTime");
+                String Status = object.optString("Status").toUpperCase();
+                if (!Status.equals("")){
+                    shiftOverTime=handleShiftOverTimeTime(PunchInTiming);
+                }
+                String PunchTiming="\nCheck-In: "+PunchInTiming + "\nCheck-Out: " + PunchOutTiming +" \nShift OverTime: " + shiftOverTime;
+
+                if (Status.equalsIgnoreCase("")) {
+                    binding.lnStatus.setVisibility(View.GONE);
+                } else if (Status.equalsIgnoreCase("P")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#08D112")));
+                    binding.tvDetails.setText(Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")+" - Present" + "\n" + PunchTiming );
+                    binding.tvDetails.setTextColor(Color.parseColor("#000000"));
+                    binding.tvOK.setTextColor(Color.parseColor("#000000"));
+
+                } else if (Status.equalsIgnoreCase("A")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF0000")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy"))+" - Absent" + "\n" + PunchTiming);
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+
+                } else if (Status.equalsIgnoreCase("CL")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#04ABFF")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")) + " - "+Status);
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+
+                } else if (Status.equalsIgnoreCase("SL")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#04ABFF")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")) + " - "+Status);
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+
+                } else if (Status.equalsIgnoreCase("PL")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#04ABFF")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")) + " - "+Status);
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+                } else if (Status.equalsIgnoreCase("CO")) {
+
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#04ABFF")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")) + " - "+Status);
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+
+                } else if (Status.equalsIgnoreCase("HD")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F87AA5")));
+                    binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy")) + " - Half Day");
+                    binding.tvDetails.setTextColor(Color.parseColor("#000000"));
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+
+                } else if (Status.equalsIgnoreCase("WO")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0a0aa7")));
+                    if (!PunchInTiming.equalsIgnoreCase("")){
+                        binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy"))+" - Weekly Off" + "\n" + PunchTiming );
+                    }else {
+                        binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy"))+" - Weekly Off");
+                    }
+
+                    binding.tvOK.setTextColor(Color.parseColor("#FFFFFF"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#FFFFFF"));
+                }else if (Status.equalsIgnoreCase("H")) {
+                    binding.lnStatus.setVisibility(View.VISIBLE);
+                    binding.lnStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#F8E225")));
+                    if (!PunchInTiming.equalsIgnoreCase("")){
+                        binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy"))+" - Holiday" + "\n" + PunchTiming );
+                    }else {
+                        binding.tvDetails.setText((Util.changeAnyDateFormat(date,"dd-MM-yyyy","dd MMM yy"))+" - Holiday");
+                    }
+                    binding.tvDetails.setTextColor(Color.parseColor("#000000"));
+                    binding.tvOK.setTextColor(Color.parseColor("#000000"));
+                    binding.tvDetails.setTextColor(Color.parseColor("#000000"));
+
+                }
+            }
+        });
+
+        binding.tvOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.lnStatus.setVisibility(View.GONE);
+            }
+        });
 
         getAttendance();
 
@@ -347,6 +463,7 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                         pd.dismiss();
                         presentCount=new ArrayList<>();
                         absentCount=new ArrayList<>();
+                        dateList = new ArrayList<>();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
@@ -356,6 +473,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                             if (responseStatus) {
                                 //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
                                 JSONArray responseData = job1.optJSONArray("responseData");
+                                attendanceArray=responseData;
+
                                 for (int i = 0; i < responseData.length(); i++) {
                                     JSONObject obj = responseData.getJSONObject(i);
                                     String sDate = Util.changeAnyDateFormat(obj.optString("Month"),"dd-MM-yyyy","dd");
@@ -371,6 +490,7 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                                         absentCount.add(sDate);
                                     }
 
+                                    dateList.add(obj.optString("Month"));
                                     dateHashmap.put(date, Status);
 
 
@@ -442,10 +562,12 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                             String responseText = job1.optString("responseText");
                             presentCount=new ArrayList<>();
                             absentCount=new ArrayList<>();
+                            dateList=new ArrayList<>();
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             if (responseStatus) {
                                 //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
                                 JSONArray responseData = job1.optJSONArray("responseData");
+                                attendanceArray=responseData;
                                 for (int i = 0; i < responseData.length(); i++) {
                                     JSONObject obj = responseData.getJSONObject(i);
                                     String sDate = Util.changeAnyDateFormat(obj.optString("Date"),"dd MMM yyyy","dd");
@@ -462,6 +584,7 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                                     }
 
                                     dateHashmap.put(date, Status);
+                                    dateList.add(obj.optString("Month"));
 
 
                                 }
@@ -502,6 +625,56 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
         };
         RequestQueue requestQueue = Volley.newRequestQueue(AttendanceCalendarDialogActivity.this);
         requestQueue.add(stringRequest);
+    }
+
+
+    private String handleShiftOverTimeTime(String apiTime) {
+        String shiftOvertTime=null;
+
+        try {
+            // Parse only TIME from API
+            SimpleDateFormat inputFormat =
+                    new SimpleDateFormat("h:mma", Locale.getDefault());
+            Date checkInDate = inputFormat.parse(apiTime);
+
+            // Get today's date
+            Calendar today = Calendar.getInstance();
+
+            // Create calendar with TODAY + API TIME
+            Calendar checkoutLimitCal = Calendar.getInstance();
+            checkoutLimitCal.set(Calendar.YEAR, today.get(Calendar.YEAR));
+            checkoutLimitCal.set(Calendar.MONTH, today.get(Calendar.MONTH));
+            checkoutLimitCal.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
+
+            // Set hour & minute from API time
+            Calendar apiTimeCal = Calendar.getInstance();
+            apiTimeCal.setTime(checkInDate);
+
+            checkoutLimitCal.set(Calendar.HOUR_OF_DAY, apiTimeCal.get(Calendar.HOUR_OF_DAY));
+            checkoutLimitCal.set(Calendar.MINUTE, apiTimeCal.get(Calendar.MINUTE));
+            checkoutLimitCal.set(Calendar.SECOND, 0);
+
+            // Add 9 hours 15 minutes
+            checkoutLimitCal.add(Calendar.HOUR_OF_DAY, 9);
+            checkoutLimitCal.add(Calendar.MINUTE, 00);
+
+            // Current time
+            Calendar now = Calendar.getInstance();
+
+            // Display format
+            SimpleDateFormat displayFormat =
+                    new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            String checkoutLimitTime =
+                    displayFormat.format(checkoutLimitCal.getTime());
+            shiftOvertTime= checkoutLimitTime;
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return shiftOvertTime;
     }
 
 

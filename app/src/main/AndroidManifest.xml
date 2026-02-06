@@ -255,7 +255,7 @@
         <activity android:name=".activity.MicroOvenDialogActivity" />
         <activity
             android:name=".activity.AttendanceCalendarDialogActivity"
-            android:theme="@style/Theme.AppCompat.Dialog" />
+            android:screenOrientation="userPortrait" />
         <activity
             android:name=".activity.RefrigeratorDialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />

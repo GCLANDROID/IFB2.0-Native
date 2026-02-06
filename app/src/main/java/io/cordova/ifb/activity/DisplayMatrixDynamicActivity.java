@@ -560,13 +560,13 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
         tvREFRIGERATORFFGodrejAdd = (TextView) findViewById(R.id.tvREFRIGERATORFFGodrejAdd);
 
 
-        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + prefManager.getAirIfbSize();
-        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#" + prefManager.getClothsIfbSize();
-        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#" + prefManager.getDishIfbSize();
-        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#" + prefManager.getMicroOvenIfbSize();
-        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + prefManager.getKAIfbSize();
-        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" + prefManager.getWMFLUIfbSize();
-        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + prefManager.getWMTLIFBSize();
+        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + "0";
+        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#" + "0";
+        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#" + "0";
+        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#" + "0";
+        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + "0";
+        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" + "0";
+        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + "0";
 
 
         //clothes
@@ -3102,18 +3102,18 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
     }*/
 
     private void postDisplaymatrix() {
-        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#" + etAirIFB.getText().toString();
-        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#" + etClothsIFB.getText().toString();
-        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#" + etDishIFB.getText().toString();
-        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#" + etMicroIfb.getText().toString();
-        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#" + etKAIfb.getText().toString();
-        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#" + etFLUIfb.getText().toString();
-        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#" + etTLIfb.getText().toString();
-        refregeratorIfb = "IFBPC1000013" + "-" + "IFBCC000015" + "#" + etREFRIGERATORIfb.getText().toString();
-        refregeratorFFIfb = "IFBPC1000040" + "-" + "IFBCC000015" + "#" + etREFRIGERATORFFIfb.getText().toString();
+        airIfb = "IFBPC1000001" + "-" + "IFBCC000015" + "#0";
+        clothsIFB = "IFBPC1000005" + "-" + "IFBCC000015" + "#0" ;
+        dishIfb = "IFBPC1000007" + "-" + "IFBCC000015" + "#0";
+        microIfb = "IFBPC1000011" + "-" + "IFBCC000015" + "#0";
+        kaIfb = "IFBPC1000035" + "-" + "IFBCC000015" + "#0";
+        FLUIfb = "IFBPC1000021" + "-" + "IFBCC000015" + "#0";
+        TLIfb = "IFBPC1000025" + "-" + "IFBCC000015" + "#0" ;
+        refregeratorIfb = "IFBPC1000013" + "-" + "IFBCC000015" + "#0";
+        refregeratorFFIfb = "IFBPC1000040" + "-" + "IFBCC000015" + "#0" ;
 
 
-        washerIfb = "IFBPC1000039" + "-" + "IFBCC000015" + "#" + etWasherDisherIfb.getText().toString();
+        washerIfb = "IFBPC1000039" + "-" + "IFBCC000015" + "#0";
         washerLg = "IFBPC1000039" + "-" + "IFBCC000001" + "#" + etWasherDisherLg.getText().toString();
         washerSamSung = "IFBPC1000039" + "-" + "IFBCC000002" + "#" + etWasherDisherSamsung.getText().toString();
         washerWhirlPool = "IFBPC1000039" + "-" + "IFBCC000005" + "#" + etWasherDisherWhirlPool.getText().toString();
@@ -4081,7 +4081,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000004")) {
                                         etDishOther.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000007") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etDishIFB.setText(Quantity);
+                                        etDishIFB.setText("0");
                                     }
 
                                     //MICROVEN
@@ -4099,7 +4099,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000007")) {
                                         etMicroPanasonic.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etMicroIfb.setText(Quantity);
+                                        etMicroIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000011") && CompetitorCompanyID.equals("IFBCC000017")) {
                                         etMicroOnida.setText(Quantity);
                                     }
@@ -4118,7 +4118,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000014")) {
                                         etKAElica.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etKAIfb.setText(Quantity);
+                                        etKAIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000035") && CompetitorCompanyID.equals("IFBCC000022")) {
                                         etKASunFlame.setText(Quantity);
                                     }
@@ -4137,7 +4137,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000005")) {
                                         etFLUWhirlPool.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etFLUIfb.setText(Quantity);
+                                        etFLUIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000021") && CompetitorCompanyID.equals("IFBCC000024")) {
                                         etFLUBeko.setText(Quantity);
                                     }
@@ -4158,7 +4158,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000007")) {
                                         etTLPanasonic.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etTLIfb.setText(Quantity);
+                                        etTLIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000025") && CompetitorCompanyID.equals("IFBCC000017")) {
                                         etTLOnida.setText(Quantity);
                                     }
@@ -4177,7 +4177,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000007")) {
                                         etWasherDisherPanasonic.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etWasherDisherIfb.setText(Quantity);
+                                        etWasherDisherIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000039") && CompetitorCompanyID.equals("IFBCC000017")) {
                                         etWasherDisherOnida.setText(Quantity);
                                     }
@@ -4194,7 +4194,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000006")) {
                                         etREFRIGERATORGodrej.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etREFRIGERATORIfb.setText(Quantity);
+                                        etREFRIGERATORIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000013") && CompetitorCompanyID.equals("IFBCC000021")) {
                                         etREFRIGERATORHaier.setText(Quantity);
                                     }
@@ -4211,7 +4211,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                     } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000006")) {
                                         etREFRIGERATORFFGodrej.setText(Quantity);
                                     } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                        etREFRIGERATORFFIfb.setText(Quantity);
+                                        etREFRIGERATORFFIfb.setText("0");
                                     } else if (CategoryID.equals("IFBPC1000040") && CompetitorCompanyID.equals("IFBCC000021")) {
                                         etREFRIGERATORFFHaier.setText(Quantity);
                                     }
@@ -5866,7 +5866,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
                                             Log.d("DisplayMatrix", "8");
 
                                         } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000015")) {
-                                            etAirIFB.setText(Quantity);
+                                            etAirIFB.setText("0");
 
                                         } else if (CategoryID.equals("IFBPC1000001") && CompetitorCompanyID.equals("IFBCC000017")) {
 

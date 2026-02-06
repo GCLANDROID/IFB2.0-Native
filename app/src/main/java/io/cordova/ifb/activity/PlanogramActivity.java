@@ -88,6 +88,8 @@ public class PlanogramActivity extends AppCompatActivity {
     String productCode="";
     ArrayList<String>totlaList=new ArrayList<>();
     ArrayList<String>doneList=new ArrayList<>();
+    ArrayList<String>yesListList=new ArrayList<>();
+    ArrayList<String>noListList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -742,6 +744,8 @@ public class PlanogramActivity extends AppCompatActivity {
                         productDisplayitemList.clear();
                         totlaList.clear();
                         doneList.clear();
+                        yesListList.clear();
+                        noListList.clear();
 
                         try {
                             JSONObject job1 = response;
@@ -762,15 +766,23 @@ public class PlanogramActivity extends AppCompatActivity {
                                     if (Display_Actual==1 || Display_Actual==0){
                                         doneList.add(ModelName);
                                     }
+                                    if (Display_Actual==1){
+                                        yesListList.add(ModelName);
+                                    }
+
+                                    if (Display_Actual==0){
+                                        noListList.add(ModelName);
+                                    }
 
                                     totlaList.add(ModelName);
                                 }
 
-                                binding.tvTotal.setText("Total Products: "+totlaList.size()+"");
-                                binding.tvDone.setText("Scanned Products: "+doneList.size()+"");
-                                binding.tvPending.setText("Pending Products: "+(totlaList.size()-doneList.size())+"");
-                                binding.tvPercentage.setText("Completion: "+(doneList.size()*100)/totlaList.size()+"%");
-
+                                binding.tvTotal.setText("Total Products: \n"+totlaList.size()+"\n");
+                                binding.tvDone.setText("Scanned Products: \n"+doneList.size()+"\n");
+                                binding.tvPending.setText("Pending Products: \n"+(totlaList.size()-doneList.size())+"\n");
+                                binding.tvPercentage.setText("Completion: \n"+(doneList.size()*100)/totlaList.size()+"%\n");
+                                binding.tvDisplayAdherence.setText("Display Adherence: \n"+(yesListList.size()*100)/totlaList.size()+"%\n");
+                                binding.tvNo.setText("Not Displayed: \n"+noListList.size()+"\n");
 
                                 ProductDisplayAdapter adapter=new ProductDisplayAdapter(productDisplayitemList,PlanogramActivity.this);
                                 binding.rvProduct.setAdapter(adapter);
@@ -778,9 +790,13 @@ public class PlanogramActivity extends AppCompatActivity {
                                 if (productDisplayitemList.size()>0){
                                     binding.tvNoData.setVisibility(View.GONE);
                                     binding.rvProduct.setVisibility(View.VISIBLE);
+                                    binding.tvFinish.setVisibility(View.VISIBLE);
+                                    binding.llCount.setVisibility(View.GONE);
                                 }else {
                                     binding.tvNoData.setVisibility(View.VISIBLE);
                                     binding.rvProduct.setVisibility(View.GONE);
+                                    binding.tvFinish.setVisibility(View.GONE);
+                                    binding.llCount.setVisibility(View.GONE);
                                 }
 
 
@@ -792,6 +808,7 @@ public class PlanogramActivity extends AppCompatActivity {
                         binding.tvNoData.setVisibility(View.VISIBLE);
                         binding.rvProduct.setVisibility(View.GONE);
                         binding.llCount.setVisibility(View.GONE);
+                        binding.tvFinish.setVisibility(View.GONE);
                         }
 
 
