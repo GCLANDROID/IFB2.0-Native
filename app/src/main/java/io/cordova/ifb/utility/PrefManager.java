@@ -1498,6 +1498,14 @@ public class PrefManager {
         return _pref.getInt("CheckOutMin",0);
     }
 
+    public void saveMonthlyPerformerURL(String MonthlyPerformerUR){
+        _editorPref.putString("MonthlyPerformerUR", MonthlyPerformerUR);
+        _editorPref.commit();
+    }
+
+    public String getMonthlyPerformerUR(){
+        return _pref.getString("MonthlyPerformerUR","");
+    }
 
 
 }

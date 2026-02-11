@@ -27,6 +27,9 @@ public class Util implements ActivityCompat.OnRequestPermissionsResultCallback {
     public static String globalDateFormate = "yyyy-MM-dd'T'HH:mm:ss";
 
 
+    public static String getFreshValue(String value, String defaultValue) {
+        return ( value == null  || value.equals("null") || value.equals("NaN")) ? defaultValue : value;
+    }
 
 
 

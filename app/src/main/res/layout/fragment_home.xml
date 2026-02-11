@@ -22,6 +22,7 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+
                     <TextView
                         android:id="@+id/tvMonth"
                         android:layout_width="wrap_content"
@@ -241,10 +242,38 @@
                     </LinearLayout>
                 </LinearLayout>
                 <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/llStarPerformer"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/yellow"
+                    android:padding="10dp"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/starperformer"></ImageView>
+                    <TextView
+                        android:textSize="16sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/black"
+                        android:text="View Monthly Star Performer"></TextView>
+
+
+
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_marginTop="10dp"
-                    android:background="@color/list_header"
+                    android:background="@color/list_selected"
                     android:orientation="vertical"
                     android:padding="10dp">
 

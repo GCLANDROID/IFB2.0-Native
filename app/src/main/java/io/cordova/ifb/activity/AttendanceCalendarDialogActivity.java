@@ -185,7 +185,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 Log.d("position", String.valueOf(pos));
                 JSONObject object = attendanceArray.optJSONObject(pos);
                 String PunchInTiming = object.optString("Time");
-                String PunchOutTiming = object.optString("LogoutTime");
+
+                String PunchOutTiming = Util.getFreshValue(object.optString("LogoutTime"),"NA");
                 String Status = object.optString("Status").toUpperCase();
                 if (!Status.equals("")){
                     shiftOverTime=handleShiftOverTimeTime(PunchInTiming);

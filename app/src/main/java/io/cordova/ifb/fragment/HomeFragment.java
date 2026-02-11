@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment  {
     ArrayList<String>absentCount=new ArrayList<>();
     String monthlYSold,monthlyPending;
     TextView tvCheckOutTime;
-    LinearLayout llCheckOutMessage,llChekcinout;
+    LinearLayout llCheckOutMessage,llChekcinout,llStarPerformer;
     TextView tvCheckIN,tvCheckOut;
 
 
@@ -91,11 +91,18 @@ public class HomeFragment extends Fragment  {
 
     private void initView(){
          prefManager=new PrefManager(getContext());
+        llStarPerformer=(LinearLayout)view.findViewById(R.id.llStarPerformer);
         tvCheckOutTime=view.findViewById(R.id.tvCheckOutTime);
         llCheckOutMessage=view.findViewById(R.id.llCheckOutMessage);
         llChekcinout=view.findViewById(R.id.llChekcinout);
         tvCheckIN=view.findViewById(R.id.tvCheckIN);
         tvCheckOut=view.findViewById(R.id.tvCheckOut);
+        if (!prefManager.getMonthlyPerformerUR().equals("")){
+            llStarPerformer.setVisibility(View.VISIBLE);
+
+        }else {
+            llStarPerformer.setVisibility(View.GONE);
+        }
 
 
         y = Calendar.getInstance().get(Calendar.YEAR);
@@ -198,6 +205,17 @@ public class HomeFragment extends Fragment  {
             public void onClick(View view) {
                 if (!prefManager.getNotifyUrl().equals("")){
                     Uri uri = Uri.parse(prefManager.getNotifyUrl()); // missing 'http://' will cause crashed
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        llStarPerformer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!prefManager.getMonthlyPerformerUR().equals("")){
+                    Uri uri = Uri.parse(prefManager.getMonthlyPerformerUR()); // missing 'http://' will cause crashed
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
                 }
