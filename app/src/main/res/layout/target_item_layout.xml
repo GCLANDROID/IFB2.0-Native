@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:id="@+id/llMain">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="4"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tvModelName"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Model Name"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:paddingVertical="3dp"
+            android:paddingHorizontal="2dp"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/color1"/>
+
+        <TextView
+            android:id="@+id/tvTarget"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="13sp"
+            android:text="Targate"
+            android:paddingVertical="3dp"
+            android:paddingHorizontal="2dp"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/color1"/>
+        <TextView
+            android:id="@+id/tvAchievement"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Achievement"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:paddingVertical="3dp"
+            android:paddingHorizontal="2dp"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/color1"/>
+        <TextView
+            android:id="@+id/tvToBeAchievement"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="To be Achived"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:gravity="center"
+            android:paddingVertical="3dp"
+            android:paddingHorizontal="2dp"/>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color1"/>
+</LinearLayout>
