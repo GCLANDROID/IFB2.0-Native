@@ -461,7 +461,7 @@
                     android:drawableRight="@drawable/rightarrow"
                     android:drawableTint="@color/white"
                     android:padding="5dp"
-                    android:text="Update display matrix"
+                    android:text="Competitor display matrix"
                     android:textColor="@color/white"></Button>
 
                 <Button
@@ -474,7 +474,7 @@
                     android:drawableRight="@drawable/rightarrow"
                     android:drawableTint="@color/black"
                     android:padding="5dp"
-                    android:text="Update planogram Hygene"
+                    android:text="IFB Display Matrix"
                     android:textColor="@color/black"></Button>
 
 

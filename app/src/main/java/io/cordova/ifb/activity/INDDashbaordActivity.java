@@ -13,7 +13,7 @@ import io.cordova.ifb.R;
 import io.cordova.ifb.utility.PrefManager;
 
 public class INDDashbaordActivity extends AppCompatActivity implements View.OnClickListener {
-    LinearLayout llAttendance,llHelpDesk,llLeave,llFeedback;
+    LinearLayout llAttendance,llHelpDesk,llLeave,llFeedback,llAttendanceReport;
     PrefManager prefManager;
     TextView tvUserName;
 
@@ -34,11 +34,13 @@ public class INDDashbaordActivity extends AppCompatActivity implements View.OnCl
         llHelpDesk=(LinearLayout) findViewById(R.id.llHelpDesk);
         llLeave=(LinearLayout) findViewById(R.id.llLeave);
         llFeedback=(LinearLayout)findViewById(R.id.llFeedback);
+        llAttendanceReport=(LinearLayout)findViewById(R.id.llAttendanceReport);
 
         llAttendance.setOnClickListener(this);
         llHelpDesk.setOnClickListener(this);
         llLeave.setOnClickListener(this);
         llFeedback.setOnClickListener(this);
+        llAttendanceReport.setOnClickListener(this);
     }
 
     @Override
@@ -57,6 +59,10 @@ public class INDDashbaordActivity extends AppCompatActivity implements View.OnCl
             startActivity(intent);
         }else if (view==llFeedback){
             Intent intent=new Intent(INDDashbaordActivity.this, FeedBackRatingActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }else if (view==llAttendanceReport){
+            Intent intent=new Intent(INDDashbaordActivity.this, AttemdanceReportActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
