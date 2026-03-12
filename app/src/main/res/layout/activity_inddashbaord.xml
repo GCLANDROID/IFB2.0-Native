@@ -106,13 +106,14 @@
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:id="@+id/llHelpDesk">
+                android:id="@+id/llAttendanceReport">
                 <LinearLayout
                     android:layout_width="65dp"
                     android:layout_height="65dp"
@@ -121,17 +122,18 @@
                     <ImageView
                         android:layout_width="35dp"
                         android:layout_height="35dp"
-                        android:src="@drawable/info"/>
+                        android:src="@drawable/report"/>
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:textSize="10sp"
-                    android:text="Help Desk"
+                    android:text="Attendance Report"
                     android:textColor="@android:color/black"/>
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -165,6 +167,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="3">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:id="@+id/llHelpDesk">
+                <LinearLayout
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/lldesign10"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/info"/>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:textSize="10sp"
+                    android:text="Help Desk"
+                    android:textColor="@android:color/black"/>
+
+            </LinearLayout>
             <LinearLayout
                 android:visibility="visible"
                 android:layout_width="0dp"

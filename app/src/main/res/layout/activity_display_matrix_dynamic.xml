@@ -6362,6 +6362,7 @@
 
             //1
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:orientation="horizontal"
@@ -7102,6 +7103,7 @@
 
             //1
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:orientation="horizontal"

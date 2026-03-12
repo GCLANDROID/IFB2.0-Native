@@ -959,6 +959,29 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         alertDialog2.show();
     }
 
+
+    private void shoeDialog(String Msg) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.credential_dialog, null);
+        dialogBuilder.setView(dialogView);
+        TextView tvError = dialogView.findViewById(R.id.tvError);
+        tvError.setText(Msg);
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog = dialogBuilder.create();
+        alertDialog.setCancelable(true);
+        Window window = alertDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alertDialog.show();
+    }
+
     private void turnGPSOn() {
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -1440,7 +1463,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeAttendanceWithSelfy_V2")
+        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeAttendanceWithSelfy_V3")
                 .addMultipartParameter("ClientID", prefManager.getClintId())
                 .addMultipartParameter("LoginID", prefManager.getUserId())
                 .addMultipartParameter("Password", prefManager.getPassword())
@@ -1478,6 +1501,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         String responseText = job1.optString("responseText");
+                        int responseData=job1.optInt("responseData");
                         showText = responseText;
                         Log.d("responseText", responseText);
                         boolean responseStatus = job1.optBoolean("responseStatus");
@@ -1490,7 +1514,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         } else {
                             pd.dismiss();
 
-                            wfhAlert();
+                            if (responseData==2){
+                                wfhAlert();
+                            }else {
+
+                                shoeDialog(showText);
+
+
+                            }
+
+
+
+
                         }
 
 

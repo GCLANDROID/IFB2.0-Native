@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.NewTargetAdapter;
@@ -42,6 +43,9 @@ public class NewTargetActivity extends AppCompatActivity {
     PrefManager prefManager;
     JSONArray ModelWiseDataArray = new JSONArray();
     JSONArray MarginWiseDataArray = new JSONArray();
+
+    int y;
+    String year,financialYear,month;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,52 @@ public class NewTargetActivity extends AppCompatActivity {
 
     private void initView() {
         prefManager = new PrefManager(this);
+        y = Calendar.getInstance().get(Calendar.YEAR);
+        year = String.valueOf(y);
+        Log.d("year", year);
+
+        int m = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        Log.d("month", String.valueOf(m));
+        if (m == 1) {
+            month = "January";
+        } else if (m == 2) {
+            month = "February";
+        } else if (m == 3) {
+            month = "March";
+        } else if (m == 4) {
+            month = "April";
+        } else if (m == 5) {
+            month = "May";
+        } else if (m == 6) {
+            month = "June";
+        } else if (m == 7) {
+            month = "July";
+        } else if (m == 8) {
+            month = "August";
+        } else if (m == 9) {
+            month = "September";
+        } else if (m == 10) {
+            month = "October";
+        } else if (m == 11) {
+            month = "November";
+        } else if (m == 12) {
+            month = "December";
+        }
+        if(month.equals("January")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else if (month.equals("February")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else if (month.equals("March")){
+            int futureyear = y - 1;
+            financialYear = futureyear+"-"+year;
+        }else {
+            int futureyear = y + 1;
+            financialYear = year+"-"+futureyear;
+        }
+        Log.d("financialYear",financialYear);
+
         binding.rvTarget.setLayoutManager(new LinearLayoutManager(this));
 
         getTargetDate();
@@ -64,7 +114,7 @@ public class NewTargetActivity extends AppCompatActivity {
         binding.llLoading.setVisibility(View.VISIBLE);
         binding.llNoDataFound.setVisibility(View.GONE);
         binding.llDataLayout.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/UserTargetV1?FinancialYear=2025-2026&Month=february&AEMEmployeeID=AEMP000480006076&LoginID=IFBAPPL06116&SecurityCode=IFB";
+        String surl =  AppController.APIURL+"api/UserTargetV1?FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&LoginID="+prefManager.getMasterId()+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputLogin", surl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,

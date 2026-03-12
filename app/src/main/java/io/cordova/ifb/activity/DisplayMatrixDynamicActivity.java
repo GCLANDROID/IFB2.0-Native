@@ -3456,7 +3456,7 @@ public class DisplayMatrixDynamicActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
-                getReportListForPreviousMonth();
+
 
             }
         });

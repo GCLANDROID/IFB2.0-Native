@@ -791,7 +791,7 @@ public class PlanogramActivity extends AppCompatActivity {
                                     binding.tvNoData.setVisibility(View.GONE);
                                     binding.rvProduct.setVisibility(View.VISIBLE);
                                     binding.tvFinish.setVisibility(View.VISIBLE);
-                                    binding.llCount.setVisibility(View.GONE);
+                                    binding.llCount.setVisibility(View.VISIBLE);
                                 }else {
                                     binding.tvNoData.setVisibility(View.VISIBLE);
                                     binding.rvProduct.setVisibility(View.GONE);
@@ -822,7 +822,7 @@ public class PlanogramActivity extends AppCompatActivity {
                     public void onError(ANError error) {
 
                         pd.dismiss();
-                        Toast.makeText(PlanogramActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                        Toast.makeText(PlanogramActivity.this, "Server is busy .Please try again after some time", Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -891,7 +891,7 @@ public class PlanogramActivity extends AppCompatActivity {
                     public void onError(ANError error) {
 
                         pd.dismiss();
-                        Toast.makeText(PlanogramActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                        Toast.makeText(PlanogramActivity.this, "Server is busy .Please try again after some time", Toast.LENGTH_LONG).show();
                     }
                 });
     }
