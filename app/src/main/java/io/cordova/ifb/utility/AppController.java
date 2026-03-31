@@ -93,7 +93,7 @@ public class AppController {
     public static  int ff_haier=0;
 
     public static String APIURL="https://nonfss.geniusconsultant.com/IFBiOSApi/";
-    public static String localAPIURL="https://171.16.2.30/IFBiOSApi/";
+    public static String localAPIURL="https://171.16.2.105/IFBiOSApi/";
 
 
     public static String changeAnyDateFormat(String reqdate, String dateformat, String reqformat) {

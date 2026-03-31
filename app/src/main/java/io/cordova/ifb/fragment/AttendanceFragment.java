@@ -133,7 +133,7 @@ public class AttendanceFragment extends Fragment {
         // Inflate the layout for this fragment
         view= inflater.inflate(R.layout.fragment_attendance, container, false);
         initialize();
-        checksale();
+
         attendenceCheck();
         onClick();
         return view;
@@ -322,18 +322,10 @@ public class AttendanceFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (connectionCheck.isGPSEnabled()) {
-                    if (responseCode.equals("1")) {
+
                         getCounetrCoordinates();
 
-                    } else {
-                       // salecheckalert();
-                        if (prefManager.getMasterId().equals("IFBAPPL00001")){
-                            getCounetrCoordinates();
-                        }else {
-                            salecheckalert();
-                        }
 
-                    }
                 } else {
 
                     Toast.makeText(getContext(), "Please enable GPS location", Toast.LENGTH_LONG).show();
@@ -360,22 +352,18 @@ public class AttendanceFragment extends Fragment {
         llLeave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (responseCode.equals("1")) {
+
                     openLeaveBrowser();
-                } else {
-                    salecheckalert();
-                }
+
             }
         });
 
         llLeaveEnc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (responseCode.equals("1")) {
+
                     openLeaveEncBrowser();
-                } else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -424,7 +412,7 @@ public class AttendanceFragment extends Fragment {
                             responseCode = job1.optString("responseCode");
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             responseData = job1.optBoolean("responseData");
-                            checkCounterMap();
+
 
 
                         } catch (JSONException e) {

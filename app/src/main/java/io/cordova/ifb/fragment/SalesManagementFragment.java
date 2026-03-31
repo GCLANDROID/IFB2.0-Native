@@ -82,7 +82,7 @@ public class SalesManagementFragment extends Fragment {
         // Inflate the layout for this fragment
         view= inflater.inflate(R.layout.fragment_sales_management, container, false);
         initialize();
-        checksale();
+        //checksale();
         onClick();
         return view;
     }
@@ -130,12 +130,10 @@ public class SalesManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 flag="manage";
-                if (responseCode.equals("1")) {
+
                     Intent intent = new Intent(getContext(), SalesManageDashboardActivity.class);
                     startActivity(intent);
-                }else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -225,12 +223,10 @@ public class SalesManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 flag="exchange";
-                if (responseCode.equals("1")) {
+
                     Intent intent = new Intent(getContext(), ModelExchangeActivity.class);
                     startActivity(intent);
-                }else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -240,13 +236,11 @@ public class SalesManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 flag="dummysale";
-                if (responseCode.equals("1")) {
+
                     Intent intent = new Intent(getContext(), DummySaleDashBoardActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -264,14 +258,12 @@ public class SalesManagementFragment extends Fragment {
         llNoSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (responseCode.equals("1")) {
+
                     flag="nosale";
                     Intent intent = new Intent(getContext(), NoSalesActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -279,13 +271,11 @@ public class SalesManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 flag="return";
-                if (responseCode.equals("1")) {
+
                     Intent intent = new Intent(getContext(), SalesReturnActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                }else {
-                    salecheckalert();
-                }
+
             }
         });
 

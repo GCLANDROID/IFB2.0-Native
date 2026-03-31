@@ -25,7 +25,6 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
@@ -201,6 +200,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     Button btnRegularize, btnAbsent;
     TextView tvText, tvBreakText;
     String LastworkingDt;
+    boolean responseData;
+    String responseTextBlocker, responseCode;
+    AlertDialog alet1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -681,7 +683,9 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         //API with call to check open pop up or call post attendance
                         //noSalesAlert();
                         //postAttenWithImage();
-                        checkSalesEntry();
+
+                        checkPlanoBlocker();
+
                     } else {
                         Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
@@ -704,7 +708,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             @Override
             public void onClick(View view) {
                 if (genoFence) {
-                    reasonAlert();
+                    checkPlanoBlockerForRegularize();
                 } else {
                     Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
                 }
@@ -715,7 +719,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             @Override
             public void onClick(View view) {
                 if (genoFence) {
-                    postNormalize("2", "I accept & continue");
+                    checkPlanoBlockerForAbsent();
+
                 } else {
                     Toast.makeText(AttendanceManage2Activity.this, "You are outside the Geo-Fence area", Toast.LENGTH_LONG).show();
                 }
@@ -2282,6 +2287,197 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         Toast.makeText(AttendanceManage2Activity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+
+    public void checkPlanoBlocker() {
+        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("inputCheck", surl);
+        final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            responseTextBlocker = job1.optString("responseText");
+                            responseCode = job1.optString("responseCode");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            responseData = job1.optBoolean("responseData");
+                            if (responseCode.equalsIgnoreCase("1")){
+                                checkSalesEntry();
+                            }else {
+                                salecheckalert(responseTextBlocker);
+
+                            }
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                Toast.makeText(AttendanceManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+
+    public void checkPlanoBlockerForAbsent() {
+        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("inputCheck", surl);
+        final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            responseTextBlocker = job1.optString("responseText");
+                            responseCode = job1.optString("responseCode");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            responseData = job1.optBoolean("responseData");
+                            if (responseCode.equalsIgnoreCase("1")){
+                                postNormalize("2", "I accept & continue");
+                            }else {
+                                salecheckalert(responseTextBlocker);
+
+                            }
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                Toast.makeText(AttendanceManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+    public void checkPlanoBlockerForRegularize() {
+        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("inputCheck", surl);
+        final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            responseTextBlocker = job1.optString("responseText");
+                            responseCode = job1.optString("responseCode");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            responseData = job1.optBoolean("responseData");
+                            if (responseCode.equalsIgnoreCase("1")){
+                                reasonAlert();
+                            }else {
+                                salecheckalert(responseTextBlocker);
+
+                            }
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                Toast.makeText(AttendanceManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+                Log.e("ert", error.toString());
+            }
+        }) {
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+        requestQueue.add(stringRequest);
+
+    }
+
+
+
+    private void salecheckalert(String blockertext) {
+        AlertDialog.Builder dialogBuilder = new  AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_salecheck, null);
+        dialogBuilder.setView(dialogView);
+
+        TextView tvItem=(TextView)dialogView.findViewById(R.id.tvItem);
+        tvItem.setText(blockertext);
+
+        Button btnOK = (Button) dialogView.findViewById(R.id.btnOK);
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                alet1.dismiss();
+
+            }
+        });
+
+        Button btnSkip=(Button)dialogView.findViewById(R.id.btnSkip);
+        if (responseData){
+            btnSkip.setVisibility(View.GONE);
+        }else {
+            btnSkip.setVisibility(View.GONE);
+        }
+
+
+
+
+        alet1 = dialogBuilder.create();
+        alet1.setCancelable(false);
+        Window window = alet1.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alet1.show();
     }
 
 
