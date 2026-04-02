@@ -47,7 +47,12 @@ public class DisplayMatrixDashBoardActivity extends AppCompatActivity {
         llManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DisplayMatrixDashBoardActivity.this,DisplayMatrixDynamicActivity.class);
+                /*Intent intent=new Intent(DisplayMatrixDashBoardActivity.this,DisplayMatrixDynamicActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);*/
+
+
+                Intent intent=new Intent(DisplayMatrixDashBoardActivity.this,NewCompetitorDisplayMatrixActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
 

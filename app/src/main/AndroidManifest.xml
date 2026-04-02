@@ -253,9 +253,12 @@
         <activity android:name=".activity.CookerDialogActivity" />
         <activity android:name=".activity.DishwasherDialogActivity" />
         <activity android:name=".activity.MicroOvenDialogActivity" />
+        <activity android:name=".activity.NewCompetitorDisplayMatrixActivity"
+            android:screenOrientation="userPortrait"></activity>
         <activity
             android:name=".activity.AttendanceCalendarDialogActivity"
             android:screenOrientation="userPortrait" />
+        <activity android:name=".activity.NewTargetActivity"></activity>
         <activity
             android:name=".activity.RefrigeratorDialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />
