@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -52,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.OtherItem1Adapter;
@@ -93,7 +96,7 @@ public class OtherDailyActivity extends AppCompatActivity {
     String operation="0";
     String securityCode="";
     EditText etCounter;
-    private static final String SERVER_PATH = AppController.APIURL+"api/";
+
     private PostDisplayMatrixService uploadService;
     ProgressDialog progressDialog;
     Button btnSubmit;
@@ -122,6 +125,13 @@ public class OtherDailyActivity extends AppCompatActivity {
 
     private void initialize(){
         prefManager=new PrefManager(getApplicationContext());
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         tvDateName=(TextView)findViewById(R.id.tvDateName);
         String next = "<font color='#EE0000'>*</font>";
         String datename="Visited Date";
@@ -205,12 +215,7 @@ public class OtherDailyActivity extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
         // Change base URL to your upload server URL.
-        uploadService = (PostDisplayMatrixService) new Retrofit.Builder()
-                .baseUrl(SERVER_PATH)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(PostDisplayMatrixService.class);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading...");
         btnSubmit=(Button)findViewById(R.id.btnSubmit);
@@ -392,7 +397,7 @@ public class OtherDailyActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=IFB";
+        String surl = AppController.APIV2URL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=IFB";
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -453,9 +458,19 @@ public class OtherDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(OtherDailyActivity.this);
+
         requestQueue.add(stringRequest);
 
 
@@ -465,7 +480,7 @@ public class OtherDailyActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=IFB";
+        String surl = AppController.APIV2URL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=IFB";
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -526,9 +541,18 @@ public class OtherDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(OtherDailyActivity.this);
+
         requestQueue.add(stringRequest);
 
 
@@ -546,7 +570,7 @@ public class OtherDailyActivity extends AppCompatActivity {
 
     private void setCounter() {
 
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -614,16 +638,26 @@ public class OtherDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(OtherDailyActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setLocation() {
 
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -690,9 +724,18 @@ public class OtherDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(OtherDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(OtherDailyActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -815,7 +858,7 @@ public class OtherDailyActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload(AppController.APIURL+"api/post_TSROtherSalesActivity")
+        AndroidNetworking.upload(AppController.APIV2URL+"api/post_TSROtherSalesActivity")
                 .addMultipartParameter("ZoneID", zoneId)
                 .addMultipartParameter("BranchID", branchId)
                 .addMultipartParameter("TransNo", transNo)
@@ -834,7 +877,7 @@ public class OtherDailyActivity extends AppCompatActivity {
                 .addMultipartParameter("LocationID",locationId)
                 .addMultipartParameter("Operation",operation)
                 .addMultipartParameter("SecurityCode",securityCode)
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
 
                 .setTag("uploadTest")

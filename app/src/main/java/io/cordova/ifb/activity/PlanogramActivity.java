@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -52,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import io.cordova.ifb.AndroidXCamera.AndroidXCameraActivity;
@@ -67,10 +70,11 @@ import io.cordova.ifb.module.ScannedPlanogramBarcodeModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
+import okhttp3.OkHttpClient;
 
 public class PlanogramActivity extends AppCompatActivity {
     ActivityPlanogramBinding binding;
-    private static final int SCANNER_REQUEST = 801;
+
     private static final int SCANNER_REQUEST_DISPLAY = 803;
     ArrayList<ScannedPlanogramBarcodeModel>itemList=new ArrayList<>();
     String nosaledate;
@@ -100,7 +104,13 @@ public class PlanogramActivity extends AppCompatActivity {
 
     private void initView(){
         prefManager=new PrefManager(PlanogramActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
 
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         binding.llReportHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,8 +145,12 @@ public class PlanogramActivity extends AppCompatActivity {
                 startActivityForResult(intent, SCANNER_REQUEST);*/
                 //scanCode();
 
-                Intent intent = new Intent(PlanogramActivity.this,BarcodeScannerActivity.class);
-                startActivityForResult(intent, SCANNER_REQUEST);
+//                Intent intent = new Intent(PlanogramActivity.this,BarcodeScannerActivity.class);
+//                startActivityForResult(intent, SCANNER_REQUEST);
+
+                Intent intent = new Intent(PlanogramActivity.this,OtherProductScanActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
 
             }
         });
@@ -356,7 +370,7 @@ public class PlanogramActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl =  AppController.APIURL+"api/BarcodePlanogramhygiene?LoginID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Date="+nosaledate+"&ReportType="+reporttype+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/BarcodePlanogramhygiene?LoginID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Date="+nosaledate+"&ReportType="+reporttype+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -432,9 +446,18 @@ public class PlanogramActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(PlanogramActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(PlanogramActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(PlanogramActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -449,28 +472,7 @@ public class PlanogramActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        if ((requestCode == SCANNER_REQUEST)) {
-
-
-            if (data != null) {
-                String resultData = data.getStringExtra("code");
-                //Toast.makeText(this, "Result: " + resultData, Toast.LENGTH_SHORT).show();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Scan Result");
-                builder.setMessage(resultData);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        postBarcode(resultData);
-
-                    }
-                }).show();
-            }
-
-
-
-        }else if ((requestCode == SCANNER_REQUEST_DISPLAY)){
+       if ((requestCode == SCANNER_REQUEST_DISPLAY)){
             if (data != null) {
                 String resultData = data.getStringExtra("code");
                 //Toast.makeText(this, "Result: " + resultData, Toast.LENGTH_SHORT).show();
@@ -603,86 +605,7 @@ public class PlanogramActivity extends AppCompatActivity {
     }
 
 
-    private void postBarcode(String barcode) {
 
-        final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
-        pd.setMessage("Loading..");
-        pd.setCancelable(false);
-        pd.show();
-
-        AndroidNetworking.upload( AppController.APIURL+"api/post_BarcodePlanogramhygiene")
-                .addMultipartParameter("Barcode", barcode)
-                .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
-                .addMultipartParameter("FinancialYear", financialYear)
-                .addMultipartParameter("Month", month)
-                .addMultipartParameter("BranchID", prefManager.getBranchId())
-                .addMultipartParameter("SalesPointID", prefManager.getSalesPointID())
-                .addMultipartParameter("Remarks", "QR")
-                .addMultipartParameter("UserID", prefManager.getUserId())
-                .addMultipartParameter("Operation", "3")
-
-                .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-
-                .setTag("uploadTest")
-                .setPriority(Priority.HIGH)
-                .build()
-                .setUploadProgressListener(new UploadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesUploaded, long totalBytes) {
-                        pd.show();
-
-                    }
-                })
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        pd.dismiss();
-
-
-                        JSONObject job1 = response;
-                        Log.e("response12", "@@@@@@" + job1);
-                        String responseText = job1.optString("responseText");
-                        String responseData = job1.optString("responseData");
-                        boolean responseStatus = job1.optBoolean("responseStatus");
-                        if (responseStatus) {
-                            count=count+1;
-
-                            JSONArray jsonArray=job1.optJSONArray("responseData");
-                            JSONObject jsonObject=jsonArray.optJSONObject(0);
-                            String ModelName=jsonObject.optString("ModelName");
-                            String ProductBarCode=jsonObject.optString("ProductBarCode");
-                            ScannedPlanogramBarcodeModel model=new ScannedPlanogramBarcodeModel();
-                            model.setModel(ModelName);
-                            model.setBarcode(ProductBarCode);
-                            model.setCount(count);
-                            itemList.add(model);
-
-                            Toast.makeText(PlanogramActivity.this, responseText, Toast.LENGTH_LONG).show();
-
-
-                            ScannedBarcodeAdapter barcodeAdapter=new ScannedBarcodeAdapter(itemList,PlanogramActivity.this);
-                            binding.rvItem.setAdapter(barcodeAdapter);
-
-                        } else {
-
-                            Toast.makeText(PlanogramActivity.this, responseText, Toast.LENGTH_LONG).show();
-
-                        }
-
-
-                        // boolean _status = job1.getBoolean("status");
-
-
-                        // do anything with response
-                    }
-
-                    @Override
-                    public void onError(ANError error) {
-                        pd.dismiss();
-                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
-                    }
-                });
-    }
 
 
     private void scanCode() {
@@ -703,7 +626,7 @@ public class PlanogramActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    postBarcode(result.getContents());
+
 
                 }
             }).show();
@@ -719,14 +642,14 @@ public class PlanogramActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.post(AppController.APIURL + "api/post_IFBDisplayActual")
+        AndroidNetworking.post(AppController.APIV2URL + "api/post_IFBDisplayActual")
                 .addQueryParameter("Code", prefManager.getMasterId())
                 .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
                 .addQueryParameter("ModelCode", "")
                 .addQueryParameter("updFlag", "")
                 .addQueryParameter("Operation", "2")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -792,11 +715,14 @@ public class PlanogramActivity extends AppCompatActivity {
                                     binding.rvProduct.setVisibility(View.VISIBLE);
                                     binding.tvFinish.setVisibility(View.VISIBLE);
                                     binding.llCount.setVisibility(View.VISIBLE);
+                                    binding.llOtherScan.setVisibility(View.VISIBLE);
+
                                 }else {
                                     binding.tvNoData.setVisibility(View.VISIBLE);
                                     binding.rvProduct.setVisibility(View.GONE);
                                     binding.tvFinish.setVisibility(View.GONE);
                                     binding.llCount.setVisibility(View.GONE);
+                                    binding.llOtherScan.setVisibility(View.GONE);
                                 }
 
 
@@ -809,6 +735,7 @@ public class PlanogramActivity extends AppCompatActivity {
                         binding.rvProduct.setVisibility(View.GONE);
                         binding.llCount.setVisibility(View.GONE);
                         binding.tvFinish.setVisibility(View.GONE);
+                         binding.llOtherScan.setVisibility(View.GONE);
                         }
 
 
@@ -842,14 +769,14 @@ public class PlanogramActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.post(AppController.APIURL + "api/post_IFBDisplayActual")
+        AndroidNetworking.post(AppController.APIV2URL + "api/post_IFBDisplayActual")
                 .addQueryParameter("Code", prefManager.getMasterId())
                 .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
                 .addQueryParameter("ModelCode", modelCode)
                 .addQueryParameter("updFlag", updateFlag)
                 .addQueryParameter("Operation", "1")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -871,6 +798,7 @@ public class PlanogramActivity extends AppCompatActivity {
                             if (responseStatus){
                                 getDisplayProduct();
                             }else {
+                                getDisplayProduct();
                                 Toast.makeText(PlanogramActivity.this,job1.optString("responseText"),Toast.LENGTH_LONG).show();
 
                             }

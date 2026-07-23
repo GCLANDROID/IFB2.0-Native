@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,6 +38,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.DailyCompSaleReportAdapter;
@@ -140,7 +143,7 @@ public class DailyCompSaleReportActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+date+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+date+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -217,12 +220,20 @@ public class DailyCompSaleReportActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DailyCompSaleReportActivity.this);
 
-        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompSaleReportActivity.this);
         requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompSaleReportActivity.this);
+//        requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,

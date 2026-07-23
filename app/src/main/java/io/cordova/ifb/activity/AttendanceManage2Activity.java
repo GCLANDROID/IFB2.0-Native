@@ -42,6 +42,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -91,8 +92,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
@@ -103,6 +106,7 @@ import io.cordova.ifb.utility.CameraActivity;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
+import okhttp3.OkHttpClient;
 
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 
@@ -203,6 +207,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     boolean responseData;
     String responseTextBlocker, responseCode;
     AlertDialog alet1;
+    LinearLayout llBlocker;
+    TextView tvBlcckerText,tvHeaderBlocker;
+    Button btnBlockerOK;
+    String blockerTextHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,6 +227,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
         llBreak = findViewById(R.id.llBreak);
         btnRegularize = (Button) findViewById(R.id.btnRegularize);
@@ -339,6 +354,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         attFlag = getIntent().getIntExtra("attFlag", 0);
         tvCheckIN = findViewById(R.id.tvCheckIN);
         tvCheckOut = findViewById(R.id.tvCheckOut);
+        llBlocker= findViewById(R.id.llBlocker);
+        tvBlcckerText=findViewById(R.id.tvBlcckerText);
+        tvHeaderBlocker=findViewById(R.id.tvHeaderBlocker);
+        btnBlockerOK= findViewById(R.id.btnBlockerOK);
         updateManageLayoutStatusForCheckOut();
 
 
@@ -695,6 +714,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
             }
         });
+        btnBlockerOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                llBlocker.setVisibility(View.GONE);
+                llMain.setVisibility(View.VISIBLE);
+            }
+        });
 
         imgHome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -739,14 +765,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private void attendenceCheck() {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/SelfAttendanceToDay?LoginID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputcheck", surl);
+        String surl = AppController.APIV2URL + "api/SelfAttendanceToDay?LoginID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("SelfAttendanceToDay", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        Log.d("responseAttendance", response);
+                        Log.d("SelfAttendanceToDay", response);
 
                         // attendabceInfiList.clear();
 
@@ -822,9 +848,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceManage2Activity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -1111,7 +1146,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.dismiss();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeWFHCounterManage")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeWFHCounterManage")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("Attendance_Type", workingStaus)
                 .addMultipartParameter("Calling_Data", number)
@@ -1119,6 +1154,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 .addMultipartParameter("Longitude", longt)
                 .addMultipartParameter("Latitude", lat)
                 .addMultipartParameter("Address", address)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -1468,7 +1504,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeAttendanceWithSelfy_V3")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeAttendanceWithSelfy_V3")
                 .addMultipartParameter("ClientID", prefManager.getClintId())
                 .addMultipartParameter("LoginID", prefManager.getUserId())
                 .addMultipartParameter("Password", prefManager.getPassword())
@@ -1486,6 +1522,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 .addMultipartParameter("Counter_Type_Flag", workStatusFlag)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .addMultipartFile("Imagefile", compressedImageFile)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken() )
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -1550,81 +1587,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     }
 
 
-    private void setOtherCounter() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=17SM&ID=" + prefManager.getUserId() + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("counterurl", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("counterurlresponse", response);
-                        progressBar.dismiss();
 
-                        CounterList.clear();
-                        keyCounterList.clear();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String value = obj.optString("value");
-                                    String id = obj.optString("id");
-                                    String MRP = obj.optString("MRP");
-                                    ModelSpinnerModel itemModule = new ModelSpinnerModel(value, id, MRP);
-                                    CounterList.add(itemModule);
-
-                                }
-
-                                for (int j = 0; j < CounterList.size(); j++) {
-                                    KeyPairBoolData h = new KeyPairBoolData();
-                                    h.setName(CounterList.get(j).getValue());
-                                    h.setId(CounterList.get(j).getId());
-                                    h.setMrp(CounterList.get(j).getMrp());
-                                    h.setSelected(false);
-                                    keyCounterList.add(h);
-
-                                }
-
-
-                            } else {
-
-
-                            }
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-
-                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.d("errort", "model");
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-    }
 
     private void handleCheckoutTime(String apiTime) {
 
@@ -1820,11 +1783,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/EmployeeCheckOutDailySales")
+        AndroidNetworking.get(AppController.APIV2URL + "api/EmployeeCheckOutDailySales")
                 .addQueryParameter("Code", prefManager.getMasterId())
                 .addQueryParameter("SalesCount", "0")
                 .addQueryParameter("Operation", "1")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -1879,11 +1843,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/EmployeeCheckOutDailySales")
+        AndroidNetworking.get(AppController.APIV2URL + "api/EmployeeCheckOutDailySales")
                 .addQueryParameter("Code", prefManager.getMasterId())
                 .addQueryParameter("SalesCount", count)
                 .addQueryParameter("Operation", "2")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -1939,12 +1904,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/CSRLatLongDistanceGAP")
+        AndroidNetworking.get(AppController.APIV2URL + "api/CSRLatLongDistanceGAP")
                 .addQueryParameter("LoginID", prefManager.getMasterId())
                 .addQueryParameter("Longitude", longt)
                 .addQueryParameter("Latitude", lat)
                 .addQueryParameter("SalesPointID", counterid)
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2002,9 +1968,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/get_LoginCheck")
+        AndroidNetworking.get(AppController.APIV2URL + "api/get_LoginCheck")
                 .addQueryParameter("EmployeeID", prefManager.getUserId())
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2101,12 +2068,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/post_RegulariseAttendance")
+        AndroidNetworking.get(AppController.APIV2URL + "api/post_RegulariseAttendance")
                 .addQueryParameter("LoginID", prefManager.getUserId())
                 .addQueryParameter("LoginDate", LastworkingDt)
                 .addQueryParameter("Remarks", remaks)
                 .addQueryParameter("Operation", opereation)
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2176,12 +2144,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/EmployeeBreakInOut")
+        AndroidNetworking.get(AppController.APIV2URL + "api/EmployeeBreakInOut")
                 .addQueryParameter("EmployeeID", prefManager.getUserId())
                 .addQueryParameter("Latitude", lat)
                 .addQueryParameter("Longitude", longt)
                 .addQueryParameter("Operation", "2")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2241,12 +2210,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.get(AppController.APIURL + "api/EmployeeBreakInOut")
+        AndroidNetworking.get(AppController.APIV2URL + "api/EmployeeBreakInOut")
                 .addQueryParameter("EmployeeID", prefManager.getUserId())
                 .addQueryParameter("Latitude", lat)
                 .addQueryParameter("Longitude", longt)
                 .addQueryParameter("Operation", "1")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2291,8 +2261,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
 
     public void checkPlanoBlocker() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
+        String surl =  AppController.APIV2URL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("Comp_DisplayMateixURL", surl);
         final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -2301,19 +2271,32 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("Comp_DisplayMateixURL", response);
                         progressBar.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
                             responseTextBlocker = job1.optString("responseText");
+                            tvBlcckerText.setText(responseTextBlocker);
+                            if (responseTextBlocker.contains("Competition Display")){
+                                blockerTextHeader="Competition Display Alert";
+                            }else if (responseTextBlocker.contains("IFB Display Matrix")){
+                                blockerTextHeader="IFB Display Alert";
+                            }else {
+                                blockerTextHeader="Alert";
+                            }
+                            tvHeaderBlocker.setText(blockerTextHeader);
                             responseCode = job1.optString("responseCode");
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             responseData = job1.optBoolean("responseData");
                             if (responseCode.equalsIgnoreCase("1")){
                                 checkSalesEntry();
+
+
                             }else {
-                                salecheckalert(responseTextBlocker);
+                               // salecheckalert(responseTextBlocker);
+                                llBlocker.setVisibility(View.VISIBLE);
+                                llMain.setVisibility(View.GONE);
 
                             }
 
@@ -2333,17 +2316,26 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
 
     public void checkPlanoBlockerForAbsent() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
+        String surl =  AppController.APIV2URL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("Comp_DisplayMateixURL", surl);
         final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -2352,19 +2344,31 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("Comp_DisplayMateixURL", response);
                         progressBar.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
                             responseTextBlocker = job1.optString("responseText");
+                            tvBlcckerText.setText(responseTextBlocker);
+                            if (responseTextBlocker.contains("Competition Display")){
+                                blockerTextHeader="Competition Display Alert";
+                            }else if (responseTextBlocker.contains("IFB Display Matrix")){
+                                blockerTextHeader="IFB Display Alert";
+                            }else {
+                                blockerTextHeader="Alert";
+                            }
+                            tvHeaderBlocker.setText(blockerTextHeader);
                             responseCode = job1.optString("responseCode");
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             responseData = job1.optBoolean("responseData");
                             if (responseCode.equalsIgnoreCase("1")){
                                 postNormalize("2", "I accept & continue");
                             }else {
-                                salecheckalert(responseTextBlocker);
+                               // salecheckalert(responseTextBlocker);
+
+                                llBlocker.setVisibility(View.VISIBLE);
+                                llMain.setVisibility(View.GONE);
 
                             }
 
@@ -2384,16 +2388,25 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     public void checkPlanoBlockerForRegularize() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
+        String surl =  AppController.APIV2URL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("Comp_DisplayMateixURL", surl);
         final ProgressDialog progressBar = new ProgressDialog(AttendanceManage2Activity.this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -2402,19 +2415,30 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("Comp_DisplayMateixURL", response);
                         progressBar.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);
                             responseTextBlocker = job1.optString("responseText");
+                            tvBlcckerText.setText(responseTextBlocker);
+                            if (responseTextBlocker.contains("Competition Display")){
+                                blockerTextHeader="Competition Display Alert";
+                            }else if (responseTextBlocker.contains("IFB Display Matrix")){
+                                blockerTextHeader="IFB Display Alert";
+                            }else {
+                                blockerTextHeader="Alert";
+                            }
+                            tvHeaderBlocker.setText(blockerTextHeader);
                             responseCode = job1.optString("responseCode");
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             responseData = job1.optBoolean("responseData");
                             if (responseCode.equalsIgnoreCase("1")){
                                 reasonAlert();
                             }else {
-                                salecheckalert(responseTextBlocker);
+                               // salecheckalert(responseTextBlocker);
+                                llBlocker.setVisibility(View.VISIBLE);
+                                llMain.setVisibility(View.GONE);
 
                             }
 
@@ -2434,9 +2458,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }

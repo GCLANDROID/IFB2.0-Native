@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.DocumentAdapter;
@@ -112,7 +115,7 @@ public class DocumentReportActivity extends AppCompatActivity implements Recycle
     }
 
     private void getDocList() {
-        String surl = AppController.APIURL+"api/gcl_EmployeeDigitalDocumentReport?AEMEmployeeID="+pref.getUserId()+"&SecurityCode="+ pref.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/gcl_EmployeeDigitalDocumentReport?AEMEmployeeID="+pref.getUserId()+"&SecurityCode="+ pref.getSecurityCode();
         Log.d("manageinput",surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -188,11 +191,19 @@ public class DocumentReportActivity extends AppCompatActivity implements Recycle
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+pref.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DocumentReportActivity.this);
-        requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DocumentReportActivity.this);
+//        requestQueue.add(stringRequest);
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DocumentReportActivity.this);
+        requestQueue.add(stringRequest);
 
 
     }

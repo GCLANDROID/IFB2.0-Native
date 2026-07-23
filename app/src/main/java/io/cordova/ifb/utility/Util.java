@@ -20,11 +20,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 public class Util implements ActivityCompat.OnRequestPermissionsResultCallback {
     private static NetworkInfo networkInfo;
     private static int countryCode;
     private static Context c = null;
     public static String globalDateFormate = "yyyy-MM-dd'T'HH:mm:ss";
+    private static String INIT_VECTOR="6832054171691981";
+    public static String SECRET_KEY="74074750353890398886017484399862";
 
 
     public static String getFreshValue(String value, String defaultValue) {
@@ -107,5 +113,21 @@ public class Util implements ActivityCompat.OnRequestPermissionsResultCallback {
     public static String fileToBase64(File file) throws IOException {
         Bitmap bitmap = fileToBitmap(file);
         return bitmapToBase64(bitmap);
+    }
+
+    public static String encrypt(String value,String KEY) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(INIT_VECTOR.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(KEY.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            return Base64.encodeToString(encrypted, Base64.DEFAULT);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

@@ -37,6 +37,7 @@ import java.util.Calendar;
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class TeamCollaborationActivity extends AppCompatActivity {
     ImageView imgCalendar;
@@ -59,6 +60,13 @@ public class TeamCollaborationActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         radioGroupQ1 = (RadioGroup) findViewById(R.id.radioGroupQ1);
         radioGroupQ2 = (RadioGroup) findViewById(R.id.radioGroupQ2);
         radioGroupQ3 = (RadioGroup) findViewById(R.id.radioGroupQ3);
@@ -323,11 +331,12 @@ public class TeamCollaborationActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeCollaborationQuestion")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_EmployeeCollaborationQuestion")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("Date_Of_Intraction", salesDate)
                 .addMultipartParameter("Answer", question)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()

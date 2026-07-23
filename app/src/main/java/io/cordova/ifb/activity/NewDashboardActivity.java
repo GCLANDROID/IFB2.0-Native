@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowInsetsController;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.databinding.ActivityNewDashboardBinding;
@@ -300,7 +303,7 @@ public class NewDashboardActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl = AppController.APIURL+"api/SelfAttendanceToDay?LoginID=" + preference.getUserId() + "&SecurityCode=" + preference.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/SelfAttendanceToDay?LoginID=" + preference.getUserId() + "&SecurityCode=" + preference.getSecurityCode();
         Log.d("inputcheck", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -349,9 +352,19 @@ public class NewDashboardActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+preference.getAccessToken());
+                return params;
+            }
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NewDashboardActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewDashboardActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewDashboardActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

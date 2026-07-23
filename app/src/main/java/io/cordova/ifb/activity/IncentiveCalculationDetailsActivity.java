@@ -1,6 +1,7 @@
 package io.cordova.ifb.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,19 +38,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockOneAdapter;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockTwoAdapter;
 import io.cordova.ifb.adapter.IncentiveCategoryEarningAdapter;
 import io.cordova.ifb.adapter.IncentiveDeductionAdapter;
+import io.cordova.ifb.adapter.NewIncnetiveCategoryAdapter;
 import io.cordova.ifb.databinding.ActivityIncentiveCalculationDetailsBinding;
+import io.cordova.ifb.module.Category;
+import io.cordova.ifb.module.CategoryData;
 import io.cordova.ifb.module.DeductionModule;
 import io.cordova.ifb.module.IncentiveCalculationModule;
 import io.cordova.ifb.module.IncentiveCategoryDetailsModel;
 import io.cordova.ifb.module.IncentiveCategoryEarningModule;
+import io.cordova.ifb.module.ReportSummary;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
 
@@ -65,7 +76,9 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
     ArrayList<DeductionModule>deductionList=new ArrayList<>();
     AlertDialog deductionDialog,earningDialog;
     ArrayList<IncentiveCategoryEarningModule>earningList=new ArrayList<>();
-
+    private NewIncnetiveCategoryAdapter categoryAdapter;
+    private DecimalFormat df;
+    private List<CategoryData> categoryDataList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +88,7 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        df = new DecimalFormat("#.#");
         prefManager=new PrefManager(IncentiveCalculationDetailsActivity.this);
         y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -194,18 +208,428 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
             }
         });
 
+        binding.imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
         binding.btnShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getIncentiveData();
+
+
+                if (financialYear.equals("2026-2027")) {
+
+                    // Months up to May
+                    List<String> monthsTillMay = Arrays.asList(
+
+                            "April",
+                            "May"
+                    );
+
+                    if (monthsTillMay.contains(month)) {
+                        binding.llOldIncnetive.setVisibility(View.VISIBLE);
+                        binding.llnewIncentive.setVisibility(View.GONE);
+                        getIncentiveData();
+                    } else {
+                        binding.llOldIncnetive.setVisibility(View.GONE);
+                        binding.llnewIncentive.setVisibility(View.VISIBLE);
+                        getNewIncentiveData();
+                    }
+
+                } else {
+                    binding.llOldIncnetive.setVisibility(View.GONE);
+                    binding.llnewIncentive.setVisibility(View.VISIBLE);
+                    getNewIncentiveData();
+
+                }
+
+
             }
         });
+
+
+        categoryAdapter = new NewIncnetiveCategoryAdapter(this);
+        binding.recyclerViewCategories.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerViewCategories.setAdapter(categoryAdapter);
+        binding.recyclerViewCategories.setHasFixedSize(true);
+        binding.recyclerViewCategories.setNestedScrollingEnabled(false);
+
+
 
 
 
 
 
     }
+
+
+    public void getNewIncentiveData() {
+
+        String surl = AppController.APIV2URL+ "api/IFBCSRDetailsIncentiveReport?FinancialYear="+year+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("inputLogin", surl);
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Authenticating...");
+        progressBar.show();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseLogin", response);
+                        progressBar.dismiss();
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                binding.llNewIncnetiveData.setVisibility(View.VISIBLE);
+                                binding.llNewincnetiveNoData.setVisibility(View.GONE);
+
+                                parseAndDisplayData(response);
+
+
+
+                            } else {
+                                binding.llNewIncnetiveData.setVisibility(View.GONE);
+                                binding.llNewincnetiveNoData.setVisibility(View.VISIBLE);
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            // Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                progressBar.dismiss();
+                Toast.makeText(IncentiveCalculationDetailsActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
+
+                Log.e("ert", error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
+        };
+//        RequestQueue requestQueue = Volley.newRequestQueue(IncentiveCalculationDetailsActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IncentiveCalculationDetailsActivity.this);
+
+        requestQueue.add(stringRequest);
+
+    }
+
+
+    private void parseAndDisplayData(String jsonResponse) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+
+            // Check response status
+            boolean responseStatus = jsonObject.getBoolean("responseStatus");
+
+            if (responseStatus) {
+                JSONObject responseData = jsonObject.getJSONObject("responseData");
+
+                // Parse CategoryEarn array
+                JSONArray categoryEarnArray = responseData.getJSONArray("CategoryEarn");
+
+                // Parse SpecialIncentive array
+                JSONArray specialIncentiveArray = responseData.getJSONArray("SpecialIncentive");
+
+                if (categoryEarnArray != null && categoryEarnArray.length() > 0) {
+                    // Convert to CategoryData for adapter
+                    categoryDataList = convertToCategoryData(categoryEarnArray);
+
+                    // Update RecyclerView
+                    categoryAdapter.setCategoryList(categoryDataList);
+
+                    // Calculate and display summary
+                    calculateAndDisplaySummary(categoryDataList, specialIncentiveArray);
+
+                    // Display employee and period info
+
+                } else {
+                    Toast.makeText(this, "No category data available", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                String responseText = jsonObject.getString("responseText");
+                Toast.makeText(this, "Error: " + responseText, Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error parsing data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private List<CategoryData> convertToCategoryData(JSONArray categoryEarnArray) {
+        List<CategoryData> categoryDataList = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < categoryEarnArray.length(); i++) {
+                JSONObject item = categoryEarnArray.getJSONObject(i);
+
+                String categoryName = item.getString("MasterCategoryName");
+                int target = item.getInt("Target");
+                int achievement = item.getInt("Achievement");
+                int achPercentage = item.getInt("Ach%");
+                double amount = item.getDouble("Amount");
+
+                CategoryData data = new CategoryData(
+                        categoryName,
+                        target,
+                        achievement,
+                        achPercentage,
+                        amount
+                );
+                categoryDataList.add(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return categoryDataList;
+    }
+
+    private void calculateAndDisplaySummary(List<CategoryData> categoryDataList,
+                                            JSONArray specialIncentiveArray) {
+        int totalTargetSum = 0;
+        int totalSoldSum = 0;
+        double totalEarnSum = 0;
+
+        // Calculate totals from category data
+        for (CategoryData data : categoryDataList) {
+            totalTargetSum += data.getTarget();
+            totalSoldSum += data.getSold();
+            totalEarnSum += data.getEarn();
+        }
+
+        // Calculate percentage based on total target and total sold
+        double totalPercentageValue = 0;
+        if (totalTargetSum > 0) {
+            totalPercentageValue = ((double) totalSoldSum / totalTargetSum) * 100;
+        }
+
+        // Parse Special Incentives
+        double topupBonusValue = 0;
+        double specialEarningValue = 0;
+        double specialDeductionValue = 0;
+        double specialIncentiveValue=0;
+
+        try {
+            if (specialIncentiveArray != null && specialIncentiveArray.length() > 0) {
+                JSONObject incentive = specialIncentiveArray.getJSONObject(0);
+                topupBonusValue = incentive.getDouble("SpecialTopUpBonus");
+                specialEarningValue = incentive.getDouble("SPL_Add");
+                specialIncentiveValue =  incentive.getDouble("SpecialSalesBonus");
+
+                specialDeductionValue = incentive.getDouble("SPL_Ded");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Calculate special incentive (10% of total earn)
+
+
+        // Calculate net pay
+        double netPay = totalEarnSum + specialIncentiveValue + topupBonusValue +
+                specialEarningValue - specialDeductionValue;
+
+        // Update UI
+        updateSummaryViews(totalTargetSum, totalSoldSum, totalPercentageValue,
+                totalEarnSum, specialIncentiveValue, topupBonusValue,
+                specialEarningValue, specialDeductionValue, netPay);
+    }
+
+    private void updateSummaryViews(int totalTargetSum, int totalSoldSum,
+                                    double totalPercentageValue, double totalEarnSum,
+                                    double specialIncentiveValue, double topupBonusValue,
+                                    double specialEarningValue, double specialDeductionValue,
+                                    double netPay) {
+        // Update total section
+        binding.totalTarget.setText(String.valueOf(totalTargetSum));
+        binding.totalSold.setText(String.valueOf(totalSoldSum));
+
+        // Format and display percentage
+        String percentageText = df.format(totalPercentageValue) + "%";
+        binding.totalPercentage.setText(percentageText);
+
+        // Format and display total earn
+        binding.totalEarn.setText("₹" + df.format(totalEarnSum));
+
+        // Set percentage color based on value
+        if (totalPercentageValue >= 80) {
+            binding.totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.high_percentage));
+        } else if (totalPercentageValue >= 60) {
+            binding.totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.medium_percentage));
+        } else {
+            binding. totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.low_percentage));
+        }
+
+        // Update special incentives
+        binding.specialIncentive.setText("+₹" + df.format(specialIncentiveValue));
+        binding.topupBonus.setText("+₹" + df.format(topupBonusValue));
+        binding.specialEarning.setText("+₹" + df.format(specialEarningValue));
+        binding.specialDeduction.setText("-₹" + df.format(specialDeductionValue));
+
+        // Update net pay
+        binding.netPayValue.setText("₹" + df.format(netPay));
+
+        // Format breakdown
+        double specialTotal = specialIncentiveValue + specialEarningValue + topupBonusValue;
+        binding.netPayBreakdown.setText(
+                "Base: ₹" + df.format(totalEarnSum) +
+                        " + Special: ₹" + df.format(specialTotal) +
+                        " - Deductions: ₹" + df.format(specialDeductionValue)
+        );
+    }
+
+
+
+//    private void loadReportData() {
+//        // Get sample data
+//        List<Category> categories = getSampleData();
+//
+//        // Calculate category data
+//        List<CategoryData> categoryDataList = calculateCategoryData(categories);
+//
+//        // Update RecyclerView
+//        categoryAdapter.setCategoryList(categoryDataList);
+//
+//        // Calculate and display summary
+//        ReportSummary summary = calculateSummary(categoryDataList);
+//        updateSummaryViews(summary);
+//    }
+//
+//
+//    private List<Category> getSampleData() {
+//        List<Category> categories = new ArrayList<>();
+//         categories.add(new Category("AC", 50, 42, 500));
+//         categories.add(new Category("DIS", 30, 28, 420));
+//         categories.add(new Category("KA", 25, 20, 250));
+//         categories.add(new Category("REF", 40, 35, 525));
+//         categories.add(new Category("FL", 20, 18, 270));
+//        categories.add(new Category("TL", 35, 30, 450));
+//        return categories;
+//    }
+//
+//    private List<CategoryData> calculateCategoryData(List<Category> categories) {
+//        List<CategoryData> categoryDataList = new ArrayList<>();
+//
+//        for (Category category : categories) {
+//            double percentage = ((double) category.getSold() / category.getTarget()) * 100;
+//            double earn = category.getSold() * 10.0; // ₹10 per unit
+//
+//            CategoryData data = new CategoryData(
+//                    category.getName(),
+//                    category.getTarget(),
+//                    category.getSold(),
+//                    percentage,
+//                    category.getEarn()
+//            );
+//            categoryDataList.add(data);
+//        }
+//
+//        return categoryDataList;
+//    }
+//
+//    private ReportSummary calculateSummary(List<CategoryData> categoryDataList) {
+//        int totalTargetSum = 0;
+//        int totalSoldSum = 0;
+//        double totalEarnSum = 0;
+//
+//        // Calculate totals from category data
+//        for (CategoryData data : categoryDataList) {
+//            totalTargetSum += data.getTarget();
+//            totalSoldSum += data.getSold();
+//            totalEarnSum += data.getEarn();
+//        }
+//
+//        // Calculate percentage based on total target and total sold
+//        double totalPercentageValue = 0;
+//        if (totalTargetSum > 0) {
+//            totalPercentageValue = ((double) totalSoldSum / totalTargetSum) * 100;
+//        }
+//
+//        // Calculate special incentives based on total earn
+//        double specialIncentiveValue = totalEarnSum * 0.10; // 10% of category earn
+//        double topupBonusValue = 500.0;
+//        double specialEarningValue = 200.0;
+//        double specialDeductionValue = 0.0;
+//
+//        // Calculate net pay
+//        double netPay = totalEarnSum + specialIncentiveValue + topupBonusValue +
+//                specialEarningValue - specialDeductionValue;
+//
+//        return new ReportSummary(
+//                totalTargetSum,
+//                totalSoldSum,
+//                totalPercentageValue,
+//                totalEarnSum,
+//                specialIncentiveValue,
+//                topupBonusValue,
+//                specialEarningValue,
+//                specialDeductionValue,
+//                netPay
+//        );
+//    }
+//
+//    private void updateSummaryViews(ReportSummary summary) {
+//        // Update total section
+//        binding.totalTarget.setText(String.valueOf(summary.getTotalTarget()));
+//        binding.totalSold.setText(String.valueOf(summary.getTotalSold()));
+//
+//        // Format and display percentage
+//        String percentageText = df.format(summary.getTotalPercentage()) + "%";
+//        binding.totalPercentage.setText(percentageText);
+//
+//        // Format and display total earn
+//        binding.totalEarn.setText("₹" + df.format(summary.getTotalEarn()));
+//
+//        // Set percentage color based on value
+//        if (summary.getTotalPercentage() >= 80) {
+//            binding.totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.high_percentage));
+//        } else if (summary.getTotalPercentage() >= 60) {
+//            binding.totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.medium_percentage));
+//        } else {
+//            binding.totalPercentage.setTextColor(ContextCompat.getColor(this, R.color.low_percentage));
+//        }
+//
+//        // Update special incentives
+//        binding.specialIncentive.setText("+₹" + df.format(summary.getSpecialIncentive()));
+//        binding.topupBonus.setText("+₹" + df.format(summary.getTopupBonus()));
+//        binding.specialEarning.setText("+₹" + df.format(summary.getSpecialEarning()));
+//        binding.specialDeduction.setText("-₹" + df.format(summary.getSpecialDeduction()));
+//
+//        // Update net pay
+//        binding.netPayValue.setText("₹" + df.format(summary.getNetPay()));
+//
+//        // Format breakdown
+//        double specialTotal = summary.getSpecialIncentive() +
+//                summary.getSpecialEarning() +
+//                summary.getTopupBonus();
+//        binding.netPayBreakdown.setText(
+//                "Base: ₹" + df.format(summary.getTotalEarn()) +
+//                        " + Special: ₹" + df.format(specialTotal) +
+//                        " - Deductions: ₹" + df.format(summary.getSpecialDeduction())
+//        );
+//    }
 
     private void blockOneAdapter(){
         IncentiveCategoryBlockOneAdapter oneAdapter=new IncentiveCategoryBlockOneAdapter(blockOneList,this);
@@ -220,7 +644,7 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
 
     public void getIncentiveData() {
 
-        String surl = AppController.APIURL+ "api/get_EmployeeIncentive?FinancialYear="+year+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+ "api/get_EmployeeIncentive?FinancialYear="+year+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputLogin", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -347,12 +771,25 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(IncentiveCalculationDetailsActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(IncentiveCalculationDetailsActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IncentiveCalculationDetailsActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
+
+
+
 
 
     public void deductionAlert() {

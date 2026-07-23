@@ -73,7 +73,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                     }else {
                         if (prefManager.getUserTypeId().equals("IFBUT1000127")){
 
-                            Intent intent = new Intent(SplashActivity.this, DashBoardActivity.class);
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                         }else if (prefManager.getUserTypeId().equals("IFBMM1000011") || prefManager.getUserTypeId().equals("IFBUT1000135") || prefManager.getUserTypeId().equals("IFBUT1000134") || prefManager.getUserTypeId().equals("IFBUT1000133")|| prefManager.getUserTypeId().equals("FBMM1000004")|| prefManager.getUserTypeId().equals("IFBUT1000136")){
@@ -82,7 +82,7 @@ public class SplashActivity extends AppCompatActivity implements GoogleApiClient
                             startActivity(intent);
                             finish();
                         }else {
-                            Intent intent = new Intent(SplashActivity.this, DashBoardActivity.class);
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
                         }

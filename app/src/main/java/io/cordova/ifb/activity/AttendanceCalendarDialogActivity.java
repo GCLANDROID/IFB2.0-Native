@@ -17,6 +17,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -452,14 +453,14 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
         Calendar calendar = Calendar.getInstance();
 
 
-        String surl =  AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputReport", surl);
+        String surl =  AppController.APIV2URL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("SelfAttendance", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        Log.d("responseAttendance", response);
+                        Log.d("SelfAttendance", response);
 
                         pd.dismiss();
                         presentCount=new ArrayList<>();
@@ -529,9 +530,18 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceCalendarDialogActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceCalendarDialogActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceCalendarDialogActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -546,14 +556,14 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
 
 
 
-        String surl =  AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + finYear + "&Month=" + m + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputReport", surl);
+        String surl =  AppController.APIV2URL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + finYear + "&Month=" + m + "&ReportType=1&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("SelfAttendance", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        Log.d("responseAttendance", response);
+                        Log.d("SelfAttendance", response);
 
                         pd.dismiss();
 
@@ -622,9 +632,18 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceCalendarDialogActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceCalendarDialogActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceCalendarDialogActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

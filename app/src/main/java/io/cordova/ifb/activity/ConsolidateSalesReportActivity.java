@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.databinding.DataBindingUtil;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,6 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.databinding.ActivityConsolidateSalesReportBinding;
@@ -116,7 +119,7 @@ public class ConsolidateSalesReportActivity extends AppCompatActivity {
 
 
     public void getReport() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressDialog=new ProgressDialog(ConsolidateSalesReportActivity.this);
         progressDialog.setMessage("Loading..");
@@ -183,11 +186,20 @@ public class ConsolidateSalesReportActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ConsolidateSalesReportActivity.this);
-        requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ConsolidateSalesReportActivity.this);
+//        requestQueue.add(stringRequest);
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ConsolidateSalesReportActivity.this);
+
+        requestQueue.add(stringRequest);
     }
 
     private void onCLick(){

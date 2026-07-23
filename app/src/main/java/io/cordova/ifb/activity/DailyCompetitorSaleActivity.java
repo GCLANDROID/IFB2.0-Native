@@ -29,6 +29,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -49,6 +50,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.DailyCompetitorSaleAdapter;
@@ -106,6 +109,13 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
     private void initialize() {
 
         prefManager = new PrefManager(DailyCompetitorSaleActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         rvItem = (RecyclerView) findViewById(R.id.rvItem);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(DailyCompetitorSaleActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -301,7 +311,7 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl =  AppController.APIURL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+nosaledate+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+nosaledate+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -364,9 +374,19 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompetitorSaleActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompetitorSaleActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DailyCompetitorSaleActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -534,7 +554,7 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_DailyCompetitorSales")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_DailyCompetitorSales")
                 .addMultipartParameter("ZoneID", zoneId)
                 .addMultipartParameter("BranchID", branchId)
                 .addMultipartParameter("AEMEmployeeID", aemId)
@@ -544,7 +564,7 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
                 .addMultipartParameter("Category", compItem)
                 .addMultipartParameter("SecurityCode", securitycode)
                 .addMultipartParameter("CSRRemarks", etRemarks.getText().toString())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
 
                 .setTag("uploadTest")
@@ -649,7 +669,7 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl =  AppController.APIURL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+nosaledate+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_DailyCompetitorSalesUpdatedDetails?AEMEmployeeID=" + prefManager.getUserId() + "&SalesDate="+nosaledate+"&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputtlreport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -698,11 +718,21 @@ public class DailyCompetitorSaleActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompetitorSaleActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DailyCompetitorSaleActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DailyCompetitorSaleActivity.this);
+
         requestQueue.add(stringRequest);
 
     }

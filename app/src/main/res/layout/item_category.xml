@@ -1,0 +1,81 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@color/white"
+    android:paddingVertical="5dp"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- OPTIONAL: CATEGORY TITLE -->
+        <TextView
+            android:drawableLeft="@drawable/point"
+            android:id="@+id/txtTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Category Name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:padding="8dp"
+            android:textColor="@color/black"
+            android:background="@color/yellow"/>
+
+        <!-- HEADER ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="6dp">
+
+            <!-- Brand -->
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Brand"
+                android:textSize="10sp"
+                android:textStyle="bold"/>
+
+            <!-- Capacities Scroll -->
+            <HorizontalScrollView
+                android:id="@+id/headerScroll"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/headerCapacityContainer"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </HorizontalScrollView>
+
+            <!-- Total -->
+            <TextView
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Total"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <!-- 🔥 IMPORTANT: ROW LIST -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerRows"
+            android:nestedScrollingEnabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -30,12 +30,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.UploadProgressListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -63,13 +69,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 import static com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE;
 
@@ -138,6 +147,13 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManageActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         connectionCheck = new NetworkConnectionCheck(AttendanceManageActivity.this);
         mLocationRequest = new LocationRequest();
         mLocationRequest = LocationRequest.create()
@@ -443,7 +459,7 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
         latLng = new LatLng(currentLatitude, currentLongitude);
         address = getCompleteAddressString(currentLatitude, currentLongitude);
         Log.d("attenaddrsees",address);
-        address1 = address.replaceAll("\\s+", "");
+        address1 = address.replaceAll("\\s+", "-").replaceAll("\n\n","-").replaceAll(",","-");
 
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
@@ -546,57 +562,64 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
     }
 
 
-
-
     private void attendencePunch() {
-        String surl =  AppController.APIURL+"api/postEmployeeAttendance?LoginID="+prefManager.getUserId()+"&password="+prefManager.getPassword()+"&ClientID="+prefManager.getClintId()+"&SecurityCode="+prefManager.getSecurityCode()+"&Address="+address1+"&Longitude="+longt+"&Latitude="+lat;
-        Log.d("punchurl",surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
+
+        final ProgressDialog pd = new ProgressDialog(AttendanceManageActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.get(AppController.APIV2URL + "api/postEmployeeAttendance")
+                .addQueryParameter("LoginID", prefManager.getUserId())
+                .addQueryParameter("password", prefManager.getPassword())
+                .addQueryParameter("ClientID", prefManager.getClintId())
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addQueryParameter("Address", address)
+                .addQueryParameter("Longitude", longt)
+                .addQueryParameter("Latitude", lat)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLeave", response);
-                        progressBar.dismiss();
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
                         try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
+                            JSONObject job1 = response;
                             responseText = job1.optString("responseText");
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             successAlert();
-
-
-
-
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(AttendanceManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
                         }
 
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceManageActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
 
-                Log.e("ert", error.toString());
-            }
-        }) {
+                    @Override
+                    public void onError(ANError error) {
 
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManageActivity.this);
-        requestQueue.add(stringRequest);
-
-
+                        pd.dismiss();
+                        Toast.makeText(AttendanceManageActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
+
+
+
 
 
     private void successAlert() {
@@ -741,12 +764,14 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
     }
 
 
+
+
     private void attendenceCheck() {
         final ProgressDialog progressDialog = new ProgressDialog(AttendanceManageActivity.this);
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl = AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputcheck", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -796,9 +821,18 @@ public class AttendanceManageActivity extends AppCompatActivity implements OnMap
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManageActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceManageActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(AttendanceManageActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -46,11 +47,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class ReplenshedUpdateActivity extends AppCompatActivity {
     TextView tvSalesDate,tvProductName,tvModelName,tvReplaceMentDate;
@@ -87,6 +91,13 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
 
     private void initView(){
         prefManager=new PrefManager(ReplenshedUpdateActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
+
         modelcode=getIntent().getStringExtra("modelcode");
         llOldModel=(LinearLayout)findViewById(R.id.llOldModel);
         llChangeModel=(LinearLayout)findViewById(R.id.llChangeModel);
@@ -293,7 +304,7 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL+"api/Post_DisplaymatrixReplaced_V1")
+        AndroidNetworking.upload(AppController.APIV2URL+"api/Post_DisplaymatrixReplaced_V1")
                 .addMultipartParameter("Replace_Date", replacementDate)
                 .addMultipartParameter("Remarks", etRemarks.getText().toString())
                 .addMultipartParameter("DSR_ReferenceNo", id)
@@ -301,7 +312,7 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
                 .addMultipartParameter("Operation", "3")
                 .addMultipartParameter("SubOperation", "1")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -355,14 +366,14 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL+"api/Post_DisplaymatrixReplaced")
+        AndroidNetworking.upload(AppController.APIV2URL+"api/Post_DisplaymatrixReplaced")
                 .addMultipartParameter("Replace_Date", "0")
                 .addMultipartParameter("Remarks", "0")
                 .addMultipartParameter("DSR_ReferenceNo", id)
                 .addMultipartParameter("Operation", "3")
                 .addMultipartParameter("SubOperation", "2")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -443,7 +454,7 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
     }
 
     private void setModel(String categoryId) {
-        String surl = AppController.APIURL+"api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/CommonDDL?ModuleNo=18&ID=" + categoryId + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -516,10 +527,20 @@ public class ReplenshedUpdateActivity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReplenshedUpdateActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReplenshedUpdateActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReplenshedUpdateActivity.this);
         requestQueue.add(stringRequest);
+
+
 
     }
 }

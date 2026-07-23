@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -28,6 +29,8 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
@@ -174,7 +177,7 @@ public class NoSalesActivity extends AppCompatActivity {
 
 
     private void postNoSale(){
-        String surl = AppController.APIURL+"api/post_NoSales?UserID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesDate="+tvDate.getText().toString();
+        String surl = AppController.APIV2URL+"api/post_NoSales?UserID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesDate="+tvDate.getText().toString();
 
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -219,10 +222,20 @@ public class NoSalesActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NoSalesActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NoSalesActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NoSalesActivity.this);
+
         requestQueue.add(stringRequest);
+
 
 
     }

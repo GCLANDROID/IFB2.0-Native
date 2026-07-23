@@ -41,6 +41,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -64,8 +65,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.activity.AttemdanceReportActivity;
@@ -84,6 +87,7 @@ import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.GPSTracker;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class AttendanceFragment extends Fragment {
 
@@ -140,6 +144,13 @@ public class AttendanceFragment extends Fragment {
     }
 
     private void initialize() {
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getActivity(),
+                okHttpClient
+        );
         prefManager = new PrefManager(getContext());
         tvCheckOut=view.findViewById(R.id.tvCheckOut);
         tvCheckIN=view.findViewById(R.id.tvCheckIN);
@@ -392,98 +403,11 @@ public class AttendanceFragment extends Fragment {
         }
     }
 
-    public void checksale() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(getContext());
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            responseText = job1.optString("responseText");
-                            responseCode = job1.optString("responseCode");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            responseData = job1.optBoolean("responseData");
 
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(getContext(), "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void checkCounterMap() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointGeoInfo?UserID=" + prefManager.getUserId() + "&Operation=1&SubOperation=2&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(getContext());
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-
-                            } else {
-                                counterMapDialog();
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(getContext(), "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-
-    }
 
     public void checkNewUI() {
-        String surl =  AppController.APIURL+"api/get_EmployeeLockdownAttendanceStatus?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
+        String surl =  AppController.APIV2URL+"api/get_EmployeeLockdownAttendanceStatus?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("AttendanceStatusURL", surl);
         final ProgressDialog progressBar = new ProgressDialog(getContext());
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -492,7 +416,7 @@ public class AttendanceFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("EmployeeAttendance", response);
                         progressBar.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
@@ -525,9 +449,18 @@ public class AttendanceFragment extends Fragment {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
 
     }
@@ -744,7 +677,7 @@ public class AttendanceFragment extends Fragment {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/Post_EmployeeSalespointGeoInfo")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/Post_EmployeeSalespointGeoInfo")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("SalesPointID", "0")
                 .addMultipartParameter("Longitude", longt)
@@ -754,6 +687,7 @@ public class AttendanceFragment extends Fragment {
                 .addMultipartParameter("Operation", "1")
                 .addMultipartParameter("SubOperation", "1")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -826,8 +760,8 @@ public class AttendanceFragment extends Fragment {
     }
 
     public void getCounetrCoordinates() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
+        String surl =  AppController.APIV2URL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("inputCoordinatesURL", surl);
         final ProgressDialog progressBar = new ProgressDialog(getContext());
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -836,7 +770,7 @@ public class AttendanceFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("inputCoordinatesURL", response);
                         progressBar.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
@@ -875,15 +809,25 @@ public class AttendanceFragment extends Fragment {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
 
     }
 
     public void getCounetrCoordinatesForCheckOut() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(getContext());
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -937,9 +881,18 @@ public class AttendanceFragment extends Fragment {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
 
     }
@@ -949,8 +902,8 @@ public class AttendanceFragment extends Fragment {
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl = AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputcheck", surl);
+        String surl = AppController.APIV2URL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("SelfAttendanceURL", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
@@ -963,7 +916,7 @@ public class AttendanceFragment extends Fragment {
 
                         try {
                             JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
+                            Log.d("SelfAttendanceURL", "@@@@@@" + job1);
                             String responseText = job1.optString("responseText");
 
                             boolean responseStatus = job1.optBoolean("responseStatus");
@@ -1003,9 +956,18 @@ public class AttendanceFragment extends Fragment {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
     }
 
@@ -1015,14 +977,14 @@ public class AttendanceFragment extends Fragment {
         progressDialog.setMessage("Loading..");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl = AppController.APIURL+"api/CheckOutAttendanceStatus?LoginID=" + prefManager.getUserId() + "&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputcheck", surl);
+        String surl = AppController.APIV2URL+"api/CheckOutAttendanceStatus?LoginID=" + prefManager.getUserId() + "&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode=" + prefManager.getSecurityCode();
+        Log.d("CheckOutAttendanceURL", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
-                        Log.d("responseAttendance", response);
+                        Log.d("CheckOutAttendanceURL", response);
                         progressDialog.dismiss();
 
                         // attendabceInfiList.clear();
@@ -1103,9 +1065,18 @@ public class AttendanceFragment extends Fragment {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
     }
 

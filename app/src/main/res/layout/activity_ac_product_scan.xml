@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/color3"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5">
+
+                <ImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_arrow_back_black_24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <TextView
+                    android:background="@color/white"
+                    android:id="@+id/tvHelpDesk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="2dp"
+                    android:text="FAQ"
+                    android:padding="5dp"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="@android:color/black"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/imgHome"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_home" />
+
+            </LinearLayout>
+        </LinearLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="right">
+                    <Button
+                        android:id="@+id/btnSubmit"
+                        android:layout_width="120dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/lldesign"
+                        android:backgroundTint="@color/orange"
+                        android:textColor="@color/white"
+                        android:text="Submit"
+                        ></Button>
+                </LinearLayout>
+                <LinearLayout
+                    android:background="@drawable/lldesign"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+                    <ImageView
+                        android:layout_marginLeft="10dp"
+                        android:layout_gravity="center"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/searchicon"></ImageView>
+                    <EditText
+                        android:id="@+id/etSearch"
+                        android:layout_marginLeft="10dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:hint="Search"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"></EditText>
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvItem"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</layout>

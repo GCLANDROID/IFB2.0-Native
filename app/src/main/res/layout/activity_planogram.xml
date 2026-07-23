@@ -203,7 +203,7 @@
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sorry No Product Display is assigned to you. Please contact your branch."
+                android:text="Sorry, No data found. Please try again after some time."
                 android:textColor="@color/red"
                 android:layout_marginVertical="10dp"
                 android:layout_marginHorizontal="10dp"></TextView>
@@ -230,6 +230,7 @@
                     android:text="Other IFB Product Scan"></TextView>
             </LinearLayout>
             <LinearLayout
+                android:visibility="gone"
                 android:layout_marginLeft="10dp"
                 android:id="@+id/llOtherScanReport"
                 android:layout_width="150dp"

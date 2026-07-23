@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.DocNumberReportAdapter;
@@ -46,6 +49,7 @@ public class DocumentNumberActivity extends AppCompatActivity {
     ArrayList<DocumentManageModule>docNumList=new ArrayList<>();
     ArrayList<DocumentNumberRawModel>docList=new ArrayList<>();
     LinearLayout llTotalDoc;
+
 
 
     @Override
@@ -114,7 +118,7 @@ public class DocumentNumberActivity extends AppCompatActivity {
     }
 
     private void getNumberList() {
-        String surl = AppController.APIURL+"api/gcl_EmployeeDigitalDocumentReport?AEMEmployeeID="+pref.getUserId()+"&SecurityCode=" + pref.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/gcl_EmployeeDigitalDocumentReport?AEMEmployeeID="+pref.getUserId()+"&SecurityCode=" + pref.getSecurityCode();
         Log.d("manageinput",surl);
         pg.show();
 
@@ -179,17 +183,27 @@ public class DocumentNumberActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+pref.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DocumentNumberActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DocumentNumberActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DocumentNumberActivity.this);
+
         requestQueue.add(stringRequest);
+
 
 
     }
 
     private void getDocInfoList() {
-        String surl = AppController.APIURL+"api/gcl_EmployeeDigitalDocumentUploadInfo?AEMEmployeeID="+pref.getUserId()+"&SecurityCode=" + pref.getSecurityCode();
-        Log.d("manageinput",surl);
+        String surl = AppController.APIV2URL+"api/gcl_EmployeeDigitalDocumentUploadInfo?AEMEmployeeID="+pref.getUserId()+"&SecurityCode=" + pref.getSecurityCode();
+        Log.d("DigitalDocumentUpload",surl);
         pg.show();
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -252,9 +266,19 @@ public class DocumentNumberActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+pref.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DocumentNumberActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DocumentNumberActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DocumentNumberActivity.this);
+
         requestQueue.add(stringRequest);
 
 

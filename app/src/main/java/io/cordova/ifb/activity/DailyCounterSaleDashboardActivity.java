@@ -40,6 +40,7 @@ import io.cordova.ifb.module.CompetiorSaleModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PostDisplayMatrixService;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class DailyCounterSaleDashboardActivity extends AppCompatActivity {
     LinearLayout llManage,llReport;
@@ -85,6 +86,13 @@ public class DailyCounterSaleDashboardActivity extends AppCompatActivity {
 
     private void initView(){
         prefManager=new PrefManager(DailyCounterSaleDashboardActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
+
         llManage=(LinearLayout)findViewById(R.id.llManage);
         llReport=(LinearLayout)findViewById(R.id.llReport);
         imgBack=(ImageView)findViewById(R.id.imgBack);
@@ -320,7 +328,7 @@ public class DailyCounterSaleDashboardActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_DailyCompetitorSales")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_DailyCompetitorSales")
                 .addMultipartParameter("ZoneID", "0")
                 .addMultipartParameter("BranchID", "0")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -330,7 +338,7 @@ public class DailyCounterSaleDashboardActivity extends AppCompatActivity {
                 .addMultipartParameter("Category", "IFBPC1000025-IFBCC000004#0")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .addMultipartParameter("CSRRemarks", "no sale")
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
 
                 .setTag("uploadTest")

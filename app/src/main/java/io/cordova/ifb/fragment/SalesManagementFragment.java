@@ -303,70 +303,7 @@ public class SalesManagementFragment extends Fragment {
     }
 
 
-    public void checksale() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        llLoader.setVisibility(View.VISIBLE);
-        llManage.setEnabled(false);
-        llReport.setEnabled(false);
-        llTarget.setEnabled(false);
-        llModelExchange.setEnabled(false);
-        llDummySale.setEnabled(false);
-        llWebSales.setEnabled(false);
-        llNoSales.setEnabled(false);
-        llCompSale.setEnabled(false);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        llLoader.setVisibility(View.GONE);
-                        llManage.setEnabled(true);
-                        llReport.setEnabled(true);
-                        llTarget.setEnabled(true);
-                        llModelExchange.setEnabled(true);
-                        llDummySale.setEnabled(true);
-                        llWebSales.setEnabled(true);
-                        llNoSales.setEnabled(true);
-                        llCompSale.setEnabled(true);
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            responseText = job1.optString("responseText");
-                            responseCode=job1.optString("responseCode");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            responseData=job1.optBoolean("responseData");
 
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getContext(), "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                llLoader.setVisibility(View.VISIBLE);
-                llManage.setEnabled(false);
-                llReport.setEnabled(false);
-                llTarget.setEnabled(false);
-                llModelExchange.setEnabled(false);
-                llDummySale.setEnabled(false);
-                llWebSales.setEnabled(false);
-                llNoSales.setEnabled(false);
-                llCompSale.setEnabled(false);
-                Toast.makeText(getContext(), "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-
-    }
 
 
     private void salecheckalert() {

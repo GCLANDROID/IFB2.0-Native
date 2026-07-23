@@ -3,6 +3,34 @@ package io.cordova.ifb.utility;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import android.content.Context;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.StringRequestListener;
+
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 
 public class AppController {
     public static int ifbac=0;
@@ -94,6 +122,7 @@ public class AppController {
 
     public static String APIURL="https://nonfss.geniusconsultant.com/IFBiOSApi/";
     public static String localAPIURL="https://171.16.2.105/IFBiOSApi/";
+    public static String APIV2URL="https://ifb.geniushrtech.com/IFBApi/";
 
 
     public static String changeAnyDateFormat(String reqdate, String dateformat, String reqformat) {
@@ -120,6 +149,120 @@ public class AppController {
         }
         return changedate;
     }
+
+
+    public static RequestQueue getUnsafeOkHttpQueue(Context context) {
+
+        try {
+
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+
+                        @Override
+                        public void checkClientTrusted(
+                                X509Certificate[] chain,
+                                String authType) {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(
+                                X509Certificate[] chain,
+                                String authType) {
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[]{};
+                        }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+
+            sslContext.init(
+                    null,
+                    trustAllCerts,
+                    new SecureRandom()
+            );
+
+            HurlStack hurlStack =
+                    new HurlStack(null,
+                            sslContext.getSocketFactory());
+
+            RequestQueue requestQueue = new RequestQueue(
+                    new DiskBasedCache(context.getCacheDir()),
+                    new BasicNetwork(hurlStack)
+            );
+
+            requestQueue.start();
+
+            return requestQueue;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static OkHttpClient getUnsafeOkHttpClient() {
+
+        try {
+
+            // Trust all certificates
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+
+                        @Override
+                        public void checkClientTrusted(
+                                X509Certificate[] chain,
+                                String authType) {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(
+                                X509Certificate[] chain,
+                                String authType) {
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install trust manager
+            final SSLContext sslContext =
+                    SSLContext.getInstance("TLS");
+
+            sslContext.init(
+                    null,
+                    trustAllCerts,
+                    new SecureRandom()
+            );
+
+            // Create ssl socket factory
+            final SSLSocketFactory sslSocketFactory =
+                    sslContext.getSocketFactory();
+
+            OkHttpClient.Builder builder =
+                    new OkHttpClient.Builder();
+
+            builder.sslSocketFactory(
+                    sslSocketFactory,
+                    (X509TrustManager) trustAllCerts[0]
+            );
+
+            builder.hostnameVerifier(
+                    (hostname, session) -> true
+            );
+
+            return builder.build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
 }

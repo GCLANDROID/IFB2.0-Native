@@ -109,7 +109,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/lldesign7"
-                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:backgroundTint="@color/amber_dark"
                         android:layout_marginTop="20dp"
                         android:text="Show"
                         android:textColor="@color/white"
@@ -117,322 +117,770 @@
                 </LinearLayout>
                 <LinearLayout
                     android:visibility="gone"
-                    android:id="@+id/llData"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                   android:orientation="vertical">
+                    android:id="@+id/llOldIncnetive">
                     <LinearLayout
                         android:visibility="gone"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/lldesign7"
-                        android:backgroundTint="@color/red"
-                        android:padding="10dp"
+                        android:id="@+id/llData"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:visibility="gone"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/lldesign7"
+                            android:backgroundTint="@color/red"
+                            android:padding="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:gravity="center">
+                            <TextView
+                                android:textAlignment="center"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/white"
+                                android:text="CORRECTNESS OF BELOW FIGURE ARE SUBJECT TO VERIFICATION BY  THE BRANCH HR"></TextView>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:background="@drawable/lldesign2"
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:background="@color/yellow_one"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                >
+                                <TextView
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:text="Incentive Month"></TextView>
+
+                                <TextView
+                                    android:gravity="right"
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:id="@+id/tvMonth"></TextView>
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/black"></View>
+
+                            <LinearLayout
+
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                >
+                                <LinearLayout
+                                    android:background="@color/yellow_two"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1">
+                                    <TextView
+                                        android:padding="10dp"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:textSize="12sp"
+                                        android:textColor="@color/black"
+                                        android:text="Branch Ranking"></TextView>
+
+                                    <TextView
+                                        android:gravity="right"
+                                        android:padding="10dp"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:textSize="12sp"
+                                        android:textColor="@color/black"
+                                        android:id="@+id/tvSelfRank"></TextView>
+                                </LinearLayout>
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@color/black"></View>
+
+                                <LinearLayout
+                                    android:background="@color/yellow_three"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1">
+                                    <TextView
+                                        android:padding="10dp"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:textSize="12sp"
+                                        android:textColor="@color/black"
+                                        android:text="Dealerwise Ranking"></TextView>
+
+                                    <TextView
+                                        android:gravity="right"
+                                        android:padding="10dp"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="0.5"
+                                        android:textSize="12sp"
+                                        android:textColor="@color/black"
+                                        android:id="@+id/tvEarned"></TextView>
+                                </LinearLayout>
+
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/black"></View>
+                            <LinearLayout
+                                android:background="@color/orange_one"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                >
+                                <TextView
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:text="Your Highest Incentive"></TextView>
+
+                                <TextView
+                                    android:gravity="right"
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:id="@+id/tvHighestIncentive"></TextView>
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/black"></View>
+                            <LinearLayout
+                                android:background="@color/orange_two"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                >
+                                <TextView
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:text="Avg. Incentive of Branch"></TextView>
+
+                                <TextView
+                                    android:gravity="right"
+                                    android:padding="10dp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:id="@+id/tvIncentiveBranch"></TextView>
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/black"></View>
+                            <LinearLayout
+                                android:padding="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/blue"
+                                >
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:textColor="@color/white"
+                                    android:text="Core Incentive"></TextView>
+
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.2"
+                                    android:textColor="@color/white"
+                                    android:text="Target"></TextView>
+                                <TextView
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/white"
+                                    android:text="Achieved"></TextView>
+                                <TextView
+                                    android:gravity="center"
+                                    android:textAlignment="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/white"
+                                    android:text="Acheive\nment(%)"></TextView>
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/white"
+                                    android:text="Amount"></TextView>
+
+
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/black"></View>
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvBlockOne"
+                                android:layout_marginTop="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvBlockTwo"
+                                android:layout_marginTop="5dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+                            <LinearLayout
+                                android:background="@color/greentwo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="10dp">
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:textColor="@color/black"
+                                    android:text="Total Final Incentive"></TextView>
+
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.2"
+                                    android:textColor="@color/black"
+                                    ></TextView>
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/black"
+                                    ></TextView>
+                                <TextView
+                                    android:gravity="center"
+                                    android:textAlignment="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/black"
+                                    ></TextView>
+                                <TextView
+                                    android:gravity="center"
+                                    android:textSize="10sp"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.3"
+                                    android:textColor="@color/black"
+                                    android:id="@+id/tvFinalIncentiveAmt"></TextView>
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/llNoData"
+                        android:padding="10dp"
+                        android:layout_marginTop="200dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
                         android:gravity="center">
                         <TextView
                             android:textAlignment="center"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:text="CORRECTNESS OF BELOW FIGURE ARE SUBJECT TO VERIFICATION BY  THE BRANCH HR"></TextView>
+                            android:textSize="16sp"
+                            android:textColor="@color/text_color"
+                            android:text="No incentive has been generated so far for the selected month."></TextView>
                     </LinearLayout>
-                    <LinearLayout
-                        android:background="@drawable/lldesign2"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <LinearLayout
-                            android:background="@color/yellow_one"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            >
-                            <TextView
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:text="Incentive Month"></TextView>
-
-                            <TextView
-                                android:gravity="right"
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:id="@+id/tvMonth"></TextView>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black"></View>
-
-                        <LinearLayout
-
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            >
-                            <LinearLayout
-                                android:background="@color/yellow_two"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1">
-                                <TextView
-                                    android:padding="10dp"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:text="Branch Ranking"></TextView>
-
-                                <TextView
-                                    android:gravity="right"
-                                    android:padding="10dp"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:id="@+id/tvSelfRank"></TextView>
-                            </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/black"></View>
-
-                            <LinearLayout
-                                android:background="@color/yellow_three"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-                                <TextView
-                                    android:padding="10dp"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:text="Dealerwise Ranking"></TextView>
-
-                                <TextView
-                                    android:gravity="right"
-                                    android:padding="10dp"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="0.5"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/black"
-                                    android:id="@+id/tvEarned"></TextView>
-                            </LinearLayout>
-
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black"></View>
-                        <LinearLayout
-                            android:background="@color/orange_one"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            >
-                            <TextView
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:text="Your Highest Incentive"></TextView>
-
-                            <TextView
-                                android:gravity="right"
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:id="@+id/tvHighestIncentive"></TextView>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black"></View>
-                        <LinearLayout
-                            android:background="@color/orange_two"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            >
-                            <TextView
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:text="Avg. Incentive of Branch"></TextView>
-
-                            <TextView
-                                android:gravity="right"
-                                android:padding="10dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:textSize="12sp"
-                                android:textColor="@color/black"
-                                android:id="@+id/tvIncentiveBranch"></TextView>
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black"></View>
-                        <LinearLayout
-                            android:padding="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/blue"
-                            >
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:textColor="@color/white"
-                                android:text="Core Incentive"></TextView>
-
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.2"
-                                android:textColor="@color/white"
-                                android:text="Target"></TextView>
-                            <TextView
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/white"
-                                android:text="Achieved"></TextView>
-                            <TextView
-                                android:gravity="center"
-                                android:textAlignment="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/white"
-                                android:text="Acheive\nment(%)"></TextView>
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/white"
-                                android:text="Amount"></TextView>
-
-
-                        </LinearLayout>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black"></View>
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvBlockOne"
-                            android:layout_marginTop="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
-
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rvBlockTwo"
-                            android:layout_marginTop="5dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
-
-                        <LinearLayout
-                            android:background="@color/greentwo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="10dp">
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:textColor="@color/black"
-                                android:text="Total Final Incentive"></TextView>
-
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.2"
-                                android:textColor="@color/black"
-                                ></TextView>
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/black"
-                                ></TextView>
-                            <TextView
-                                android:gravity="center"
-                                android:textAlignment="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/black"
-                                ></TextView>
-                            <TextView
-                                android:gravity="center"
-                                android:textSize="10sp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.3"
-                                android:textColor="@color/black"
-                                android:id="@+id/tvFinalIncentiveAmt"></TextView>
-
-
-                        </LinearLayout>
-                    </LinearLayout>
-
                 </LinearLayout>
                 <LinearLayout
                     android:visibility="gone"
-                    android:id="@+id/llNoData"
-                    android:padding="10dp"
-                    android:layout_marginTop="200dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:gravity="center">
-                    <TextView
-                        android:textAlignment="center"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_color"
-                        android:text="No incentive has been generated so far for the selected month."></TextView>
+                    android:id="@+id/llnewIncentive"
+                    android:background="@color/background_gray">
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/llNewIncnetiveData">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <!-- Report Header -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="@color/medium_percentage"
+                                android:padding="12dp"
+                                android:layout_marginBottom="8dp"
+                                android:weightSum="5"
+                                android:elevation="2dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Category"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Target"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp"
+                                    android:gravity="center" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="0.5"
+                                    android:text="Sold"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp"
+                                    android:gravity="center" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="%"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp"
+                                    android:gravity="center" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Earn"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="12sp"
+                                    android:gravity="center" />
+                            </LinearLayout>
+
+                            <!-- RecyclerView for Categories -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerViewCategories"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clipToPadding="false"
+                                android:paddingBottom="8dp" />
+
+                            <!-- Total Section -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:background="@android:color/white"
+                                android:padding="16dp"
+                                android:layout_marginTop="16dp"
+                                android:elevation="3dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Category Earn Summary"
+                                    android:textColor="@color/primary_dark"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:padding="8dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:background="@drawable/bottom_border" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Total Target"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/totalTarget"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="0"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Total Sold"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/totalSold"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="0"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Achievement %"
+                                        android:textColor="@color/text_secondary"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/totalPercentage"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="0%"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@color/primary_dark"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginBottom="10dp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Total Earn"
+                                        android:textColor="@color/primary_dark"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/totalEarn"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/green"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Special Incentives Section -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:background="@color/amber_light"
+                                android:padding="16dp"
+                                android:layout_marginTop="16dp"
+                                android:elevation="3dp"
+                                android:layout_marginBottom="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Special Incentives &amp; Adjustments"
+                                    android:textColor="@color/amber_dark"
+                                    android:textStyle="bold"
+                                    android:textSize="16sp"
+                                    android:padding="8dp"
+                                    android:layout_marginBottom="12dp"
+                                    android:background="@drawable/bottom_border_amber" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Special Incentive (10%)"
+                                        android:textColor="@color/text_dark"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/specialIncentive"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/green"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Topup Bonus"
+                                        android:textColor="@color/text_dark"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/topupBonus"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/green"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="6dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Special Earning"
+                                        android:textColor="@color/text_dark"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/specialEarning"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/green"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Special Deduction"
+                                        android:textColor="@color/text_dark"
+                                        android:textSize="14sp" />
+
+                                    <TextView
+                                        android:id="@+id/specialDeduction"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/red"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Net Pay Section -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:background="@color/amber_dark"
+                                android:padding="20dp"
+                                android:elevation="4dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Net Pay"
+                                    android:textColor="@android:color/white"
+                                    android:textStyle="bold"
+                                    android:textSize="18sp"
+                                    android:gravity="center"
+                                    android:layout_marginBottom="12dp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:weightSum="2"
+                                    android:layout_marginBottom="8dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="Total Earnings"
+                                        android:textColor="@color/white"
+                                        android:textSize="16sp" />
+
+                                    <TextView
+                                        android:id="@+id/netPayValue"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:text="$0"
+                                        android:textColor="@color/white"
+                                        android:textSize="24sp"
+                                        android:textStyle="bold"
+                                        android:gravity="end" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/netPayBreakdown"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text=""
+                                    android:textColor="@color/white"
+                                    android:textSize="12sp"
+                                    android:gravity="center"
+                                    android:padding="8dp"
+                                    android:layout_marginTop="8dp"
+                                    android:background="@drawable/top_border_light" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/llNewincnetiveNoData"
+                        android:padding="10dp"
+                        android:layout_marginTop="200dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:textAlignment="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_color"
+                            android:text="No incentive has been generated so far for the selected month."></TextView>
+                    </LinearLayout>
+
+
+
+
+
+
                 </LinearLayout>
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

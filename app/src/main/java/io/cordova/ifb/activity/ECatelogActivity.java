@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -29,6 +30,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.ECatelogAdapter;
@@ -59,6 +62,7 @@ public class ECatelogActivity extends AppCompatActivity {
 
     private void initialize(){
         rvReport=(RecyclerView)findViewById(R.id.rvReport);
+        prefManager=new PrefManager(ECatelogActivity.this);
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(ECatelogActivity.this, LinearLayoutManager.VERTICAL, false);
         rvReport.setLayoutManager(layoutManager);
@@ -76,7 +80,7 @@ public class ECatelogActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/get_ProductCatalog?ECatalogID=0&CategoryId=0&Operation=1";
+        String surl =  AppController.APIV2URL+"api/get_ProductCatalog?ECatalogID=0&CategoryId=0&Operation=1";
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -144,9 +148,18 @@ public class ECatelogActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ECatelogActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ECatelogActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ECatelogActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

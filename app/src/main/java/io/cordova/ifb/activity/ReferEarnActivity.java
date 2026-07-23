@@ -31,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -59,7 +60,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.ReferEarnReportAdapter;
@@ -69,6 +72,7 @@ import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.FindDocumentInformation;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.RealPathUtil;
+import okhttp3.OkHttpClient;
 
 public class ReferEarnActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "ReferEarnActivity";
@@ -113,6 +117,13 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
 
     private void initView() {
         prefManager = new PrefManager(ReferEarnActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         spMonth=(Spinner)findViewById(R.id.spMonth);
         spYear=(Spinner)findViewById(R.id.spYear);
         btnShow=(Button)findViewById(R.id.btnShow);
@@ -491,7 +502,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         pd.dismiss();
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeReferalV2")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeReferalV2")
                 .addMultipartParameter("EmployeeID", prefManager.getUserId())
                 .addMultipartParameter("CandidateName", etCanName.getText().toString())
                 .addMultipartParameter("CandidateMobile", etCanMobNumber.getText().toString())
@@ -499,7 +510,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 .addMultipartParameter("BranchID", branchID)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .addMultipartFile("CV", pdfFile)
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -580,7 +591,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/get_EmployeeReferralReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_EmployeeReferralReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -646,10 +657,20 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReferEarnActivity.this);
+
         requestQueue.add(stringRequest);
+
     }
 
 
@@ -657,7 +678,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&Operation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month="+mID+"&AEMEmployeeID="+prefManager.getUserId()+"&Operation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -747,10 +768,20 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReferEarnActivity.this);
+
         requestQueue.add(stringRequest);
+
     }
 
 
@@ -758,7 +789,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month=%&AEMEmployeeID="+prefManager.getUserId()+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_EmployeeReferralDetailsReport?FinancialYear="+yID+"&Month=%&AEMEmployeeID="+prefManager.getUserId()+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -849,9 +880,19 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReferEarnActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -863,7 +904,7 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
 
 
     private void setBranchList() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=333&ID=0&ID1=0&ID2=" + prefManager.getBranchId() + "&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=333&ID=0&ID1=0&ID2=" + prefManager.getBranchId() + "&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -930,11 +971,20 @@ public class ReferEarnActivity extends AppCompatActivity implements View.OnClick
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
-        requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReferEarnActivity.this);
+//        requestQueue.add(stringRequest);
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReferEarnActivity.this);
+
+        requestQueue.add(stringRequest);
     }
 
     private void aadhaarValidation(){

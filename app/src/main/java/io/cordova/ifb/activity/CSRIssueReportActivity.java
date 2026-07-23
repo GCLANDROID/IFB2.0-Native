@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,6 +37,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.CSRIssuewReportAdapter;
@@ -140,7 +143,7 @@ public class CSRIssueReportActivity extends AppCompatActivity {
         binding.llMain.setVisibility(View.VISIBLE);
         binding.llNoData.setVisibility(View.GONE);
 
-        String surl =  AppController.APIURL+"api/get_EmployeeIssueRequisition?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_EmployeeIssueRequisition?AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -211,10 +214,20 @@ public class CSRIssueReportActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(CSRIssueReportActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(CSRIssueReportActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(CSRIssueReportActivity.this);
+
         requestQueue.add(stringRequest);
+
     }
 
     private void setAdapter(){

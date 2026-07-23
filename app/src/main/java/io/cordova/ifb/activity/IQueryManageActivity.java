@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -46,11 +47,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.SpinnerItemModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class IQueryManageActivity extends AppCompatActivity {
     LinearLayout llDate,llOther,llLoader,llCatOther;
@@ -88,6 +92,13 @@ public class IQueryManageActivity extends AppCompatActivity {
 
     private void initView(){
         prefManager=new PrefManager(IQueryManageActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         llDate=(LinearLayout)findViewById(R.id.llDate);
         llOther=(LinearLayout)findViewById(R.id.llOther);
         llCatOther=(LinearLayout)findViewById(R.id.llCatOther);
@@ -189,7 +200,7 @@ public class IQueryManageActivity extends AppCompatActivity {
     private void setProductList() {
         Log.d("hitr", "1");
 
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=45&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=45&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
@@ -256,9 +267,18 @@ public class IQueryManageActivity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IQueryManageActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -266,7 +286,7 @@ public class IQueryManageActivity extends AppCompatActivity {
     private void setTotalIQuery() {
         Log.d("hitr", "1");
 
-        String surl =  AppController.APIURL+"api/get_EmployeeiQuery?UserID="+prefManager.getUserId()+"&FinancialYear="+finalcialchecking+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_EmployeeiQuery?UserID="+prefManager.getUserId()+"&FinancialYear="+finalcialchecking+"&Month="+month+"&Operation=2&SecurityCode="+prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
@@ -324,16 +344,26 @@ public class IQueryManageActivity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IQueryManageActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setCategoryList() {
         Log.d("hitr", "2");
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=44&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=44&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         scMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -398,9 +428,19 @@ public class IQueryManageActivity extends AppCompatActivity {
                 Log.d("errort", "title");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(IQueryManageActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IQueryManageActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -525,7 +565,7 @@ public class IQueryManageActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeiQuery")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_EmployeeiQuery")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("QueryDate", date)
                 .addMultipartParameter("CategoryID", productId)
@@ -541,6 +581,8 @@ public class IQueryManageActivity extends AppCompatActivity {
                 .addMultipartParameter("Pincode", etPincode.getText().toString())
                 .addMultipartParameter("Remarks", etRemarks.getText().toString())
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()

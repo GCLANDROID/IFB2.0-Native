@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,6 +33,9 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
@@ -126,7 +130,7 @@ public class SalesReturnActivity extends AppCompatActivity {
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
-        String surl = AppController.APIURL+"api/ModelExchange?TicketNo="+etTicket.getText().toString()+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/ModelExchange?TicketNo="+etTicket.getText().toString()+"&AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -236,9 +240,19 @@ public class SalesReturnActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesReturnActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesReturnActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesReturnActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -276,7 +290,7 @@ public class SalesReturnActivity extends AppCompatActivity {
 
 
     private void postSalesReturn(){
-        String surl = AppController.APIURL+"api/post_SalesExchange?TicketNo="+etTicket.getText().toString()+"&Remarks="+etRemarks.getText().toString().replaceAll("\\s+","-")+"&UserID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/post_SalesExchange?TicketNo="+etTicket.getText().toString()+"&Remarks="+etRemarks.getText().toString().replaceAll("\\s+","-")+"&UserID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode();
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -318,9 +332,19 @@ public class SalesReturnActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesReturnActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesReturnActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesReturnActivity.this);
+
         requestQueue.add(stringRequest);
 
     }

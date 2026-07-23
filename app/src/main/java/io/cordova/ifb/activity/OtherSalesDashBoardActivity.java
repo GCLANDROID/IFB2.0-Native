@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -52,8 +53,10 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
@@ -450,7 +453,7 @@ public class OtherSalesDashBoardActivity extends AppCompatActivity implements On
 
 
     private void attendencePunch() {
-        String surl = AppController.APIURL+"api/LocationTracker?LocationID=0&AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Longitude="+longt+"&Latitude="+lat+"&Address="+address1+"&CreatedOn="+formattedDate+"&Operation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL+"api/LocationTracker?LocationID=0&AEMEmployeeID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Longitude="+longt+"&Latitude="+lat+"&Address="+address1+"&CreatedOn="+formattedDate+"&Operation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("tlsales",surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -493,9 +496,19 @@ public class OtherSalesDashBoardActivity extends AppCompatActivity implements On
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(OtherSalesDashBoardActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(OtherSalesDashBoardActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(OtherSalesDashBoardActivity.this);
+
         requestQueue.add(stringRequest);
 
 

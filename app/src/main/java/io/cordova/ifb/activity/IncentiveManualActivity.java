@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -24,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.IncentiveManualAdapter;
@@ -32,10 +35,12 @@ import io.cordova.ifb.databinding.ActivityIncentiveManualBinding;
 import io.cordova.ifb.module.ECatelogModel;
 import io.cordova.ifb.module.IncentiveManualModule;
 import io.cordova.ifb.utility.AppController;
+import io.cordova.ifb.utility.PrefManager;
 
 public class IncentiveManualActivity extends AppCompatActivity {
     ActivityIncentiveManualBinding binding;
     ArrayList<IncentiveManualModule>itemList=new ArrayList<>();
+    PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class IncentiveManualActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        prefManager=new  PrefManager(IncentiveManualActivity.this);
         binding.rvItem.setLayoutManager(new LinearLayoutManager(IncentiveManualActivity.this));
         getItemlist();
     }
@@ -55,7 +61,7 @@ public class IncentiveManualActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
         pd.setMessage("Loading");
-        String surl =  AppController.APIURL+"api/get_IncentivePolicy?ECatalogID=0&CategoryId=0&Operation=3";
+        String surl =  AppController.APIV2URL+"api/get_IncentivePolicy?ECatalogID=0&CategoryId=0&Operation=3";
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -118,9 +124,19 @@ public class IncentiveManualActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(IncentiveManualActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(IncentiveManualActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(IncentiveManualActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

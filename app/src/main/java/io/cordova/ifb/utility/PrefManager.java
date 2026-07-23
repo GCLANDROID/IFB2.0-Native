@@ -1508,4 +1508,13 @@ public class PrefManager {
     }
 
 
+    public void saveAccessToken(String AccessToken){
+        _editorPref.putString("AccessToken", AccessToken);
+        _editorPref.commit();
+    }
+
+    public String getAccessToken(){
+        return _pref.getString("AccessToken","");
+    }
+
 }

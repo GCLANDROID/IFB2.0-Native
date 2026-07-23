@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -51,6 +52,7 @@ import io.cordova.ifb.activity.ConsolidateSalesReportActivity;
 import io.cordova.ifb.activity.DashBoardActivity;
 import io.cordova.ifb.activity.DeliveryDetailsActivity;
 import io.cordova.ifb.activity.DisplayMatrixDashBoardActivity;
+import io.cordova.ifb.activity.NewCompetitorDisplayMatrixActivity;
 import io.cordova.ifb.activity.NewDashboardActivity;
 import io.cordova.ifb.activity.NotificationActivity;
 import io.cordova.ifb.activity.PlanogramActivity;
@@ -77,6 +79,7 @@ public class HomeFragment extends Fragment  {
     TextView tvCheckOutTime;
     LinearLayout llCheckOutMessage,llChekcinout,llStarPerformer;
     TextView tvCheckIN,tvCheckOut;
+
 
 
     @Override
@@ -174,7 +177,7 @@ public class HomeFragment extends Fragment  {
         binding.btnDisplayMatrix.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), DisplayMatrixDashBoardActivity.class);
+                Intent intent = new Intent(getContext(), NewCompetitorDisplayMatrixActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
@@ -345,7 +348,7 @@ public class HomeFragment extends Fragment  {
         progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        String surl =  AppController.APIURL+"api/get_EmployeeNotificationInfo?AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&Operation=1";
+        String surl =  AppController.APIV2URL+"api/get_EmployeeNotificationInfo?AEMEmployeeID="+prefManager.getUserId()+"&SecurityCode="+prefManager.getSecurityCode()+"&Operation=1";
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -411,9 +414,19 @@ public class HomeFragment extends Fragment  {
                 Log.e("ert", error.toString());
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
         requestQueue.add(stringRequest);
     }
 
@@ -458,7 +471,7 @@ public class HomeFragment extends Fragment  {
 
 
     public void getReport() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_EmployeeSalesRefDetails?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressDialog=new ProgressDialog(getContext());
         progressDialog.setMessage("Loading..");
@@ -468,11 +481,11 @@ public class HomeFragment extends Fragment  {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("responseLogin", response);
+                        Log.d("responseSalesRefDetails", response);
                         progressDialog.dismiss();
                         try {
                             JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
+                            Log.e("responseSalesRefDetails", "@@@@@@" + job1);
 
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             if (responseStatus){
@@ -511,11 +524,20 @@ public class HomeFragment extends Fragment  {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
+//        requestQueue.add(stringRequest);
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(getContext());
+
+        requestQueue.add(stringRequest);
     }
 
     private void handleCheckoutTime(String apiTime) {

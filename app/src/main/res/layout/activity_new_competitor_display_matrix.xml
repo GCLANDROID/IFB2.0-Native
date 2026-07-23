@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
 
 
 
@@ -74,112 +75,173 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout8"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
-            <LinearLayout
-                android:background="@drawable/lldesign7"
+            android:id="@+id/llClosed">
+            <ImageView
+                android:scaleType="fitXY"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="15dp">
-                <Spinner
-                    android:id="@+id/spCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></Spinner>
-            </LinearLayout>
-
-
-
-            <Button
-                android:id="@+id/btnShow"
-                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:src="@mipmap/backsoon"></ImageView>
+            <TextView
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/lldesign"
-                android:text="Show"
-                android:backgroundTint="@color/saffron_kesari"
-                android:textColor="@color/white" />
+                android:textAlignment="center"
+                android:layout_marginTop="20dp"
+                android:text="This feature is currently unavailable. It will be available on the scheduled day. Please check back later."></TextView>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="15dp"
-                android:layout_marginTop="15dp"
-                android:background="#B3B3B3" />
         </LinearLayout>
 
-        <FrameLayout
+        <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
-
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    tools:listitem="@layout/new_comp_display_item_layout"
-                    app:layout_constraintBottom_toTopOf="@+id/linearLayout9"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <LinearLayout
-                    android:id="@+id/linearLayout9"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btnSave"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="15dp"
-                        android:layout_marginVertical="15dp"
-                        android:background="@drawable/lldesign"
-                        android:backgroundTint="@color/saffron_kesari"
-                        android:text="Save"
-                        android:textColor="@color/white"/>
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/llMain">
             <LinearLayout
-                android:id="@+id/llScroller"
-                android:background="#1B070707"
+                android:id="@+id/linearLayout8"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <ImageView
-                    android:layout_marginTop="40dp"
-                    android:id="@+id/imgScrollHint"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+                <LinearLayout
+                    android:background="@drawable/lldesign7"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:scaleType="centerInside"
-                    android:visibility="visible"/>
-                <TextView
+                    android:layout_height="40dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="15dp">
+                    <Spinner
+                        android:id="@+id/spCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></Spinner>
+                </LinearLayout>
 
+
+
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/btnShow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Scroll by swiping the header →"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"
-                    android:gravity="center"
-                    android:padding="4dp"/>
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/lldesign"
+                    android:text="Show"
+                    android:backgroundTint="@color/saffron_kesari"
+                    android:textColor="@color/white" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="#B3B3B3" />
             </LinearLayout>
 
-        </FrameLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
+
+                    <HorizontalScrollView
+                        android:id="@+id/mainScroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:scrollbars="none"
+                        app:layout_constraintBottom_toTopOf="@+id/linearLayout9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <!-- HEADER -->
+                            <LinearLayout
+                                android:id="@+id/headerContainer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="1dp"
+                                android:orientation="horizontal"/>
+
+                            <!-- RECYCLER -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rvRecyclerView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"/>
+
+                        </LinearLayout>
+
+                    </HorizontalScrollView>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:visibility="gone"
+                        android:id="@+id/rvRecyclerVieww"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        tools:listitem="@layout/new_comp_display_item_layout"
+                        app:layout_constraintBottom_toTopOf="@+id/linearLayout9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/linearLayout9"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btnSave"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="15dp"
+                            android:layout_marginVertical="15dp"
+                            android:background="@drawable/lldesign"
+                            android:backgroundTint="@color/saffron_kesari"
+                            android:text="Save"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <LinearLayout
+                    android:id="@+id/llScroller"
+                    android:background="#1B070707"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_marginTop="40dp"
+                        android:id="@+id/imgScrollHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:scaleType="centerInside"
+                        android:visibility="visible"/>
+                    <TextView
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Scroll by swiping the header →"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:padding="4dp"/>
+                </LinearLayout>
+
+            </FrameLayout>
+        </LinearLayout>
+
+
 
 
 

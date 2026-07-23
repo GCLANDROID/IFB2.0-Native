@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -45,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.RefInfoAdapter;
@@ -94,6 +97,13 @@ public class RefInfoManageActivity extends AppCompatActivity implements View.OnC
 
     private void initialize() {
         prefManager = new PrefManager(RefInfoManageActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         lnRemarks = (LinearLayout) findViewById(R.id.lnRemarks);
         rvItem = (RecyclerView) findViewById(R.id.rvItem);
         LinearLayoutManager layoutManager
@@ -304,7 +314,7 @@ public class RefInfoManageActivity extends AppCompatActivity implements View.OnC
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl =  AppController.APIURL+"api/get_RefrigeratorCompetitorSales?AEMEmployeeID=" + prefManager.getUserId() + "&FinYear=" + financialYear + "&Month=" + month + "&Operation=2&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_RefrigeratorCompetitorSales?AEMEmployeeID=" + prefManager.getUserId() + "&FinYear=" + financialYear + "&Month=" + month + "&Operation=2&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -364,84 +374,24 @@ public class RefInfoManageActivity extends AppCompatActivity implements View.OnC
                 Log.e("ert", error.toString());
             }
         }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(RefInfoManageActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    private void getItemForReport() {
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Authenticating...");
-        progressBar.show();
-        String surl =  AppController.APIURL+"api/get_RefrigeratorCompetitorSales?AEMEmployeeID=" + prefManager.getUserId() + "&FinYear=" + financialYear + "&Month=" + month + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputSalesReport", surl);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        Log.d("responseAttendance", response);
-
-                        // attendabceInfiList.clear();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-
-                            //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                            JSONArray responseData = job1.optJSONArray("responseData");
-                            for (int i = 0; i < responseData.length(); i++) {
-                                JSONObject obj = responseData.getJSONObject(i);
-                                String CompanyName = obj.optString("CompanyName");
-                                String CompetitorCompanyID = obj.optString("CompetitorCompanyID");
-                                String FF = obj.optString("FF");
-                                String DC = obj.optString("DC");
-
-                                refinfoModel = new RefInfoModel();
-                                refinfoModel.setCompName(CompanyName);
-                                refinfoModel.setCompID(CompetitorCompanyID);
-                                refinfoModel.setFfEditVolume(FF);
-                                refinfoModel.setDcEditVolume(DC);
-
-                                itemList.add(refinfoModel);
-
-
-                            }
-                            progressBar.dismiss();
-
-
-                            setAdapter();
-                                /*llNodata.setVisibility(View.GONE);
-                                llAgain.setVisibility(View.GONE);*/
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(RefInfoManageActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-
-                progressBar.dismiss();
-                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
             }
-        }) {
-
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(RefInfoManageActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(RefInfoManageActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(RefInfoManageActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
+
+
 
     private void setAdapter() {
         refAdapter = new RefInfoAdapter(itemList, RefInfoManageActivity.this);
@@ -500,14 +450,14 @@ public class RefInfoManageActivity extends AppCompatActivity implements View.OnC
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_RefrigeratorCompetitorSales")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_RefrigeratorCompetitorSales")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("FinancialYear", financialYear)
                 .addMultipartParameter("Month", month)
                 .addMultipartParameter("CompetitorData", TotalItem)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
                 .addMultipartParameter("CSRRemarks", etRemarks.getText().toString())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()

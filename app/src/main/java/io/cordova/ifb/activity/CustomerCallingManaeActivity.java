@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -45,6 +46,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.ProductDetailsAdapter;
@@ -52,6 +55,7 @@ import io.cordova.ifb.module.ProductDetailsModel;
 import io.cordova.ifb.module.SpinnerItemModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class CustomerCallingManaeActivity extends AppCompatActivity {
 
@@ -101,6 +105,13 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
 
     private void initVIEW(){
         prefManager=new PrefManager(CustomerCallingManaeActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         area=getIntent().getStringExtra("area");
         pinCode=getIntent().getStringExtra("pinCode");
         tvTitle=(TextView)findViewById(R.id.tvTitle);
@@ -163,7 +174,7 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
 
     private void setTitle() {
         Log.d("hitr", "2");
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -228,9 +239,18 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
                 Log.d("errort", "title");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(CustomerCallingManaeActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(CustomerCallingManaeActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(CustomerCallingManaeActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -238,7 +258,7 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
 
     private void setAction(String status) {
         Log.d("hitr", "2");
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=63&ID=0&ID1=0&ID2="+status+"&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=63&ID=0&ID1=0&ID2="+status+"&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         final ProgressDialog pd=new ProgressDialog(CustomerCallingManaeActivity.this);
         pd.setMessage("Loading...");
         pd.show();
@@ -305,9 +325,18 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
                 Log.d("errort", "title");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(CustomerCallingManaeActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(CustomerCallingManaeActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(CustomerCallingManaeActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -526,7 +555,7 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/Post_EmployeeCustomerCallTracker")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/Post_EmployeeCustomerCallTracker")
                 .addMultipartParameter("CallToken", "CRM")
                 .addMultipartParameter("AEMEmployeeID", useriD)
                 .addMultipartParameter("Title", "1")
@@ -540,7 +569,7 @@ public class CustomerCallingManaeActivity extends AppCompatActivity {
                 .addMultipartParameter("SerialNo", serialNo)
                 .addMultipartParameter("CustomerEmail", etEmailId.getText().toString())
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()

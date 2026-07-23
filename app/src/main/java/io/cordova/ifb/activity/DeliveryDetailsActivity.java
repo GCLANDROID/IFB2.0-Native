@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -43,12 +44,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.DeliveyDetailsAdapter;
 import io.cordova.ifb.module.DeliveryDetailsModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class DeliveryDetailsActivity extends AppCompatActivity {
 
@@ -79,6 +83,13 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         prefManager=new PrefManager(DeliveryDetailsActivity.this);
         rvItem=(RecyclerView)findViewById(R.id.rvItem);
         LinearLayoutManager layoutManager
@@ -247,7 +258,7 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/getEmployeeReferenceSalesDelivery?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=1&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/getEmployeeReferenceSalesDelivery?ReferenceNo=0&UserID="+prefManager.getUserId()+"&FinancialYear="+financialYear+"&Month="+month+"&Operation=1&SubOperation=1&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputSalesReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -354,9 +365,18 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryDetailsActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryDetailsActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryDetailsActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -371,7 +391,7 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeSalesManageV1")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_EmployeeSalesManageV1")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -413,6 +433,7 @@ public class DeliveryDetailsActivity extends AppCompatActivity {
                 .addMultipartParameter("DisplayMatrix_Sold", "")
                 .addMultipartParameter("CSD_Sales", "")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer "+prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)

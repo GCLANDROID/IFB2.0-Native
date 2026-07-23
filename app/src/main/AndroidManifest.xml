@@ -20,6 +20,27 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.RefProductScanActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activity.AcProductScanActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".activity.OtherProductScanActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activity.PlanogramScanReportActivity"
             android:exported="false">
             <meta-data
@@ -253,12 +274,14 @@
         <activity android:name=".activity.CookerDialogActivity" />
         <activity android:name=".activity.DishwasherDialogActivity" />
         <activity android:name=".activity.MicroOvenDialogActivity" />
-        <activity android:name=".activity.NewCompetitorDisplayMatrixActivity"
-            android:screenOrientation="userPortrait"></activity>
+        <activity
+            android:name=".activity.NewCompetitorDisplayMatrixActivity"
+            android:screenOrientation="userPortrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activity.AttendanceCalendarDialogActivity"
             android:screenOrientation="userPortrait" />
-        <activity android:name=".activity.NewTargetActivity"></activity>
+        <activity android:name=".activity.NewTargetActivity" />
         <activity
             android:name=".activity.RefrigeratorDialogActivity"
             android:theme="@style/Theme.AppCompat.Dialog" />

@@ -899,6 +899,7 @@ color foreground_material_dark
 color foreground_material_light
 color gray
 color green
+color greentwo
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color hint_foreground_material_dark
@@ -950,7 +951,11 @@ color mtrl_textinput_hovered_box_stroke_color
 color notification_action_color_filter
 color notification_icon_bg_color
 color notification_material_background_media_default_color
+color orange
+color orange_one
+color orange_two
 color primary
+color primary1
 color primary_dark
 color primary_dark_material_dark
 color primary_dark_material_light
@@ -980,6 +985,10 @@ color text_color
 color tooltip_background_dark
 color tooltip_background_light
 color white
+color yellow
+color yellow_one
+color yellow_three
+color yellow_two
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav
 dimen abc_action_bar_default_height_material

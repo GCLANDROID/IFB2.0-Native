@@ -233,7 +233,13 @@ public class SalesManage2Activity extends AppCompatActivity {
     }
 
     private void initialize() {
+        OkHttpClient okHttpClientt =
+                AppController.getUnsafeOkHttpClient();
 
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClientt
+        );
         prefManager = new PrefManager(SalesManage2Activity.this);
         String next = "<font color='#EE0000'>*</font>";
 
@@ -608,6 +614,14 @@ public class SalesManage2Activity extends AppCompatActivity {
                         lnInstallation.setVisibility(View.GONE);
                         llODU.setVisibility(View.GONE);
                         lnPedestal.setVisibility(View.GONE);
+                    }
+
+                    if (categoryId.equals("IFBPC1000001")) {
+                        etQuantity.setText("");
+                        etQuantity.setEnabled(true);
+                    }else {
+                        etQuantity.setText("1");
+                        etQuantity.setEnabled(false);
                     }
 
                 }
@@ -1312,7 +1326,7 @@ public class SalesManage2Activity extends AppCompatActivity {
     private void setCategory() {
         Log.d("hitr", "1");
 
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
@@ -1379,15 +1393,24 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setModel(String categoryId) {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=18M&ID=" + categoryId + "&ID1=0&ID2=" + prefManager.getBranchId() + "&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=18M&ID=" + categoryId + "&ID1=0&ID2=" + prefManager.getBranchId() + "&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1456,15 +1479,24 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setDP(String modelID) {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=MDPRB&ID=" + modelID + "&ID1=" + prefManager.getBranchId() + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=MDPRB&ID=" + modelID + "&ID1=" + prefManager.getBranchId() + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1517,15 +1549,24 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setInstallation() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SITYSSD&ID="+prefManager.getSalesPartyCode()+"&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=SITYSSD&ID="+prefManager.getSalesPartyCode()+"&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1592,15 +1633,24 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setSalesType() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SISY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=SISY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -1664,16 +1714,25 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     private void setTitle() {
         Log.d("hitr", "2");
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=42&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -1738,9 +1797,18 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.d("errort", "title");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -1883,7 +1951,7 @@ public class SalesManage2Activity extends AppCompatActivity {
         llLoader.setVisibility(View.GONE);
         llMain.setVisibility(View.VISIBLE);
         Log.d("hitr", "5");
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=35&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
         progressBar.setMessage("Loading...");
@@ -1949,230 +2017,23 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-
-    private void setState() {
-        Log.d("hitr", "3");
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("stateinput", surl);
-        llLoader.setVisibility(View.VISIBLE);
-        llMain.setVisibility(View.GONE);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responsestate", response);
-                        llLoader.setVisibility(View.VISIBLE);
-                        llMain.setVisibility(View.GONE);
-                        state.clear();
-                        moduleState.clear();
-
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("responseState", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String value = obj.optString("value");
-                                    String id = obj.optString("id");
-                                    state.add(value);
-                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
-                                    moduleState.add(itemModule);
-
-                                }
-
-                                setCity();
-
-                                //  getInformationForFiftySales();
-
-                                spState.setVisibility(View.VISIBLE);
-                                spCity.setVisibility(View.VISIBLE);
-
-
-                                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                                        (SalesManage2Activity.this, android.R.layout.simple_spinner_item,
-                                                state); //selected item will look like a spinner set from XML
-                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                spState.setAdapter(spinnerArrayAdapter);
-                                spState.setSelection(0);
-
-
-                            }
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("errort", e.toString());
-                            Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-
-
-                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.d("errort", "state");
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
             }
-        }) {
-
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
-    private void setCity() {
-        Log.d("hitr", "4");
-        tvCityName.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
-        llLoader.setVisibility(View.VISIBLE);
-        llMain.setVisibility(View.GONE);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseCategory", response);
-                        llLoader.setVisibility(View.GONE);
-                        llMain.setVisibility(View.VISIBLE);
-                        city.clear();
-                        moduleCity.clear();
 
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String value = obj.optString("value");
-                                    String id = obj.optString("id");
-                                    city.add(value);
-                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
-                                    moduleCity.add(itemModule);
-
-                                }
-
-
-                                spCity.setVisibility(View.VISIBLE);
-                                tvCityName.setVisibility(View.GONE);
-
-
-                                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                                        (SalesManage2Activity.this, android.R.layout.simple_spinner_item,
-                                                city); //selected item will look like a spinner set from XML
-                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                spCity.setAdapter(spinnerArrayAdapter);
-                                spCity.setSelection(0);
-
-                                getInformationForFiftySales();
-
-
-                            }
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-
-                            Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                llLoader.setVisibility(View.VISIBLE);
-                llMain.setVisibility(View.GONE);
-
-                Toast.makeText(SalesManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.d("errort", "city");
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
-        requestQueue.add(stringRequest);
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                MY_SOCKET_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-    }
-
-    private void setSalesEntry() {
-        String surl = AppController.APIURL + "api/post_SalesEntry?TransNo=0&AEMEmployeeID=" + prefManager.getUserId() + "&_SalesDate=" + salesDate + "&FinancialYear=" + financialYear + "&Month=" + monthname + "&CategoryID=" + categoryId + "&Quantity=" + quantity + "&xmldata=0&UserID=" + prefManager.getUserId() + "&BranchID=" + prefManager.getBranchId() + "&ModelID=" + modelId + "&CustomerName=" + customerName.replaceAll("\\s+", "-") + "&CustomerPhNo=" + etMobNumber.getText().toString() + "&CustomerPinCode=" + etPinCode.getText().toString() + "&CustomerEmail=" + etEmailId.getText().toString() + "&InvoiceNo=" + etInvoiceNumber.getText().toString() + "&FinanceScheme=" + schemeId + "&DeliveryAddress=" + etHouse.getText().toString() + "-" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&FirstName=" + etFirstName.getText().toString().replaceAll("\\s+", "-") + "&LastName=" + etLastName.getText().toString().replaceAll("\\s+", "-") + "&CustomerAlternateNumber=" + altmob + "&HouseNo=" + etHouse.getText().toString().replaceAll("\\s+", "-") + "&StreetName=" + etStreetName.getText().toString().replaceAll("\\s+", "-") + "&Landmark=" + etLandMark.getText().toString().replaceAll("\\s+", "-") + "&Title=" + titleId + "&StateID=" + stateId + "&City=" + tvCityName.getText().toString().replaceAll("\\s+", "-") + "&InvoiceValue=" + etInvoiceValue.getText().toString() + "&Remarks=" + remarks + "&UnderExchange=" + underExchange + "&SalesEntryFlag=-1&Area=" + areaName + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("salesentry", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseCategory", response);
-                        progressBar.dismiss();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                Toast.makeText(getApplicationContext(), responseText, Toast.LENGTH_LONG).show();
-
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), responseText, Toast.LENGTH_LONG).show();
-
-                            }
-
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("errort", e.toString());
-                            Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-
-                Toast.makeText(SalesManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-    }
 
 
     private void successAlert(String text) {
@@ -2297,60 +2158,9 @@ public class SalesManage2Activity extends AppCompatActivity {
     }
 
 
-    private void emailcheck1() {
-        String surl = AppController.APIURL + "api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
-        Log.d("emailcheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseCategory", response);
-                        progressBar.dismiss();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean emailstatus2 = job1.optBoolean("responseStatus");
-                            if (emailstatus2) {
-                                // ssaleFunction();
-                                mobNumbercheck();
-                            } else {
-                                invalidemailalert(responseText);
-                            }
-
-                            //boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("errort", e.toString());
-                            Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-
-                Toast.makeText(SalesManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-    }
 
     private void mobNumbercheck() {
-        String surl = AppController.APIURL + "api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
+        String surl = AppController.APIV2URL + "api/CheckInvalidMobileNo?MobileNo=" + etMobNumber.getText().toString();
         Log.d("phnnumbercheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2402,63 +2212,23 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    private void altNumbercheck() {
-        String surl = AppController.APIURL + "api/CheckInvalidMobileNo?MobileNo=" + etPhnNumber.getText().toString();
-        Log.d("phnnumbercheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(true);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseCategory", response);
-                        progressBar.dismiss();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean emailstatus2 = job1.optBoolean("responseStatus");
-                            if (emailstatus2) {
-                                ssaleFunction();
-                            } else {
-                                invalidemailalert(responseText);
-                            }
-
-                            //boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Log.d("errort", e.toString());
-                            Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-
-                Toast.makeText(SalesManage2Activity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
             }
-        }) {
-
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
+
+
 
     private void cameraDialog() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SalesManage2Activity.this, R.style.CustomDialogNew);
@@ -2658,7 +2428,7 @@ public class SalesManage2Activity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV6")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeSalesManageV6")
                 .addMultipartParameter("TransNo", transNo)
                 .addMultipartParameter("ReferenceNo", "0")
                 .addMultipartParameter("AEMEmployeeID", userId)
@@ -2705,6 +2475,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                 .addMultipartParameter("CSD_Sales", "")
                 .addMultipartParameter("PedestalSales", "")
                 .addMultipartParameter("SecurityCode", secirityCode)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
@@ -2888,7 +2659,7 @@ public class SalesManage2Activity extends AppCompatActivity {
 
     public void getInformationForFiftySales() {
 
-        String surl = AppController.APIURL + "api/get_EmployeeSalesByReference?Reference=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_EmployeeSalesByReference?Reference=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheckIformation", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -2933,15 +2704,24 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
 
     public void getInformationFromToken() {
-        String surl = AppController.APIURL + "api/get_EmployeeSalesByReference?Reference=" + refrenceNo + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_EmployeeSalesByReference?Reference=" + refrenceNo + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheckIformation", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -3009,9 +2789,18 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -3267,7 +3056,7 @@ public class SalesManage2Activity extends AppCompatActivity {
     }
     private void postOTP() {
 
-        String surl = AppController.APIURL + "api/SalesCustomerSatisCodeUpdate?ReferenceNo=" + refrenceNo + "&Status=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/SalesCustomerSatisCodeUpdate?ReferenceNo=" + refrenceNo + "&Status=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheckIformation", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -3306,9 +3095,18 @@ public class SalesManage2Activity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -3320,11 +3118,12 @@ public class SalesManage2Activity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/SalesOTPTracker")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/SalesOTPTracker")
                 .addMultipartParameter("ReferenceNo", refno)
                 .addMultipartParameter("OTP", otp)
                 .addMultipartParameter("Remarks", status)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer "+prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)

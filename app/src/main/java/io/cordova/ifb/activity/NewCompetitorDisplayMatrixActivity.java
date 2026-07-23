@@ -3,14 +3,23 @@ package io.cordova.ifb.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,7 +48,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.CategoryAdapter;
@@ -47,6 +59,7 @@ import io.cordova.ifb.databinding.ActivityNewCompetitorDisplayMatrixBinding;
 import io.cordova.ifb.module.SpinnerItemModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 
 public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
@@ -63,12 +76,25 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
     int y;
     String year, month, financialYear;
     String monthname;
+    int totalcount;
+    AlertDialog alerDialog1;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNewCompetitorDisplayMatrixBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
+
+        prefManager=new PrefManager(NewCompetitorDisplayMatrixActivity.this);
+
 
         y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
@@ -115,6 +141,12 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
             int futureyear = y + 1;
             financialYear = year + "-" + futureyear;
         }
+        binding.imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
         //initView();
         btnSave = findViewById(R.id.btnSave);
         Glide.with(this)
@@ -140,6 +172,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         // Adapter
 
         recyclerCategory.setAdapter(adapter);
+        btnSave.setVisibility(View.GONE);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,6 +238,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
 
                     Log.e("FINAL_JSON", finalObj.toString());
                     Log.e("TOTAL_COUNT", String.valueOf(grandTotal));
+                    totalcount=grandTotal;
                     postSave(finalObj);
 
                 } catch (Exception e) {
@@ -222,6 +256,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                 if (position > 0) {
                     categoryId = moduleCategory.get(position).getItemId();
                     categoryname=moduleCategory.get(position).getItem();
+                    loadData();
 
 
 
@@ -242,9 +277,34 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                     Toast.makeText(NewCompetitorDisplayMatrixActivity.this, "Please select a category", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                loadData();
+
             }
         });
+        binding.imgBack.setOnClickListener(new  View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+        binding.imgHome.setOnClickListener(new  View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
+        recyclerCategory.setClipToPadding(false);
+        recyclerCategory.setPadding(0, 0, 0, dpToPx(NewCompetitorDisplayMatrixActivity.this,100));
+       /* recyclerCategory.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+
+            if (bottom < oldBottom) {
+                recyclerCategory.post(() -> recyclerCategory.smoothScrollToPosition(
+                        categoryList.size() - 1
+                ));
+            }
+        });*/
+
+        getOnOFF();
     }
 
     private void loadData() {
@@ -275,7 +335,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
     private void setProductStatus() {
         Log.d("hitr", "1");
 
-        String surl = AppController.APIURL + "api/get_CompetitorDisplayMatrixStatus?AEMEmployeeID="+prefManager.getUserId()+"&CategoryID="+categoryId+"&CategoryName=AIR&FinancialYear="+financialYear+"&Month="+monthname+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesPartyCode="+prefManager.getSalesPartyCode();
+        String surl = AppController.APIV2URL + "api/get_CompetitorDisplayMatrixStatus?AEMEmployeeID="+prefManager.getUserId()+"&CategoryID="+categoryId+"&CategoryName=AIR&FinancialYear="+financialYear+"&Month="+monthname+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesPartyCode="+prefManager.getSalesPartyCode();
         Log.d("ctegoryinput", surl);
         ProgressDialog pd=new ProgressDialog(NewCompetitorDisplayMatrixActivity.this);
         pd.setMessage("Loading");
@@ -294,12 +354,21 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                             Log.e("response12", "@@@@@@" + job1);
                             String responseText = job1.optString("responseText");
                             boolean responseStatus = job1.optBoolean("DisplayStatus");
-                            setProduct(responseStatus);
+
+
                             if (responseStatus){
-                                btnSave.setVisibility(View.VISIBLE);
+                                setProduct(responseStatus);
                             }else {
-                                btnSave.setVisibility(View.GONE);
+                                displayMatrixAlert();
+
                             }
+//                            if (responseStatus){
+//                                btnSave.setText("Save");
+//                                btnSave.setEnabled(true);
+//                            }else {
+//                                btnSave.setText(categoryname+" data is already saved");
+//                                btnSave.setEnabled(false);
+//                            }
 
 
 
@@ -328,17 +397,26 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
-        requestQueue.add(stringRequest);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        requestQueue.add(stringRequest);
 
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
+
+        requestQueue.add(stringRequest);
     }
 
     private void setProduct(boolean responseStatus) {
         Log.d("hitr", "1");
 
-        String surl = AppController.APIURL + "api/get_CompetitorDisplayMatrix?AEMEmployeeID="+prefManager.getUserId()+"&CategoryID="+categoryId+"&CategoryName=AIR&FinancialYear="+financialYear+"&Month="+monthname+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesPartyCode="+prefManager.getSalesPartyCode();
+        String surl = AppController.APIV2URL + "api/get_CompetitorDisplayMatrix?AEMEmployeeID="+prefManager.getUserId()+"&CategoryID="+categoryId+"&CategoryName=AIR&FinancialYear="+financialYear+"&Month="+monthname+"&SecurityCode="+prefManager.getSecurityCode()+"&SalesPartyCode="+prefManager.getSalesPartyCode();
         Log.d("ctegoryinput", surl);
         ProgressDialog pd=new ProgressDialog(NewCompetitorDisplayMatrixActivity.this);
         pd.setMessage("Loading");
@@ -349,6 +427,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("responseIFBCategory", response);
+                        btnSave.setVisibility(View.VISIBLE);
                         pd.dismiss();
                         binding.llScroller.setVisibility(View.VISIBLE);
 
@@ -396,10 +475,20 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
         requestQueue.add(stringRequest);
+
 
     }
 
@@ -451,9 +540,38 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                     brandList.add(brand);
                 }
 
+
+
                 category.brands = brandList;
                 categoryList.add(category);
             }
+
+
+            LinearLayout headerContainer = findViewById(R.id.headerContainer);
+            headerContainer.removeAllViews();
+
+// 👉 Extract capacities from first category → first brand
+//            if (!categoryList.isEmpty() && !categoryList.get(0).brands.isEmpty()) {
+//
+//                List<CapacityItem> capList = categoryList.get(0).brands.get(0).capacityList;
+//
+//                for (CapacityItem item : capList) {
+//
+//                    TextView tv = new TextView(this);
+//
+//                    LinearLayout.LayoutParams params =
+//                            new LinearLayout.LayoutParams(70, 50);
+//                    params.setMargins(4, 0, 4, 0);
+//
+//                    tv.setLayoutParams(params);
+//                    tv.setText(item.value); // ✅ capacity value
+//                    tv.setGravity(Gravity.CENTER);
+//                    tv.setTextSize(10);
+//                    tv.setBackgroundColor(Color.LTGRAY);
+//
+//                    headerContainer.addView(tv);
+//                }
+//            }
 
             adapter = new CategoryAdapter(categoryList,responseStatus);
             recyclerCategory.setAdapter(adapter);
@@ -478,7 +596,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         Log.d("hitr", "1");
         prefManager=new PrefManager(NewCompetitorDisplayMatrixActivity.this);
 
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
        ProgressDialog progressDialog=new ProgressDialog(NewCompetitorDisplayMatrixActivity.this);
        progressDialog.setMessage("Loading");
@@ -546,9 +664,19 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                 Log.d("errort", "category");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -575,12 +703,13 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
         pd.show();
-        String url=AppController.APIURL + "api/CompetitorDisplayMatrix/save?SecurityCode="+prefManager.getSecurityCode();
+        String url=AppController.APIV2URL + "api/CompetitorDisplayMatrix/save?SecurityCode="+prefManager.getSecurityCode();
 
         AndroidNetworking.post(url)
                 .addJSONObjectBody(jsonObject)
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .build()
                 .setUploadProgressListener(new UploadProgressListener() {
                     @Override
@@ -597,7 +726,7 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                             JSONObject job1 = response;
                             boolean responseStatus=job1.optBoolean("responseStatus");
                             if (responseStatus){
-                                loadData();
+                                successAlert();
                             }else {
                                 Toast.makeText(NewCompetitorDisplayMatrixActivity.this, "Failed to save data", Toast.LENGTH_LONG).show();
                             }
@@ -619,6 +748,158 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
                         Toast.makeText(NewCompetitorDisplayMatrixActivity.this, "Error Occured 1", Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void successAlert() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(NewCompetitorDisplayMatrixActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_success, null);
+        dialogBuilder.setView(dialogView);
+        TextView tvInvalidDate = (TextView) dialogView.findViewById(R.id.tvSuccess);
+        tvInvalidDate.setText(totalcount+" "+categoryname+" units(s) has been added successfully");
+
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alerDialog1.dismiss();
+                recyclerCategory.setVisibility(View.GONE);
+                categoryList=new ArrayList<>();
+                binding.spCategory.setSelection(0);
+                btnSave.setVisibility(View.GONE);
+
+
+
+            }
+        });
+
+        alerDialog1 = dialogBuilder.create();
+        alerDialog1.setCancelable(true);
+        Window window = alerDialog1.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alerDialog1.show();
+    }
+    private int dpToPx(Context context, int dp) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    }
+
+
+    private void displayMatrixAlert() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(NewCompetitorDisplayMatrixActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_compsale, null);
+        dialogBuilder.setView(dialogView);
+        Button btnNow = (Button) dialogView.findViewById(R.id.btnNow);
+        TextView tvResponse = (TextView) dialogView.findViewById(R.id.tvResponse);
+        tvResponse.setText(categoryname + "'s Display Matrix already updated. Do you want to update ?");
+        btnNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+                setProduct(true);
+
+            }
+        });
+
+        Button btnLate = (Button) dialogView.findViewById(R.id.btnLate);
+        btnLate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        alertDialog = dialogBuilder.create();
+        alertDialog.setCancelable(false);
+        Window window = alertDialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alertDialog.show();
+    }
+
+
+    private void getOnOFF() {
+        Log.d("hitr", "1");
+
+        String surl = AppController.APIV2URL + "api/Get_CompetitorDispalyMatrixOnOff?SecurityCode=IFB";
+        Log.d("onoff", surl);
+        ProgressDialog pd=new ProgressDialog(NewCompetitorDisplayMatrixActivity.this);
+        pd.setMessage("Loading");
+        pd.show();
+        pd.setCancelable(false);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("responseIFBCategory", response);
+                        pd.dismiss();
+
+
+                        try {
+                            JSONObject job1 = new JSONObject(response);
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("DisplayStatus");
+                            JSONArray responseData= job1.optJSONArray("responseData");
+                            JSONObject frstObj=responseData.getJSONObject(0);
+                            boolean Result=frstObj.optBoolean("Result");
+                            if (Result){
+                                binding.llClosed.setVisibility(View.GONE);
+                                binding.llMain.setVisibility(View.VISIBLE);
+                            }else {
+                                binding.llClosed.setVisibility(View.VISIBLE);
+                                binding.llMain.setVisibility(View.GONE);
+                            }
+
+//                            if (responseStatus){
+//                                btnSave.setText("Save");
+//                                btnSave.setEnabled(true);
+//                            }else {
+//                                btnSave.setText(categoryname+" data is already saved");
+//                                btnSave.setEnabled(false);
+//                            }
+
+
+
+
+
+
+
+
+
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(NewCompetitorDisplayMatrixActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                showAlert();
+
+                //   Toast.makeText(DocumentManageActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
+                Log.d("errort", "category");
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
+        };
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
+
+        requestQueue.add(stringRequest);
     }
 
 }

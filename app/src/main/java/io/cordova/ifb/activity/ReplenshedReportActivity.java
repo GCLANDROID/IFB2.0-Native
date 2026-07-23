@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.ReplenshiedReportAdapter;
@@ -69,7 +72,7 @@ public class ReplenshedReportActivity extends AppCompatActivity {
         pd.setMessage("Loading...");
         pd.setCancelable(false);
         pd.show();
-        String surl =  AppController.APIURL+"api/get_DisplaymatrixReplaced?DSR_ReferenceNo=0&AEMEmployeeID="+prefManager.getUserId()+"&Status=2&Opertaion=1&SubOpertaion=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/get_DisplaymatrixReplaced?DSR_ReferenceNo=0&AEMEmployeeID="+prefManager.getUserId()+"&Status=2&Opertaion=1&SubOpertaion=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
@@ -115,9 +118,19 @@ public class ReplenshedReportActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(ReplenshedReportActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(ReplenshedReportActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(ReplenshedReportActivity.this);
+
         requestQueue.add(stringRequest);
 
 

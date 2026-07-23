@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -52,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.TSRSaleAdapter;
@@ -128,6 +131,13 @@ public class TSRDailyActivity extends AppCompatActivity {
 
     private void initialize() {
         prefManager=new PrefManager(TSRDailyActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         tvDateName = (TextView) findViewById(R.id.tvDateName);
         String next = "<font color='#EE0000'>*</font>";
         String datename = "Visited Date";
@@ -399,7 +409,7 @@ public class TSRDailyActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Authenticating...");
         progressBar.show();
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=4&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode="+prefManager.getSecurityCode();
         Log.d("inputReport", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -459,9 +469,18 @@ public class TSRDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(TSRDailyActivity.this);
+
         requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 5000,
@@ -482,7 +501,7 @@ public class TSRDailyActivity extends AppCompatActivity {
 
     private void setCounter() {
 
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -550,9 +569,18 @@ public class TSRDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(TSRDailyActivity.this);
+
         requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 5000,
@@ -566,7 +594,7 @@ public class TSRDailyActivity extends AppCompatActivity {
 
     private void setLocation() {
 
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -633,9 +661,18 @@ public class TSRDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(TSRDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(TSRDailyActivity.this);
+
         requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 5000,
@@ -765,7 +802,7 @@ public class TSRDailyActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_TSROtherSalesActivity")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_TSROtherSalesActivity")
                 .addMultipartParameter("ZoneID", zoneId)
                 .addMultipartParameter("BranchID", branchId)
                 .addMultipartParameter("TransNo", transNo)
@@ -784,7 +821,7 @@ public class TSRDailyActivity extends AppCompatActivity {
                 .addMultipartParameter("LocationID",locationId)
                 .addMultipartParameter("Operation",operation)
                 .addMultipartParameter("SecurityCode",securityCode)
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
 
                 .setTag("uploadTest")

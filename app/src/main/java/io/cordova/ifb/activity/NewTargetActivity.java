@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -28,6 +29,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.NewTargetAdapter;
@@ -114,8 +117,8 @@ public class NewTargetActivity extends AppCompatActivity {
         binding.llLoading.setVisibility(View.VISIBLE);
         binding.llNoDataFound.setVisibility(View.GONE);
         binding.llDataLayout.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/UserTargetV1?FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&LoginID="+prefManager.getMasterId()+"&SecurityCode="+prefManager.getSecurityCode();
-        Log.d("inputLogin", surl);
+        String surl =  AppController.APIV2URL+"api/UserTargetV1?FinancialYear="+financialYear+"&Month="+month+"&AEMEmployeeID="+prefManager.getUserId()+"&LoginID="+prefManager.getMasterId()+"&SecurityCode="+prefManager.getSecurityCode();
+        Log.d("tragetURL", surl);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -166,9 +169,18 @@ public class NewTargetActivity extends AppCompatActivity {
                 binding.llDataLayout.setVisibility(View.GONE);
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(NewTargetActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(NewTargetActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(NewTargetActivity.this);
+
         requestQueue.add(stringRequest);
     }
 

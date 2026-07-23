@@ -21,6 +21,12 @@ public class IncentiveSubActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        binding.imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
         binding.llIncentiveManual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

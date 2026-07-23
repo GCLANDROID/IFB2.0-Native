@@ -85,6 +85,7 @@ import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
 import io.cordova.ifb.utility.ValidUtils;
+import okhttp3.OkHttpClient;
 
 public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     LinearLayout llDate, lnWIFI, lnPedestal, llScheme, llSalesType, llSalesDate;
@@ -209,7 +210,13 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     private void initView() {
 
         prefManager = new PrefManager(DeliveryAddressUpdateActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
 
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         invoicevalue = getIntent().getStringExtra("invoicevalue");
         month = getIntent().getStringExtra("month");
         financilayear = getIntent().getStringExtra("financilayear");
@@ -1029,7 +1036,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV8")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeSalesManageV8")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1078,6 +1085,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 .addMultipartParameter("DeliveryAddress2", etMoreAddress.getText().toString())
                 .addMultipartParameter("AddressUpdateFlag", AddressUpdateFlag)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken() )
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -1143,7 +1151,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         String serailNumber = etSerailNumber.getText().toString() + "," + etSerailNumberTwo.getText().toString() + "," + etSerailNumberThree.getText().toString() + "," + etSerailNumberFour.getText().toString() + "," + etSerailNumberFive.getText().toString();
         String odunumber = etODUNumber.getText().toString() + "," + etODUNumberTwo.getText().toString() + "," + etODUNumberThree.getText().toString() + "," + etODUNumberFour.getText().toString() + "," + etODUNumberFive.getText().toString();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeSalesManageV6")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeSalesManageV6")
                 .addMultipartParameter("TransNo", "0")
                 .addMultipartParameter("ReferenceNo", refNo)
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
@@ -1190,6 +1198,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 .addMultipartParameter("CSD_Sales", csdSales)
                 .addMultipartParameter("PedestalSales", pedestial)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -1238,113 +1247,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 });
     }
 
-    /*private void updateDeliveryAddress() {
 
-        if (TextUtils.isEmpty(stringFile)) {
-            fileImage = "0";
-        } else {
-            fileImage = stringFile;
-        }
-
-        final ProgressDialog pd = new ProgressDialog(DeliveryAddressUpdateActivity.this);
-        pd.setMessage("Loading..");
-        pd.setCancelable(false);
-        pd.show();
-        String serailNumber=etSerailNumber.getText().toString()+","+etSerailNumberTwo.getText().toString()+","+etSerailNumberThree.getText().toString()+","+etSerailNumberFour.getText().toString()+","+etSerailNumberFive.getText().toString();
-        String odunumber=etODUNumber.getText().toString()+","+etODUNumberTwo.getText().toString()+","+etODUNumberThree.getText().toString()+","+etODUNumberFour.getText().toString()+","+etODUNumberFive.getText().toString();
-
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeSalesManageV6")
-                .addMultipartParameter("TransNo", "0")
-                .addMultipartParameter("ReferenceNo", refNo)
-                .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
-                .addMultipartParameter("SalesDate", "0")
-                .addMultipartParameter("FinancialYear", "0")
-                .addMultipartParameter("Month", "0")
-                .addMultipartParameter("CategoryID", "0")
-                .addMultipartParameter("Quantity", "0")
-                .addMultipartParameter("UserID", prefManager.getUserId())
-                .addMultipartParameter("BranchID", prefManager.getBranchId())
-                .addMultipartParameter("ModelID", "0")
-                .addMultipartParameter("CustomerName", "0")
-                .addMultipartParameter("CustomerPhNo","0" )
-                .addMultipartParameter("CustomerPinCode", "0")
-                .addMultipartParameter("CustomerEmail", "0")
-                .addMultipartParameter("InvoiceNo", "0")
-                .addMultipartParameter("FinanceScheme", "0")
-                .addMultipartParameter("DeliveryAddress", "0")
-                .addMultipartParameter("FirstName", "0")
-                .addMultipartParameter("LastName", "0")
-                .addMultipartParameter("CustomerAlternateNumber", "0")
-                .addMultipartParameter("HouseNo", "0")
-                .addMultipartParameter("StreetName","0")
-                .addMultipartParameter("Landmark", "0")
-                .addMultipartParameter("Title", "0")
-                .addMultipartParameter("StateID", "0")
-                .addMultipartParameter("City", "0")
-                .addMultipartParameter("InvoiceValue","0")
-                .addMultipartParameter("Remarks", "0")
-                .addMultipartParameter("UnderExchange", "0")
-                .addMultipartParameter("Area", "0")
-                .addMultipartParameter("SalesEntryFlag", "1")
-                .addMultipartParameter("Invoicecopy", fileImage)
-                .addMultipartParameter("SerialNo", serailNumber)
-                .addMultipartParameter("SerialNo1", odunumber)
-                .addMultipartParameter("InstallationBy", InstallationBy)
-                .addMultipartParameter("SalesType", "0")
-                .addMultipartParameter("WiFiDeviceStatus", "0")
-                .addMultipartParameter("Delivery_Date", salesDate)
-                .addMultipartParameter("Delivery_Remarks", etRemark.getText().toString())
-                .addMultipartParameter("Operation", "3")
-                .addMultipartParameter("SubOperation", "4")
-                .addMultipartParameter("DisplayMatrix_Sold", "0")
-                .addMultipartParameter("CSD_Sales", "0")
-                .addMultipartParameter("PedestalSales", "0")
-                .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-                .setTag("uploadTest")
-                .setPriority(Priority.HIGH)
-                .build()
-                .setUploadProgressListener(new UploadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesUploaded, long totalBytes) {
-                        pd.show();
-
-                    }
-                })
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-                        JSONObject job1 = response;
-                        Log.e("response12", "@@@@@@" + job1);
-                        String responseText = job1.optString("responseText");
-                        sucessText=responseText;
-                        Log.d("responseText", responseText);
-                        boolean responseStatus = job1.optBoolean("responseStatus");
-                        if (responseStatus) {
-                            getToken();
-                            pd.dismiss();
-
-                        } else {
-                            pd.dismiss();
-                            Toast.makeText(DeliveryAddressUpdateActivity.this, responseText, Toast.LENGTH_LONG).show();
-
-                        }
-
-
-                        // boolean _status = job1.getBoolean("status");
-
-
-                        // do anything with response
-                    }
-
-                    @Override
-                    public void onError(ANError error) {
-                        pd.dismiss();
-                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
-                    }
-                });
-    }*/
 
     private void successAlert(String text, String flag) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(DeliveryAddressUpdateActivity.this, R.style.CustomDialogNew);
@@ -1383,7 +1286,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     }
 
     public void getToken() {
-        String surl = AppController.APIURL + "api/get_CRMDummyTokenByReference?ReferenceNo=" + refNo + "&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/get_CRMDummyTokenByReference?ReferenceNo=" + refNo + "&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputCheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(false);//you can cancel it by pressing back button
@@ -1501,9 +1404,19 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -2507,11 +2420,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_CRMTokenPushedStatus")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_CRMTokenPushedStatus")
 
                 .addMultipartParameter("TokenNo", token)
                 .addMultipartParameter("Remarks", status)
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -2650,10 +2564,11 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         pd.show();
 
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_CRMDummyReferenceTicket_V2")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_CRMDummyReferenceTicket_V2")
                 .addMultipartParameter("CRMData", CRMData)
                 .addMultipartParameter("UserID", prefManager.getUserId())
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
                 .build()
@@ -2704,79 +2619,6 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
                     }
                 });
-    }
-
-
-    public void getInformationFromToken() {
-        String surl = AppController.APIURL + "api/get_EmployeeSalesByToken?TokenNo=" + tokenno + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheckIformation", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                JSONArray responseData = job1.optJSONArray("responseData");
-
-                                JSONObject object = responseData.optJSONObject(0);
-                                String TokenNo = object.optString("TokenNo");
-                                String CustomerName = object.optString("CustomerName");
-                                String MobileNo = object.optString("MobileNo");
-                                String Product = object.optString("Product");
-                                String PurchaseDate = object.optString("PurchaseDate");
-                                String Dealer = object.optString("Dealer");
-                                String CSRID = object.optString("CSRID");
-                                String State = object.optString("State");
-                                String MoreThanFifty = object.optString("MoreThanFifty");
-                                try {
-                                    informationOBJ.put("TokenNo", TokenNo);
-                                    informationOBJ.put("CustomerName", CustomerName);
-                                    informationOBJ.put("MobileNo", MobileNo);
-                                    informationOBJ.put("Product", Product);
-                                    informationOBJ.put("PurchaseDate", PurchaseDate);
-                                    informationOBJ.put("Dealer", Dealer);
-                                    informationOBJ.put("CSRID", CSRID);
-                                    informationOBJ.put("State", State);
-                                    informationOBJ.put("MoreThanFifty", MoreThanFifty);
-
-                                    postInformation(informationOBJ);
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
-
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(DeliveryAddressUpdateActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(DeliveryAddressUpdateActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
-        requestQueue.add(stringRequest);
-
     }
 
 
@@ -2841,7 +2683,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     }
 
     private void setInstallation() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=717&ID=" + prefManager.getSalesPartyCode() + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=717&ID=" + prefManager.getSalesPartyCode() + "&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -2901,9 +2743,19 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -3788,7 +3640,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     }
 
     private void emailcheck1() {
-        String surl = AppController.APIURL + "api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
+        String surl = AppController.APIV2URL + "api/CheckInvalidEmailID?EmailID=" + etEmailId.getText().toString();
         Log.d("emailcheck", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -3837,9 +3689,19 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -3885,6 +3747,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("responsepincode", response);
                         progressBar.dismiss();
+                        area.clear();
 
 
                         try {
@@ -3966,7 +3829,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
     private void setState() {
         Log.d("hitr", "3");
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=2&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("stateinput", surl);
         ProgressDialog pd = new ProgressDialog(DeliveryAddressUpdateActivity.this);
         pd.setMessage("Loading");
@@ -4036,97 +3899,25 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.d("errort", "state");
             }
         }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    private void setCity() {
-        Log.d("hitr", "4");
-        tvCityName.setVisibility(View.GONE);
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=14&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
-        ProgressDialog pd = new ProgressDialog(DeliveryAddressUpdateActivity.this);
-        pd.setMessage("Loading");
-        pd.show();
-        pd.setCancelable(false);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseCategory", response);
-                        pd.dismiss();
-                        city.clear();
-                        moduleCity.clear();
-
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            String responseText = job1.optString("responseText");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                //Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                for (int i = 0; i < responseData.length(); i++) {
-                                    JSONObject obj = responseData.getJSONObject(i);
-                                    String value = obj.optString("value");
-                                    String id = obj.optString("id");
-                                    city.add(value);
-                                    SpinnerItemModule itemModule = new SpinnerItemModule(value, id);
-                                    moduleCity.add(itemModule);
-
-                                }
-
-
-                                spCity.setVisibility(View.VISIBLE);
-                                tvCityName.setVisibility(View.GONE);
-
-
-                                ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
-                                        (DeliveryAddressUpdateActivity.this, android.R.layout.simple_spinner_item,
-                                                city); //selected item will look like a spinner set from XML
-                                spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                                spCity.setAdapter(spinnerArrayAdapter);
-                                spCity.setSelection(0);
-
-
-                            }
-
-                            // boolean _status = job1.getBoolean("status");
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-
-                            Toast.makeText(DeliveryAddressUpdateActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                pd.dismiss();
-
-                Toast.makeText(DeliveryAddressUpdateActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.d("errort", "city");
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
             }
-        }) {
-
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
+
         requestQueue.add(stringRequest);
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                MY_SOCKET_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
     }
+
+
 
 
     private void setSalesType() {
-        String surl = AppController.APIURL + "api/CommonDDL?ModuleNo=SISY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl = AppController.APIV2URL + "api/CommonDDL?ModuleNo=SISY&ID=0&ID1=0&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("modelinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -4188,9 +3979,18 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 Log.d("errort", "model");
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
+
         requestQueue.add(stringRequest);
 
     }

@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -39,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.QueriesAdapter;
@@ -123,7 +126,7 @@ public class QueriesActivity extends AppCompatActivity {
         llMain.setVisibility(View.GONE);
         llNoData.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
-        String surl =  AppController.APIURL+"api/Feedback?ClientID=" + prefManager.getClintId() + "&FeedBackID=0&UserID=" + prefManager.getUserId() + "&Query=0&RepliedDetails=0&RepliedBy=0&ReplyStatus=4&IssueID=0&CurrentPage=" + mPageCount + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/Feedback?ClientID=" + prefManager.getClintId() + "&FeedBackID=0&UserID=" + prefManager.getUserId() + "&Query=0&RepliedDetails=0&RepliedBy=0&ReplyStatus=4&IssueID=0&CurrentPage=" + mPageCount + "&Operation=1&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("inputQueries", surl);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
                 new Response.Listener<String>() {
@@ -195,9 +198,19 @@ public class QueriesActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(QueriesActivity.this);
+
         requestQueue.add(stringRequest);
     }
 
@@ -298,7 +311,7 @@ public class QueriesActivity extends AppCompatActivity {
 
 
     private void getIssue(){
-        String surl =  AppController.APIURL+"api/IssueList?AEMClientID=AEMCLI1010000480&SecurityCode=IFB";
+        String surl =  AppController.APIV2URL+"api/IssueList?AEMClientID=AEMCLI1010000480&SecurityCode=IFB";
 
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -366,17 +379,27 @@ public class QueriesActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(QueriesActivity.this);
         requestQueue.add(stringRequest);
+
 
 
     }
 
 
     private void postIsuue(String query){
-        String surl =  AppController.APIURL+"api/post_Feedback?ClientID="+prefManager.getClintId()+"&FeedBackID=0&UserID="+prefManager.getUserId()+"&Query="+query+"&RepliedDetails=0&RepliedBy=0&ReplyStatus=4&IssueID="+issueId+"&CurrentPage=1&Operation=3&SecurityCode="+prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/post_Feedback?ClientID="+prefManager.getClintId()+"&FeedBackID=0&UserID="+prefManager.getUserId()+"&Query="+query+"&RepliedDetails=0&RepliedBy=0&ReplyStatus=4&IssueID="+issueId+"&CurrentPage=1&Operation=3&SecurityCode="+prefManager.getSecurityCode();
         Log.d("postissue",surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -430,9 +453,19 @@ public class QueriesActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(QueriesActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(QueriesActivity.this);
+
         requestQueue.add(stringRequest);
 
 

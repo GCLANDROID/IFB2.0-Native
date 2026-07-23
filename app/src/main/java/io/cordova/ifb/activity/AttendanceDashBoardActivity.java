@@ -115,8 +115,6 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance_dash_board);
         initialize();
-        checksale();
-        attendenceCheck();
         onClick();
     }
 
@@ -231,11 +229,10 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
             @Override
             public void onClick(View v) {
                 if (connectionCheck.isGPSEnabled()) {
-                    if (responseCode.equals("1")) {
-                        getCounetrCoordinates();
-                    } else {
-                        salecheckalert();
-                    }
+
+                        Intent intent = new Intent(AttendanceDashBoardActivity.this, AttendanceManageActivity.class);
+                        startActivity(intent);
+
                 } else {
 
                     Toast.makeText(getApplicationContext(), "Please enable GPS location", Toast.LENGTH_LONG).show();
@@ -249,7 +246,7 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
             public void onClick(View v) {
                 if (connectionCheck.isGPSEnabled()) {
 
-                    getCounetrCoordinatesForCheckOut();
+
 
                 } else {
 
@@ -262,22 +259,18 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
         llLeave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (responseCode.equals("1")) {
+
                     openLeaveBrowser();
-                } else {
-                    salecheckalert();
-                }
+
             }
         });
 
         llLeaveEnc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (responseCode.equals("1")) {
+
                     openLeaveEncBrowser();
-                } else {
-                    salecheckalert();
-                }
+
             }
         });
 
@@ -396,241 +389,12 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
     }
 
 
-    public void checksale() {
-        String surl =  AppController.APIURL+"api/get_Comp_DisplayMateix_Status?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@ 2" + job1);
-                            responseText = job1.optString("responseText");
-                            responseCode = job1.optString("responseCode");
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            responseData = job1.optBoolean("responseData");
-                            checkCounterMap();
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceDashBoardActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void checkCounterMap() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointGeoInfo?UserID=" + prefManager.getUserId() + "&Operation=1&SubOperation=2&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@ 3" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-
-                            } else {
-                                counterMapDialog();
-                            }
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceDashBoardActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void checkNewUI() {
-        String surl =  AppController.APIURL+"api/get_EmployeeLockdownAttendanceStatus?AEMEmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@ 4" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                Intent intent = new Intent(AttendanceDashBoardActivity.this, AttendanceManage2Activity.class);
-                                intent.putExtra("counterlat", counterLat);
-                                intent.putExtra("counterlong", counterLong);
-                                intent.putExtra("attFlag", attFalg);
-                                intent.putExtra("radius", radius);
-                                startActivity(intent);
-                            } else {
-                                Intent intent = new Intent(AttendanceDashBoardActivity.this, AttendanceManageActivity.class);
-                                startActivity(intent);
-                            }
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceDashBoardActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-
-    private void salecheckalert() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceDashBoardActivity.this, R.style.CustomDialogNew);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = inflater.inflate(R.layout.dialog_salecheck, null);
-        dialogBuilder.setView(dialogView);
-
-        TextView tvItem = (TextView) dialogView.findViewById(R.id.tvItem);
-        tvItem.setText(responseText);
-
-        Button btnOK = (Button) dialogView.findViewById(R.id.btnOK);
-        btnOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                alet1.dismiss();
-
-            }
-        });
-
-        Button btnSkip = (Button) dialogView.findViewById(R.id.btnSkip);
-        if (responseData) {
-            btnSkip.setVisibility(View.VISIBLE);
-        } else {
-            btnSkip.setVisibility(View.GONE);
-        }
-
-        btnSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*Intent intent=new Intent(AttendanceDashBoardActivity.this,AttendanceManageActivity.class);
-                startActivity(intent);
-                finish();*/
-                getCounetrCoordinates();
-                alet1.dismiss();
-            }
-        });
-
-
-        alet1 = dialogBuilder.create();
-        alet1.setCancelable(false);
-        Window window = alet1.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.CENTER);
-        alet1.show();
-    }
-
-    private void counterMapDialog() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceDashBoardActivity.this, R.style.CustomDialogNew);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialogView = inflater.inflate(R.layout.dialog_geofence, null);
-        dialogBuilder.setView(dialogView);
-        ImageView imgCamera = (ImageView) dialogView.findViewById(R.id.imgCamera);
-        imgPic = (ImageView) dialogView.findViewById(R.id.imgPic);
-        imgCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cameraIntentforPic1();
-            }
-        });
-        TextView tvAddress = (TextView) dialogView.findViewById(R.id.tvAddress);
-        String addressT = "<font color='#EE0000'>Address: </font>";
-        tvAddress.setText(Html.fromHtml(addressT + " " + address));
-        String latT = "<font color='#EE0000'>Latitude: </font>";
-        String longT = "<font color='#EE0000'>Longitude: </font>";
-        TextView tvLatLong = (TextView) dialogView.findViewById(R.id.tvLatLong);
-        tvLatLong.setText(Html.fromHtml(latT + latt + "   " + longT + longt));
-        ImageView imgCancel = (ImageView) dialogView.findViewById(R.id.imgCancel);
-        imgCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alerDialog1.dismiss();
-            }
-        });
-        Button btnSave = (Button) dialogView.findViewById(R.id.btnSave);
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pic1Flag == 1) {
-                    alerDialog1.dismiss();
-                    postCounterImage();
-                } else {
-                    Toast.makeText(AttendanceDashBoardActivity.this, "Please Upload Counter Image", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-
-        alerDialog1 = dialogBuilder.create();
-        alerDialog1.setCancelable(true);
-        Window window = alerDialog1.getWindow();
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.CENTER);
-        alerDialog1.show();
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -741,68 +505,7 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
         return strAdd;
     }
 
-    private void postCounterImage() {
 
-        final ProgressDialog pd = new ProgressDialog(AttendanceDashBoardActivity.this);
-        pd.setMessage("Loading..");
-        pd.setCancelable(false);
-        pd.show();
-
-        AndroidNetworking.upload( AppController.APIURL+"api/Post_EmployeeSalespointGeoInfo")
-                .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
-                .addMultipartParameter("SalesPointID", "0")
-                .addMultipartParameter("Longitude", longt)
-                .addMultipartParameter("Latitude", latt)
-                .addMultipartParameter("Address", address)
-                .addMultipartParameter("GeoInfocopy", stringFile)
-                .addMultipartParameter("Operation", "1")
-                .addMultipartParameter("SubOperation", "1")
-                .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
-
-                .setTag("uploadTest")
-                .setPriority(Priority.HIGH)
-                .build()
-                .setUploadProgressListener(new UploadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesUploaded, long totalBytes) {
-                        pd.show();
-
-                    }
-                })
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-
-                        JSONObject job1 = response;
-                        Log.e("response12", "@@@@@@" + job1);
-                        String responseText = job1.optString("responseText");
-                        Log.d("responseText", responseText);
-                        boolean responseStatus = job1.optBoolean("responseStatus");
-                        if (responseStatus) {
-                            successAlert(responseText);
-                            pd.dismiss();
-
-                        } else {
-                            pd.dismiss();
-                            Toast.makeText(AttendanceDashBoardActivity.this, responseText, Toast.LENGTH_LONG).show();
-
-                        }
-
-
-                        // boolean _status = job1.getBoolean("status");
-
-
-                        // do anything with response
-                    }
-
-                    @Override
-                    public void onError(ANError error) {
-                        pd.dismiss();
-                        Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
-                    }
-                });
-    }
 
     private void successAlert(String text) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceDashBoardActivity.this, R.style.CustomDialogNew);
@@ -829,185 +532,11 @@ public class AttendanceDashBoardActivity extends AppCompatActivity implements On
         alerDialog2.show();
     }
 
-    public void getCounetrCoordinates() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@ 5" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                JSONObject obj = responseData.optJSONObject(0);
-                                counterLat = obj.optString("Latitude");
-                                counterLong = obj.optString("Longitude");
-                                radius = obj.optInt("Radius");
-                                attFalg = obj.optInt("Flag");
 
 
-                            } else {
-                                counterLat = "0.00";
-                                counterLong = "0.00";
-                                radius = 0;
-                                attFalg = 0;
-                            }
-
-                            checkNewUI();
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
 
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceDashBoardActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    public void getCounetrCoordinatesForCheckOut() {
-        String surl =  AppController.APIURL+"api/get_EmployeeSalespointLatLong?EmployeeID=" + prefManager.getUserId() + "&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputCheck", surl);
-        final ProgressDialog progressBar = new ProgressDialog(this);
-        progressBar.setCancelable(false);//you can cancel it by pressing back button
-        progressBar.setMessage("Loading...");
-        progressBar.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("responseLogin", response);
-                        progressBar.dismiss();
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@" + job1);
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-                            if (responseStatus) {
-                                JSONArray responseData = job1.optJSONArray("responseData");
-                                JSONObject obj = responseData.optJSONObject(0);
-                                counterLat = obj.optString("Latitude");
-                                counterLong = obj.optString("Longitude");
-                                radius = obj.optInt("Radius");
-                                attFalg = obj.optInt("Flag");
-
-
-                            } else {
-                                counterLat = "0.00";
-                                counterLong = "0.00";
-                                radius = 0;
-                                attFalg = 0;
-                            }
-
-                            Intent intent = new Intent(AttendanceDashBoardActivity.this, AttendanceCheckOutActivity.class);
-                            intent.putExtra("counterlat", counterLat);
-                            intent.putExtra("counterlong", counterLong);
-                            intent.putExtra("attFlag", attFalg);
-                            intent.putExtra("radius", radius);
-                            startActivity(intent);
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressBar.dismiss();
-                Toast.makeText(AttendanceDashBoardActivity.this, "volly 2" + error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-
-    }
-
-    private void attendenceCheck() {
-        final ProgressDialog progressDialog = new ProgressDialog(AttendanceDashBoardActivity.this);
-        progressDialog.setMessage("Loading..");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        String surl = AppController.APIURL+"api/SelfAttendance?LoginID=" + prefManager.getUserId() + "&FinancialYear=" + financialYear + "&Month=" + month + "&ReportType=2&SecurityCode=" + prefManager.getSecurityCode();
-        Log.d("inputcheck", surl);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, surl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        Log.d("responseAttendance", response);
-                        progressDialog.dismiss();
-
-                        // attendabceInfiList.clear();
-
-                        try {
-                            JSONObject job1 = new JSONObject(response);
-                            Log.e("response12", "@@@@@@ 1" + job1);
-                            String responseText = job1.optString("responseText");
-
-                            boolean responseStatus = job1.optBoolean("responseStatus");
-
-                            //          Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
-                            JSONArray responseData = job1.optJSONArray("responseData");
-
-                            JSONObject obj = responseData.getJSONObject(0);
-                            String ReportType = obj.optString("ReportType");
-                            if (ReportType.equals("1")) {
-                                if (prefManager.getUserTypeId().equals("IFBMM1000011") ||prefManager.getUserTypeId().equals("IFBUT1000136") ) {
-                                    llCheckOut.setVisibility(View.VISIBLE);
-                                }else {
-                                    llCheckOut.setVisibility(View.GONE);
-                                }
-                            } else {
-                                llCheckOut.setVisibility(View.GONE);
-                            }
-
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(AttendanceDashBoardActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-
-                //Toast.makeText(SupAttenReportActivity.this, "volly 2"+error.toString(), Toast.LENGTH_LONG).show();
-                Log.e("ert", error.toString());
-            }
-        }) {
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(AttendanceDashBoardActivity.this);
-        requestQueue.add(stringRequest);
-    }
 
 
 }

@@ -71,6 +71,8 @@ import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
+import io.cordova.ifb.utility.Util;
+import okhttp3.OkHttpClient;
 
 public class LoginActivity extends AppCompatActivity {
     TextView llLogin;
@@ -95,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     String IsChangePassword;
     String reason = "";
     AlertDialog alerDialog1;
-
+    public static String SECRET_KEY = "74074750353890398886017484399862";
 
     //  नाम
     @Override
@@ -109,6 +111,14 @@ public class LoginActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void initialize() {
+
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
 
         prefManager = new PrefManager(LoginActivity.this);
         connectionCheck = new NetworkConnectionCheck(LoginActivity.this);
@@ -134,36 +144,38 @@ public class LoginActivity extends AppCompatActivity {
         etSceurityCode.setText(prefManager.getSecurityCode());
 
 
-        secerutycodde = etSceurityCode.getText().toString().toUpperCase();
+        secerutycodde = etSceurityCode.getText().toString().toUpperCase().trim();
         llAgain = (LinearLayout) findViewById(R.id.llAgain);
         llLoader = (LinearLayout) findViewById(R.id.llLoader);
         llMain = (LinearLayout) findViewById(R.id.llMain);
         phnonenumber = "okkk";
-        //refreshedToken=getAndroidID(LoginActivity.this);;
+        refreshedToken=getAndroidID(LoginActivity.this);;
 
-        refreshedToken = "1222";
+      //  refreshedToken = "bbe80c0f81d3effc";
 
-        android_id= "7c1af6037f2b729c";
- //       android_id = getAndroidID(LoginActivity.this);
-//        if (android_id.equals("0")) {
-//            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-//                // TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                return;
-//            }
-//            android_id = telephonyManager.getDeviceId();
-//        }else {
-//            android_id = getAndroidID(LoginActivity.this);
-//        }
+  //      android_id= "40af1ba9e00db8f9";
+        android_id = getAndroidID(LoginActivity.this);
+        if (android_id.equals("0")) {
+            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            android_id = telephonyManager.getDeviceId();
+        }else {
+            android_id = getAndroidID(LoginActivity.this);
+        }
 
         tvShow = (TextView) findViewById(R.id.tvShow);
         tvHide = (TextView) findViewById(R.id.tvHide);
+
+
 
 
     }
@@ -203,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 if (etSceurityCode.getText().toString().length() > 0) {
-                    secerutycodde = etSceurityCode.getText().toString().toUpperCase();
+                    secerutycodde = etSceurityCode.getText().toString().toUpperCase().trim();
                     Log.d("secerutycodde", secerutycodde);
                 }
 
@@ -220,7 +232,20 @@ public class LoginActivity extends AppCompatActivity {
                             if (connectionCheck.isNetworkAvailable()) {
                                 if (version.equals(IFBVersion)) {
 
-                                    loginFunction();
+                                    //loginFunction();
+
+                                    JSONObject obj = new JSONObject();
+                                    try {
+                                        obj.put("LoginID", Util.encrypt(etUserName.getText().toString().trim(), SECRET_KEY));
+                                        obj.put("Password", Util.encrypt(etPassword.getText().toString().trim(), SECRET_KEY));
+                                        obj.put("IMEI", android_id);
+                                        obj.put("DeviceID", android_id);
+                                        obj.put("DeviceType", "Android");
+                                        obj.put("SecurityCode", secerutycodde);
+                                        loginv2(obj);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
 
 
                                 } else {
@@ -228,7 +253,20 @@ public class LoginActivity extends AppCompatActivity {
                                         upDateAlert(IFBVersion);
                                         Toast.makeText(getApplicationContext(), "Please update your app", Toast.LENGTH_LONG).show();
                                     } else {
-                                        loginFunction();
+                                        //loginFunction();
+
+                                        JSONObject obj = new JSONObject();
+                                        try {
+                                            obj.put("LoginID", Util.encrypt(etUserName.getText().toString().trim(), SECRET_KEY));
+                                            obj.put("Password", Util.encrypt(etPassword.getText().toString().trim(), SECRET_KEY));
+                                            obj.put("IMEI", android_id);
+                                            obj.put("DeviceID", android_id);
+                                            obj.put("DeviceType", "Android");
+                                            obj.put("SecurityCode", secerutycodde);
+                                            loginv2(obj);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                             } else {
@@ -263,6 +301,218 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    private void loginv2(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/Login/UserLogin")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        try {
+                            JSONObject job1 = response;
+                            Log.e("response12", "@@@@@@" + job1);
+                            String responseText = job1.optString("responseText");
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            if (responseStatus) {
+                                // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject obj = responseData.getJSONObject(i);
+                                    String UserName = obj.optString("UserName");
+                                    prefManager.saveEmpName(UserName);
+                                    String LastLogin = obj.optString("LastLogin");
+                                    prefManager.saveLoginTime(LastLogin);
+                                    String Counter = obj.optString("Counter");
+                                    prefManager.saveCounter(Counter);
+                                    String BranchId = obj.optString("BranchId");
+                                    prefManager.saveBranchId(BranchId);
+                                    String UserTypeId = obj.optString("UserTypeId");
+                                    prefManager.saveUserTypeId(UserTypeId);
+                                    String ClientID = obj.optString("ClientID");
+                                    prefManager.saveClintId(ClientID);
+                                    String ConsultantID = obj.optString("ConsultantID");
+                                    String UserID = obj.optString("UserID");
+                                    prefManager.saveUserId(UserID);
+                                    String MasterID = obj.optString("MasterID");
+                                    prefManager.saveMasterId(etUserName.getText().toString());
+                                    String Target = obj.optString("Target");
+                                    prefManager.saveTarget(Target);
+                                    String Pending = obj.optString("Pending");
+                                    prefManager.savePending(Pending);
+                                    String MonthlyTarget = obj.optString("MonthlyTarget");
+                                    prefManager.saveMonthlyTarget(MonthlyTarget);
+                                    String Sold = obj.optString("Sold");
+                                    prefManager.saveSold(Sold);
+                                    String Approved = obj.optString("Approved");
+                                    prefManager.saveApproved(Approved);
+
+                                    String Rejected = obj.optString("Rejected");
+                                    prefManager.saveRejected(Rejected);
+
+                                    String SecurityCode = obj.optString("SecurityCode");
+                                    prefManager.saveSecurityCode(SecurityCode);
+                                    String Password = obj.optString("Password");
+                                    prefManager.savePassword(Password);
+                                    String WebSalesURL = obj.optString("WebSalesURL");
+                                    prefManager.saveWebSales(WebSalesURL);
+                                    String Code = obj.optString("Code");
+                                    prefManager.saveUserCode(Code);
+                                    String ZoneID = obj.optString("ZoneID");
+                                    prefManager.saveZoneId(ZoneID);
+                                    String HRDeskURL = obj.optString("HRDeskURL");
+                                    prefManager.saveHRDeskURL(HRDeskURL);
+                                    String ManualURL = obj.optString("ManualURL");
+                                    prefManager.saveManualURL(ManualURL);
+                                    String LeaveURL = obj.optString("LeaveURL");
+                                    prefManager.saveLeaveURL(LeaveURL);
+                                    String LeaveEncahURL = obj.optString("LeaveEncahURL");
+                                    prefManager.saveLeaveEncahURL(LeaveEncahURL);
+                                    String DigitalDocFlag = obj.optString("DigitalDocFlag");
+                                    prefManager.saveDocFlag(DigitalDocFlag);
+                                    String DailyActivityFlag = obj.optString("DailyActivityFlag");
+                                    prefManager.saveDailyLogFlag(DailyActivityFlag);
+                                    String CustomerVisitFlag = obj.optString("CustomerVisitFlag");
+                                    prefManager.saveCVFlag(CustomerVisitFlag);
+                                    String SalesInvCopyImgFlag = obj.optString("SalesInvCopyImgFlag");
+                                    prefManager.saveInvoiceFlag(SalesInvCopyImgFlag);
+                                    prefManager.saveRemberFlag("1");
+                                    String SubDearlerType = obj.optString("SubDearlerType");
+                                    prefManager.saveSubDealerType(SubDearlerType);
+                                    String SalesPartyCode = obj.optString("SalesPartyCode");
+                                    prefManager.saveSalesPartyCode(SalesPartyCode);
+
+                                    String CSRSurveyURL = obj.optString("CSRSurveyURL");
+                                    prefManager.saveCSRSurveyURL(CSRSurveyURL);
+                                    String IsFillCSRSurvey = obj.optString("IsFillCSRSurvey");
+                                    prefManager.saveIsFillCSRSurvey(IsFillCSRSurvey);
+
+                                    String CustomerSop = obj.optString("CustomerSop");
+                                    prefManager.saveCustomerSOPImage(CustomerSop);
+
+
+                                    String Notify_Remarks = obj.optString("Notify_Remarks");
+                                    prefManager.saveNotify(Notify_Remarks);
+
+
+                                    String Notify_URL = obj.optString("Notify_URL");
+                                    prefManager.saveNotifyUrl(Notify_URL);
+
+                                    String SalesPointID = obj.optString("SalesPointID");
+                                    prefManager.saveSalesPointID(SalesPointID);
+
+                                    IsChangePassword = obj.optString("IsChangePassword");
+
+                                    int minCheckInHour = Integer.parseInt(obj.getString("MINCheckinhrs"));
+                                    int minCheckInMinute = Integer.parseInt(obj.getString("MINCheckinmin"));
+                                    prefManager.saveCheckInHr(minCheckInHour);
+                                    prefManager.saveCheckInMin(minCheckInMinute);
+
+                                    int minCheckOutHour = Integer.parseInt(obj.getString("MINCheckouthrs"));
+                                    int minCheckOutMinute = Integer.parseInt(obj.getString("MINCheckoutmin"));
+
+                                    prefManager.saveCheckOutHr(minCheckOutHour);
+                                    prefManager.saveCheckOutMin(minCheckOutMinute);
+
+                                    String MonthlyPerformanceURL= obj.optString("MonthlyPerformanceURL");
+                                    prefManager.saveMonthlyPerformerURL(MonthlyPerformanceURL);
+
+
+                                    String Genius_Access_Token= obj.optString("Genius_Access_Token");
+                                    prefManager.saveAccessToken(Genius_Access_Token);
+
+
+                                    // Firebase(UserName);
+                                }
+                                if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS")) {
+                                    Intent intent = new Intent(LoginActivity.this, INDDashbaordActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else if (prefManager.getUserTypeId().equals("IFBUT1000127")) {
+                                    /*Intent intent = new Intent(LoginActivity.this, KAEnqueryActivity.class);
+                                    startActivity(intent);
+                                    finish();*/
+
+                                    Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else if (prefManager.getUserTypeId().equals("IFBMM1000011") || prefManager.getUserTypeId().equals("IFBUT1000135") || prefManager.getUserTypeId().equals("IFBUT1000134") || prefManager.getUserTypeId().equals("IFBUT1000133") || prefManager.getUserTypeId().equals("FBMM1000004") || prefManager.getUserTypeId().equals("IFBUT1000136")) {
+                                    /*Intent intent = new Intent(LoginActivity.this, KAEnqueryActivity.class);
+                                    startActivity(intent);
+                                    finish();*/
+
+                                    /*Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                    startActivity(intent);
+                                    finish();*/
+                                    if (etPassword.getText().toString().equalsIgnoreCase("password")) {
+                                        if (IsChangePassword.equalsIgnoreCase("1") || IsChangePassword.equalsIgnoreCase("true") || IsChangePassword.equalsIgnoreCase("True")) {
+                                            Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    } else {
+                                        Intent intent = new Intent(LoginActivity.this, NewDashboardActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+
+                                } else {
+                                    Intent intent = new Intent(LoginActivity.this, DashBoardActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                            } else {
+                                JSONArray responseData = job1.optJSONArray("responseData");
+                                JSONObject frstOBJ = responseData.getJSONObject(0);
+                                String ErrorCode = frstOBJ.getString("ErrorCode");
+                                String Msg = frstOBJ.getString("Msg");
+                                if (ErrorCode.equals("3")) {
+                                    deviceChangeDialog(responseText + " Please send a request to change your device.", etUserName.getText().toString(), etSceurityCode.getText().toString());
+
+                                } else {
+                                    shoeDialog(Msg);
+                                }
+
+
+                            }
+
+                            // boolean _status = job1.getBoolean("status");
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            // Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
     }
 
     public void loginFunction() {
@@ -608,7 +858,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkBersion() {
-        String surl = AppController.APIURL + "api/ApkVersionChecking";
+        String surl = AppController.APIV2URL + "api/ApkVersionChecking";
         llLoader.setVisibility(View.VISIBLE);
         llMain.setVisibility(View.GONE);
         llAgain.setVisibility(View.GONE);
@@ -658,7 +908,12 @@ public class LoginActivity extends AppCompatActivity {
         }) {
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+//        requestQueue.add(stringRequest);
+
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(LoginActivity.this);
+
         requestQueue.add(stringRequest);
 
     }
@@ -701,7 +956,19 @@ public class LoginActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginFunction();
+                //loginFunction();
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("LoginID", Util.encrypt(etUserName.getText().toString().trim(), SECRET_KEY));
+                    obj.put("Password", Util.encrypt(etPassword.getText().toString().trim(), SECRET_KEY));
+                    obj.put("IMEI", android_id);
+                    obj.put("DeviceID", android_id);
+                    obj.put("DeviceType", "Android");
+                    obj.put("SecurityCode", secerutycodde.trim());
+                    loginv2(obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -745,7 +1012,7 @@ public class LoginActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload(AppController.APIURL + "api/post_EmployeeMobileIMEIChnageRequest")
+        AndroidNetworking.upload(AppController.APIV2URL + "api/post_EmployeeMobileIMEIChnageRequest")
                 .addMultipartParameter("Code", Code)
                 .addMultipartParameter("IMEI", android_id)
                 .addMultipartParameter("Reason", Reason)

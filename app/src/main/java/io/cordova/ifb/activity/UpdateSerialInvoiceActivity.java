@@ -49,6 +49,7 @@ import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class UpdateSerialInvoiceActivity extends AppCompatActivity implements View.OnClickListener {
     ImageView imgAttach, imgDoc;
@@ -81,6 +82,13 @@ public class UpdateSerialInvoiceActivity extends AppCompatActivity implements Vi
 
     private void initView() {
         prefManager = new PrefManager(UpdateSerialInvoiceActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
         imgAttach = (ImageView) findViewById(R.id.imgAttach);
         imgDoc = (ImageView) findViewById(R.id.imgDoc);
         imgAttach.setOnClickListener(this);
@@ -375,7 +383,7 @@ public class UpdateSerialInvoiceActivity extends AppCompatActivity implements Vi
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_EmployeeSalesSerialNoInvoiceCopy")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_EmployeeSalesSerialNoInvoiceCopy")
                 .addMultipartParameter("AEMEmployeeID", prefManager.getUserId())
                 .addMultipartParameter("TokenNo", tokenNo)
                 .addMultipartParameter("FinancialYear", financialYear)
@@ -384,6 +392,7 @@ public class UpdateSerialInvoiceActivity extends AppCompatActivity implements Vi
                 .addMultipartParameter("SerialNo", etSerial.getText().toString())
                 .addMultipartParameter("Operation", "2")
                 .addMultipartParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)

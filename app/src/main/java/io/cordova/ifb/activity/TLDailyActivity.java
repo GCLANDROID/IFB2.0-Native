@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -52,8 +53,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.SpinnerItemModule;
@@ -129,6 +132,13 @@ public class TLDailyActivity extends AppCompatActivity {
 
     private void initialize() {
         prefManager = new PrefManager(TLDailyActivity.this);
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
+
         tvDateName = (TextView) findViewById(R.id.tvDateName);
         String next = "<font color='#EE0000'>*</font>";
         String datename = "Visited Date";
@@ -668,7 +678,7 @@ public class TLDailyActivity extends AppCompatActivity {
 
     private void setCounter() {
 
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=24&ID=" + prefManager.getBranchId() + "&ID1=0&ID2=1&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
         final ProgressDialog progressBar = new ProgressDialog(this);
         progressBar.setCancelable(true);//you can cancel it by pressing back button
@@ -735,9 +745,18 @@ public class TLDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(TLDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(TLDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(TLDailyActivity.this);
+
         requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
@@ -749,7 +768,7 @@ public class TLDailyActivity extends AppCompatActivity {
 
     private void setLocation() {
 
-        String surl =  AppController.APIURL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
+        String surl =  AppController.APIV2URL+"api/CommonDDL?ModuleNo=47&ID=" + prefManager.getUserId() + "&ID1=" + nosaledate + "&ID2=0&ID3=0&SecurityCode=" + prefManager.getSecurityCode();
         Log.d("ctegoryinput", surl);
 
         final ProgressDialog progressBar = new ProgressDialog(this);
@@ -816,9 +835,18 @@ public class TLDailyActivity extends AppCompatActivity {
                 Log.e("ert", error.toString());
             }
         }) {
-
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "Bearer "+prefManager.getAccessToken());
+                return params;
+            }
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(TLDailyActivity.this);
+//        RequestQueue requestQueue = Volley.newRequestQueue(TLDailyActivity.this);
+//        requestQueue.add(stringRequest);
+        RequestQueue requestQueue =
+                AppController.getUnsafeOkHttpQueue(TLDailyActivity.this);
+
         requestQueue.add(stringRequest);
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
@@ -947,7 +975,7 @@ public class TLDailyActivity extends AppCompatActivity {
         pd.setMessage("Loading..");
         pd.setCancelable(false);
 
-        AndroidNetworking.upload( AppController.APIURL+"api/post_TLSalesActivity")
+        AndroidNetworking.upload( AppController.APIV2URL+"api/post_TLSalesActivity")
                 .addMultipartParameter("SalesDate", nosaledate)
                 .addMultipartParameter("SalesPointID", counterid)
                 .addMultipartParameter("SalesPointName", countername)
@@ -960,7 +988,7 @@ public class TLDailyActivity extends AppCompatActivity {
                 .addMultipartParameter("Month", month)
                 .addMultipartParameter("UsertTypeID", usertypeid)
                 .addMultipartParameter("SecurityCode",securitycode)
-
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
 
 
                 .setTag("uploadTest")
