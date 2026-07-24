@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="@color/brand_empty"
+    android:layout_marginBottom="4dp"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Color Indicator - View (not TextView) -->
+        <View
+            android:id="@+id/colorIndicator"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/brandName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Samsung"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/qtyInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:inputType="number"
+        android:background="@drawable/edittext_border"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:hint="0"
+        android:textColorHint="@color/hint_gray" />
+
+</LinearLayout>

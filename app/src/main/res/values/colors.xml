@@ -44,4 +44,33 @@
     <color name="red">#c62828</color>
     <color name="amber_light">#fff8e1</color>
     <color name="amber_dark">#ff6f00</color>
+
+
+    <color name="background_white">#ffffff</color>
+
+    <!-- Text Colors -->
+
+
+    <!-- Brand List Colors -->
+    <color name="brand_filled">#f0f7ff</color>
+    <color name="brand_empty">#fafafa</color>
+
+    <!-- Border Colors -->
+    <color name="border_gray">#dddddd</color>
+    <color name="border_primary">#1a237e</color>
+
+    <!-- Hint Colors -->
+    <color name="hint_gray">#bbbbbb</color>
+
+    <!-- Status Colors -->
+
+    <!-- General Colors -->
+
+    <color name="button_gray">#f5f5f5</color>
+
+    <!-- Row Colors -->
+
+
+
+
 </resources>

@@ -43,7 +43,7 @@ public class CompSalesDashboardActivity extends AppCompatActivity implements Vie
     public void onClick(View view) {
         if (view==llManage){
             if (flag) {
-                Intent intent = new Intent(CompSalesDashboardActivity.this, CompetitorSaleActivity.class);
+                Intent intent = new Intent(CompSalesDashboardActivity.this, NewCompSalesActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else {
