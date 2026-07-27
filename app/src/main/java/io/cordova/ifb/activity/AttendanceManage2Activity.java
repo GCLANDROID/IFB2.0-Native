@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -100,6 +101,8 @@ import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 import io.cordova.ifb.R;
+import io.cordova.ifb.adapter.CategoryStatusAdapter;
+import io.cordova.ifb.module.CategoryStatusItem;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.CameraActivity;
@@ -116,6 +119,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class AttendanceManage2Activity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final String TAG = AttendanceManage2Activity.class.getSimpleName();
@@ -211,6 +216,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     TextView tvBlcckerText,tvHeaderBlocker;
     Button btnBlockerOK;
     String blockerTextHeader;
+    private CategoryStatusAdapter adapter;
+    private List<CategoryStatusItem> categoryList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,6 +241,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 getApplicationContext(),
                 okHttpClient
         );
+
         llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
         llBreak = findViewById(R.id.llBreak);
         btnRegularize = (Button) findViewById(R.id.btnRegularize);
@@ -359,6 +367,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         tvHeaderBlocker=findViewById(R.id.tvHeaderBlocker);
         btnBlockerOK= findViewById(R.id.btnBlockerOK);
         updateManageLayoutStatusForCheckOut();
+        setupData();
+        showCategoryStatusModal();
 
 
     }
@@ -510,6 +520,18 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
         }*/
+    }
+
+    private void setupData() {
+        categoryList = new ArrayList<>();
+        categoryList.add(new CategoryStatusItem("IFBPC1000001", "AIR CONDITIONER", 1));
+        categoryList.add(new CategoryStatusItem("IFBPC1000005", "CLOTHES DRYER", 0));
+        categoryList.add(new CategoryStatusItem("IFBPC1000007", "DISHWASHER", 1));
+        categoryList.add(new CategoryStatusItem("IFBPC1000011", "MICROWAVE OVEN", 0));
+        categoryList.add(new CategoryStatusItem("IFBPC1000013", "REFRIGERATOR DC", 0));
+        categoryList.add(new CategoryStatusItem("IFBPC1000021", "WASHING MACHINE-FLU", 0));
+        categoryList.add(new CategoryStatusItem("IFBPC1000025", "WASHING MACHINE-TL", 0));
+        categoryList.add(new CategoryStatusItem("IFBPC1000040", "REFRIGERATOR FF", 0));
     }
 
     private void setUpMapIfNeeded() {
@@ -2511,6 +2533,50 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
         alet1.show();
+    }
+
+    private void showCategoryStatusModal() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_category_status);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.getWindow().setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+        );
+        dialog.setCancelable(true);
+
+        // Get views
+        RecyclerView recyclerViewModal = dialog.findViewById(R.id.recyclerViewModalCategories);
+        TextView tvModalTotal = dialog.findViewById(R.id.tvModalTotal);
+        TextView tvModalCompleted = dialog.findViewById(R.id.tvModalCompleted);
+        TextView tvModalPending = dialog.findViewById(R.id.tvModalPending);
+        Button btnClose = dialog.findViewById(R.id.btnCloseModal);
+
+        // Calculate stats
+        int completed = 0;
+        int pending = 0;
+        for (CategoryStatusItem item : categoryList) {
+            if (item.isCompleted()) {
+                completed++;
+            } else {
+                pending++;
+            }
+        }
+
+        tvModalTotal.setText(String.valueOf(categoryList.size()));
+        tvModalCompleted.setText(String.valueOf(completed));
+        tvModalPending.setText(String.valueOf(pending));
+
+        // Setup RecyclerView for modal
+        CategoryStatusAdapter modalAdapter = new CategoryStatusAdapter(this, categoryList);
+        recyclerViewModal.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewModal.setAdapter(modalAdapter);
+
+        // Close button
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
 
