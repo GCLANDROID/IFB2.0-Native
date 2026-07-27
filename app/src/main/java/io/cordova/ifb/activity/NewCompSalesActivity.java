@@ -1,13 +1,19 @@
 package io.cordova.ifb.activity;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -16,19 +22,30 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.CompSalesBrandAdapter;
 import io.cordova.ifb.databinding.ActivityNewCompSalesBinding;
 import io.cordova.ifb.module.CompetitonSalesBrandModel;
+import io.cordova.ifb.utility.AppController;
+import io.cordova.ifb.utility.PrefManager;
+import okhttp3.OkHttpClient;
 
 public class NewCompSalesActivity extends AppCompatActivity {
     ActivityNewCompSalesBinding binding;
@@ -37,9 +54,12 @@ public class NewCompSalesActivity extends AppCompatActivity {
     private LinearLayout brandListContainer, savedDataContainer;
     private LinearLayout savedEntriesContainer;
 
-    private List<CompetitonSalesBrandModel> brandList;
+    private List<CompetitonSalesBrandModel> brandList=new ArrayList<>();
     private String selectedCategory = "";
     private List<SavedEntry> savedEntries = new ArrayList<>();
+    private List<CategoryItem> categoryList = new ArrayList<>();
+    String selectedCategoryId,selectedCategoryName;
+    PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,33 +69,39 @@ public class NewCompSalesActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        OkHttpClient okHttpClient =
+                AppController.getUnsafeOkHttpClient();
+
+        AndroidNetworking.initialize(
+                getApplicationContext(),
+                okHttpClient
+        );
+        prefManager=new PrefManager(NewCompSalesActivity.this);
+
         spinnerCategory = findViewById(R.id.spinnerCategory);
         brandListContainer = findViewById(R.id.brandListContainer);
         savedDataContainer = findViewById(R.id.savedDataContainer);
         savedEntriesContainer = findViewById(R.id.savedEntriesContainer);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("SecurityCode",prefManager.getSecurityCode());
+            getCategoryList(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        String[] categories = {
-                "Select Category",
-                "AIR CONDITIONER",
-                "DISHWASHER",
-                "WASHING MACHINE-FL",
-                "WASHING MACHINE-TL",
-                "KITCHEN_APPLIANCE",
-                "REFRIGERATOR_APPLIANCE"
-        };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, categories);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(adapter);
+
 
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position > 0) {
-                    selectedCategory = categories[position];
+                    selectedCategoryId = categoryList.get(position).getCategoryId();
+                    selectedCategoryName = categoryList.get(position).getCategoryName();
                 } else {
-                    selectedCategory = "";
+                    selectedCategoryId = "";
+                    selectedCategoryName = "";
                 }
             }
 
@@ -84,96 +110,280 @@ public class NewCompSalesActivity extends AppCompatActivity {
                 selectedCategory = "";
             }
         });
-        setupBrandList();
+
         setupButtons();
         displaySavedEntries();
-    }
-
-
-    private void setupBrandList() {
-        brandList = new ArrayList<>();
-
-        // Initialize brands with colors and IDs
-        brandList.add(new CompetitonSalesBrandModel("1", "IFB9000", "Samsung", "", "#1428A0"));
-        brandList.add(new CompetitonSalesBrandModel("2", "IFB9001", "LG", "", "#A50034"));
-        brandList.add(new CompetitonSalesBrandModel("3", "IFB0001", "Beko", "", "#005B9F"));
-        brandList.add(new CompetitonSalesBrandModel("4", "IFB9002", "Voltas", "", "#ED1C24"));
-        brandList.add(new CompetitonSalesBrandModel("5", "IFB9003", "Daikin", "", "#0068B4"));
-        brandList.add(new CompetitonSalesBrandModel("6", "IFB9004", "Hitachi", "", "#E60012"));
-        brandList.add(new CompetitonSalesBrandModel("7", "IFB9005", "Whirlpool", "", "#004B87"));
-        brandList.add(new CompetitonSalesBrandModel("8", "IFB9006", "Godrej", "", "#E31E24"));
-        brandList.add(new CompetitonSalesBrandModel("9", "IFB9007", "Haier", "", "#00529B"));
-        brandList.add(new CompetitonSalesBrandModel("10", "IFB9008", "Panasonic", "", "#003DA5"));
-
-        brandAdapter = new CompSalesBrandAdapter(this, (brandId, qty) -> {
-            updateStats();
+        binding.imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
         });
 
-        binding.recyclerViewBrands.setLayoutManager(new LinearLayoutManager(this));
-        binding.recyclerViewBrands.setAdapter(brandAdapter);
-        binding.recyclerViewBrands.setHasFixedSize(true);
-        binding.recyclerViewBrands.setNestedScrollingEnabled(false);
     }
+
+
+    private void getCategoryList(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(NewCompSalesActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/ShowList")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String Response_Code = job1.optString("Response_Code");
+
+                        if (Response_Code.equalsIgnoreCase("101")) {
+                            // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                            try {
+                                JSONArray responseData  = job1.getJSONArray("Response_Data");
+                                categoryList.clear();
+
+                                // Add Select Category option
+                                categoryList.add(new CategoryItem("", "Select Category"));
+
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject item = responseData.getJSONObject(i);
+                                    String categoryId = item.getString("CategoryID");
+                                    String categoryName = item.getString("CategoryName");
+                                    categoryList.add(new CategoryItem(categoryId, categoryName));
+                                }
+
+                                String[] categories = new String[categoryList.size()];
+                                for (int i = 0; i < categoryList.size(); i++) {
+                                    categories[i] = categoryList.get(i).getCategoryName();
+                                }
+
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewCompSalesActivity.this,
+                                        android.R.layout.simple_spinner_item, categories);
+                                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                spinnerCategory.setAdapter(adapter);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
+    }
+
+    private void setUpBrandList(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(NewCompSalesActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/Show")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String Response_Code = job1.optString("Response_Code");
+
+                        if (Response_Code.equalsIgnoreCase("101")) {
+                            // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                            try {
+                                JSONArray responseData  = job1.getJSONArray("Response_Data");
+                                brandList.clear();
+
+                                // Define brand colors
+                                Map<String, String> brandColors = new HashMap<>();
+                                brandColors.put("LG", "#A50034");
+                                brandColors.put("SAMSUNG", "#1428A0");
+                                brandColors.put("WHIRPOOL", "#004B87");
+                                brandColors.put("GODREJ", "#E31E24");
+                                brandColors.put("PANASONIC", "#003DA5");
+                                brandColors.put("VOLTAS", "#ED1C24");
+                                brandColors.put("DAIKEN", "#0068B4");
+                                brandColors.put("LLOYDS", "#005B9F");
+                                brandColors.put("IFB", "#1a237e");
+                                brandColors.put("ONIDA", "#E60012");
+                                brandColors.put("CARRIER", "#00529B");
+                                brandColors.put("BLUE STAR", "#0088CC");
+                                brandColors.put("OGENERAL", "#FF6B00");
+                                brandColors.put("HAIER", "#00529B");
+                                brandColors.put("HITACHI", "#E60012");
+                                brandColors.put("MITSUBISHI", "#FF0000");
+                                brandColors.put("OTHERS", "#666666");
+
+                                // Default color if brand not found
+                                String defaultColor = "#666666";
+
+                                for (int i = 0; i < responseData.length(); i++) {
+                                    JSONObject item = responseData.getJSONObject(i);
+                                    String competitorCompanyId = item.getString("CompetitorCompanyID");
+                                    String brandName = item.getString("Name");
+                                    int quantity = item.getInt("Quantity");
+
+                                    // Get color for brand
+                                    String color = brandColors.getOrDefault(brandName.toUpperCase(), defaultColor);
+
+                                    // Create brand object
+                                    CompetitonSalesBrandModel brand = new CompetitonSalesBrandModel(
+                                            String.valueOf(i + 1),
+                                            competitorCompanyId,
+                                            brandName,
+                                            String.valueOf(quantity),
+                                            color
+                                    );
+                                    brandList.add(brand);
+                                }
+
+                                // Update adapter
+                                brandAdapter = new CompSalesBrandAdapter(NewCompSalesActivity.this, (brandId, qty) -> {
+                                    updateStats();
+                                });
+
+                                LinearLayoutManager layoutManager = new LinearLayoutManager(NewCompSalesActivity.this);
+                                layoutManager.setStackFromEnd(false);
+                                binding.recyclerViewBrands.setLayoutManager(layoutManager);
+                                binding.recyclerViewBrands.setAdapter(brandAdapter);
+                                binding.recyclerViewBrands.setHasFixedSize(true);
+                                binding.recyclerViewBrands.setNestedScrollingEnabled(false);
+                                binding.recyclerViewBrands.setFocusable(false);
+                                binding.recyclerViewBrands.setFocusableInTouchMode(false);
+                                brandAdapter.setBrandList(brandList);
+                                brandListContainer.setVisibility(View.VISIBLE);
+                                binding.tvSelectedCategory.setText("Category: " + selectedCategoryName);
+                                updateStats();
+
+                                // Scroll to brand list
+                                binding.mainScrollView.postDelayed(() -> {
+                                    binding.mainScrollView.smoothScrollTo(0, brandListContainer.getTop());
+                                }, 100);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
+    }
+
 
     private void setupButtons() {
         binding.btnShow.setOnClickListener(v -> {
-            if (TextUtils.isEmpty(selectedCategory)) {
+            hideKeyboard();
+
+
+            // Reset quantities
+            if (TextUtils.isEmpty(selectedCategoryId)) {
                 Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Reset quantities
-            for (CompetitonSalesBrandModel brand : brandList) {
-                brand.setQty("");
+            // Show loading
+
+
+            // Fetch brands from API
+            JSONObject jsonObject=new JSONObject();
+            try {
+                jsonObject.put("AEMEmployeeID",prefManager.getUserId());
+                jsonObject.put("CategoryID",selectedCategoryId);
+                jsonObject.put("SecurityCode",prefManager.getSecurityCode());
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            brandAdapter.setBrandList(brandList);
-            brandListContainer.setVisibility(View.VISIBLE);
-            binding.tvSelectedCategory.setText("Category: " + selectedCategory);
-            updateStats();
+            setUpBrandList(jsonObject);
+
         });
 
         binding.btnSave.setOnClickListener(v -> {
-            List<CompetitonSalesBrandModel> filledBrands = new ArrayList<>();
-            for (CompetitonSalesBrandModel brand : brandList) {
-                if (brand.getQty() != null && !brand.getQty().isEmpty() &&
-                        Integer.parseInt(brand.getQty()) > 0) {
-                    filledBrands.add(brand);
-                }
-            }
-
-            if (filledBrands.isEmpty()) {
-                Toast.makeText(this, "Please enter quantity for at least one brand",
-                        Toast.LENGTH_SHORT).show();
+            hideKeyboard();
+            if (TextUtils.isEmpty(selectedCategoryId)) {
+                Toast.makeText(this, "Please select a category first", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Save entry
-            SavedEntry entry = new SavedEntry();
-            entry.id = System.currentTimeMillis();
-            entry.category = selectedCategory;
-            entry.date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-            entry.time = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
-            entry.brands = new ArrayList<>(filledBrands);
-            entry.totalQuantity = 0;
-            for (CompetitonSalesBrandModel brand : filledBrands) {
-                entry.totalQuantity += Integer.parseInt(brand.getQty());
+            if (brandList.isEmpty()) {
+                Toast.makeText(this, "Please click Show Brands to load brands", Toast.LENGTH_SHORT).show();
+                return;
             }
+            List<CompetitonSalesBrandModel> allBrandsWithQty = new ArrayList<>();
 
-            savedEntries.add(0, entry);
-            displaySavedEntries();
-
-            // Reset form
             for (CompetitonSalesBrandModel brand : brandList) {
-                brand.setQty("");
-            }
-            brandAdapter.setBrandList(brandList);
-            brandListContainer.setVisibility(View.GONE);
-            updateStats();
+                String qtyStr = brand.getQty();
+                int qty = 0;
 
-            Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_SHORT).show();
+                // If quantity is empty or null, set to 0
+                if (qtyStr == null || qtyStr.isEmpty()) {
+                    qty = 0;
+                } else {
+                    try {
+                        qty = Integer.parseInt(qtyStr);
+                    } catch (NumberFormatException e) {
+                        qty = 0; // If invalid number, set to 0
+                    }
+                }
+
+                // Update brand with proper quantity
+                brand.setQty(String.valueOf(qty));
+                allBrandsWithQty.add(brand);
+            }
+
+            // Show loading and save (send all brands including 0)
+
+            DataSave(allBrandsWithQty);
         });
 
+
+
+
         binding.btnClear.setOnClickListener(v -> {
+            hideKeyboard();
             new AlertDialog.Builder(this)
                     .setTitle("Clear All")
                     .setMessage("Are you sure you want to clear all entered quantities?")
@@ -189,12 +399,104 @@ public class NewCompSalesActivity extends AppCompatActivity {
         });
 
         binding.btnGenerateJson.setOnClickListener(v -> {
+            hideKeyboard();
             if (savedEntries.isEmpty()) {
                 Toast.makeText(this, "No saved data to generate JSON", Toast.LENGTH_SHORT).show();
                 return;
             }
             generateAndShowJson();
         });
+    }
+
+    private void DataSave(List<CompetitonSalesBrandModel> allBrands) {
+        JSONObject requestBody = new JSONObject();
+        try {
+
+            requestBody.put("AEMEmployeeID", prefManager.getUserId());
+            requestBody.put("CategoryID", selectedCategoryId);
+            requestBody.put("SecurityCode", prefManager.getSecurityCode());
+            requestBody.put("SalesPointID", prefManager.getSalesPointID()); // Replace with actual SalesPointID
+
+            JSONArray salesArray = new JSONArray();
+            for (CompetitonSalesBrandModel brand : allBrands) {
+                int qty = Integer.parseInt(brand.getQty());
+                JSONObject salesItem = new JSONObject();
+                salesItem.put("CompetitorCompanyID", brand.getBrandId());
+                salesItem.put("Quantity", String.valueOf(qty)); // Send 0 for empty quantities
+                salesArray.put(salesItem);
+            }
+            requestBody.put("Sales", salesArray);
+
+            // Log request for debugging
+            Log.d("SaveRequest", requestBody.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final ProgressDialog pd = new ProgressDialog(NewCompSalesActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/SaveCompetitorSales")
+                .addJSONObjectBody(requestBody)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+
+
+                        try {
+                            JSONObject job1 = response;
+                            Log.e("response12", "@@@@@@" + job1);
+                            String Response_Code = job1.optString("Response_Code");
+                            String responseMessage = job1.getString("Response_Message");
+                            if (Response_Code.equalsIgnoreCase("101")) {
+                                // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                                Toast.makeText(NewCompSalesActivity.this,
+                                        "✅ " + responseMessage, Toast.LENGTH_SHORT).show();
+
+                                // Save to local list (only brands with quantity > 0)
+                                List<CompetitonSalesBrandModel> savedBrands = new ArrayList<>();
+                                for (CompetitonSalesBrandModel brand : allBrands) {
+                                    if (Integer.parseInt(brand.getQty()) > 0) {
+                                        savedBrands.add(brand);
+                                    }
+                                }
+                                saveToLocalEntries(savedBrands);
+
+                                // Reset form
+                                resetForm();
+
+                            } else {
+                                Toast.makeText(NewCompSalesActivity.this,
+                                        "❌ Error: " + responseMessage, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
     }
 
     private void updateStats() {
@@ -215,6 +517,36 @@ public class NewCompSalesActivity extends AppCompatActivity {
         binding.tvTotalQuantity.setText("Total: " + totalQuantity);
     }
 
+
+    private void saveToLocalEntries(List<CompetitonSalesBrandModel> filledBrands) {
+        if (filledBrands.isEmpty()) {
+            return;
+        }
+
+        SavedEntry entry = new SavedEntry();
+        entry.id = System.currentTimeMillis();
+        entry.categoryName = selectedCategoryName;
+        entry.date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        entry.time = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
+        entry.brands = new ArrayList<>(filledBrands);
+        entry.totalQuantity = 0;
+        for (CompetitonSalesBrandModel brand : filledBrands) {
+            entry.totalQuantity += Integer.parseInt(brand.getQty());
+        }
+
+        savedEntries.add(0, entry);
+        displaySavedEntries();
+    }
+
+    private void resetForm() {
+        for (CompetitonSalesBrandModel brand : brandList) {
+            brand.setQty("");
+        }
+        brandAdapter.setBrandList(brandList);
+        binding.brandListContainer.setVisibility(View.GONE);
+        updateStats();
+    }
+
     private void displaySavedEntries() {
         savedEntriesContainer.removeAllViews();
 
@@ -233,7 +565,7 @@ public class NewCompSalesActivity extends AppCompatActivity {
             LinearLayout brandsContainer = cardView.findViewById(R.id.savedBrandsContainer);
             Button btnDelete = cardView.findViewById(R.id.btnDeleteEntry);
 
-            tvCategory.setText(entry.category);
+            tvCategory.setText(entry.categoryName);
             tvDate.setText(entry.date + " " + entry.time);
             tvTotal.setText("Total: " + entry.totalQuantity + " units");
 
@@ -274,22 +606,20 @@ public class NewCompSalesActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject();
             JSONArray brandArray = new JSONArray();
 
-            // Get all brands with quantity > 0 from saved entries
-            // Using the latest saved entry
             SavedEntry latestEntry = savedEntries.get(0);
             for (CompetitonSalesBrandModel brand : latestEntry.brands) {
-
+                if (brand.getQty() != null && !brand.getQty().isEmpty() &&
+                        Integer.parseInt(brand.getQty()) > 0) {
                     JSONObject brandObj = new JSONObject();
                     brandObj.put("brandID", brand.getBrandId());
                     brandObj.put("brandName", brand.getName());
                     brandObj.put("Qty", Integer.parseInt(brand.getQty()));
                     brandArray.put(brandObj);
-
+                }
             }
 
             jsonObject.put("brandData", brandArray);
 
-            // Show JSON in dialog
             String jsonString = jsonObject.toString(4);
 
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_json_view, null);
@@ -317,12 +647,45 @@ public class NewCompSalesActivity extends AppCompatActivity {
         }
     }
 
+    private void setupKeyboardListeners() {
+        // Hide keyboard when touching outside EditText
+        findViewById(android.R.id.content).setOnTouchListener((v, event) -> {
+            hideKeyboard();
+            return false;
+        });
+    }
 
+    private void hideKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+    private static class CategoryItem {
+        private String categoryId;
+        private String categoryName;
+
+        public CategoryItem(String categoryId, String categoryName) {
+            this.categoryId = categoryId;
+            this.categoryName = categoryName;
+        }
+
+        public String getCategoryId() { return categoryId; }
+        public String getCategoryName() { return categoryName; }
+    }
 
     // Inner class for saved entries
     private static class SavedEntry {
         long id;
-        String category;
+        String categoryName;
         String date;
         String time;
         List<CompetitonSalesBrandModel> brands;

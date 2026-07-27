@@ -67,7 +67,8 @@
 
             </LinearLayout>
         </LinearLayout>
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/mainScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
@@ -76,7 +77,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:focusableInTouchMode="true"
+                android:descendantFocusability="afterDescendants">
 
                 <!-- Category Selection -->
                 <LinearLayout
@@ -131,7 +134,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Category: "
-                        android:textColor="@color/primary_dark"
+                        android:textColor="@color/greeen"
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:layout_marginBottom="8dp" />
@@ -167,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:background="@color/test"
+                        android:background="@color/primary"
                         android:padding="10dp"
                         android:layout_marginBottom="8dp">
 
@@ -191,12 +194,14 @@
                             android:gravity="center" />
                     </LinearLayout>
 
+                    <!-- RecyclerView with fixed height and scroll -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewBrands"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
-                        android:paddingBottom="8dp" />
+                        android:paddingBottom="8dp"
+                        android:nestedScrollingEnabled="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -210,7 +215,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Save"
-                            android:background="@color/amber_dark"
+                            android:background="@color/medium_percentage"
                             android:textColor="@android:color/white"
                             android:padding="12dp"
                             android:layout_marginEnd="6dp" />
@@ -230,6 +235,7 @@
 
                 <!-- Saved Data -->
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/savedDataContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -253,7 +259,6 @@
                             android:textSize="18sp" />
 
                         <Button
-                            android:visibility="gone"
                             android:id="@+id/btnGenerateJson"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -273,7 +278,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
 </layout>
