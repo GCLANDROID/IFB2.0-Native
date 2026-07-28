@@ -28,12 +28,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="📋 Category Status"
+                android:text="📋 Competitor Sales Status"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/tvCloseModal"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -47,6 +48,7 @@
 
         <!-- Instruction Text -->
         <TextView
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Please add your previous month competitor sales data for following categories"
@@ -161,16 +163,36 @@
         android:padding="4dp" />
 
     <!-- Close Button -->
-    <Button
-        android:id="@+id/btnCloseModal"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Close"
-        android:background="@drawable/close_button_background"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:padding="12dp"
-        android:layout_marginTop="12dp"
-        android:textStyle="bold" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnCloseModal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="SKIP For now"
+            android:background="@drawable/close_button_background"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold" />
+        <Button
+            android:layout_marginLeft="10dp"
+            android:id="@+id/btnNewCompSales"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Add Comp. Sales"
+            android:background="@drawable/comp_button_background"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -45,6 +45,7 @@ import io.cordova.ifb.activity.DailyCounterSaleDashboardActivity;
 import io.cordova.ifb.activity.DashBoardActivity;
 import io.cordova.ifb.activity.DummySaleDashBoardActivity;
 import io.cordova.ifb.activity.ModelExchangeActivity;
+import io.cordova.ifb.activity.NewCompSalesActivity;
 import io.cordova.ifb.activity.NewTargetActivity;
 import io.cordova.ifb.activity.NoSalesActivity;
 import io.cordova.ifb.activity.RefInfoManageActivity;
@@ -282,9 +283,8 @@ public class SalesManagementFragment extends Fragment {
         llCompSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getContext(), CompSalesDashboardActivity.class);
-                intent.putExtra("flag",true);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(getContext(), NewCompSalesActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });

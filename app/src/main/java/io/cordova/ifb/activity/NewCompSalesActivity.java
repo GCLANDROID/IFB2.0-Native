@@ -7,12 +7,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,6 +47,7 @@ import java.util.Map;
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.CompSalesBrandAdapter;
 import io.cordova.ifb.databinding.ActivityNewCompSalesBinding;
+import io.cordova.ifb.module.CategoryStatusItem;
 import io.cordova.ifb.module.CompetitonSalesBrandModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
@@ -60,6 +66,7 @@ public class NewCompSalesActivity extends AppCompatActivity {
     private List<CategoryItem> categoryList = new ArrayList<>();
     String selectedCategoryId,selectedCategoryName;
     PrefManager prefManager;
+    AlertDialog alerDialog1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +89,17 @@ public class NewCompSalesActivity extends AppCompatActivity {
         brandListContainer = findViewById(R.id.brandListContainer);
         savedDataContainer = findViewById(R.id.savedDataContainer);
         savedEntriesContainer = findViewById(R.id.savedEntriesContainer);
+
+
+        JSONObject jsonObject1 = new JSONObject();
+        try {
+            jsonObject1.put("AEMEmployeeID",prefManager.getUserId());
+            jsonObject1.put("CategoryID","IFBPC1000011");
+            jsonObject1.put("SecurityCode",prefManager.getSecurityCode());
+            checkCompSalesFlag(jsonObject1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("SecurityCode",prefManager.getSecurityCode());
@@ -96,18 +114,20 @@ public class NewCompSalesActivity extends AppCompatActivity {
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position > 0) {
+
+                if (categoryList == null || categoryList.isEmpty()) {
+                    return;
+                }
+
+                if (position >= 0 && position < categoryList.size()) {
                     selectedCategoryId = categoryList.get(position).getCategoryId();
                     selectedCategoryName = categoryList.get(position).getCategoryName();
-                } else {
-                    selectedCategoryId = "";
-                    selectedCategoryName = "";
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                selectedCategory = "";
+
             }
         });
 
@@ -470,9 +490,10 @@ public class NewCompSalesActivity extends AppCompatActivity {
                                     }
                                 }
                                 saveToLocalEntries(savedBrands);
+                                successAlert(selectedCategoryName + " has been saved successfully!");
 
                                 // Reset form
-                                resetForm();
+
 
                             } else {
                                 Toast.makeText(NewCompSalesActivity.this,
@@ -690,5 +711,104 @@ public class NewCompSalesActivity extends AppCompatActivity {
         String time;
         List<CompetitonSalesBrandModel> brands;
         int totalQuantity;
+    }
+
+    private void checkCompSalesFlag(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(NewCompSalesActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/CheckStatus")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String Response_Code = job1.optString("Response_Code");
+
+                        if (Response_Code.equalsIgnoreCase("101")) {
+                            // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                            try {
+                                JSONObject responseData  = job1.optJSONObject("Response_Data");
+                                JSONArray Table=responseData.optJSONArray("Table");
+                                categoryList.clear();
+
+                                // Add Select Category option
+
+
+                                JSONArray Table1=responseData.optJSONArray("Table1");
+                                JSONObject frstObject=Table1.getJSONObject(0);
+                                boolean LockFlag=frstObject.getBoolean("LockFlag");
+                                if (LockFlag){
+                                    binding.llLockScreen.setVisibility(View.VISIBLE);
+                                    binding.llMainScreen.setVisibility(View.GONE);
+                                }else {
+                                    binding.llLockScreen.setVisibility(View.GONE);
+                                    binding.llMainScreen.setVisibility(View.VISIBLE);
+
+                                }
+
+
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
+    }
+
+    private void successAlert(String showText) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(NewCompSalesActivity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_success, null);
+        dialogBuilder.setView(dialogView);
+        TextView tvInvalidDate = (TextView) dialogView.findViewById(R.id.tvSuccess);
+        tvInvalidDate.setText(showText);
+
+        Button btnOk = (Button) dialogView.findViewById(R.id.btnOk);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alerDialog1.dismiss();
+                resetForm();
+
+
+            }
+        });
+
+        alerDialog1 = dialogBuilder.create();
+        alerDialog1.setCancelable(true);
+        Window window = alerDialog1.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alerDialog1.show();
     }
 }

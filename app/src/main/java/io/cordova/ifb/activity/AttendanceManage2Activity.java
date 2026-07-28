@@ -217,7 +217,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     Button btnBlockerOK;
     String blockerTextHeader;
     private CategoryStatusAdapter adapter;
-    private List<CategoryStatusItem> categoryList;
+    private List<CategoryStatusItem> categoryList=new ArrayList<>();
+    boolean SkipFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,8 +368,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         tvHeaderBlocker=findViewById(R.id.tvHeaderBlocker);
         btnBlockerOK= findViewById(R.id.btnBlockerOK);
         updateManageLayoutStatusForCheckOut();
-        setupData();
-        showCategoryStatusModal();
+
+
 
 
     }
@@ -522,17 +523,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         }*/
     }
 
-    private void setupData() {
-        categoryList = new ArrayList<>();
-        categoryList.add(new CategoryStatusItem("IFBPC1000001", "AIR CONDITIONER", 1));
-        categoryList.add(new CategoryStatusItem("IFBPC1000005", "CLOTHES DRYER", 0));
-        categoryList.add(new CategoryStatusItem("IFBPC1000007", "DISHWASHER", 1));
-        categoryList.add(new CategoryStatusItem("IFBPC1000011", "MICROWAVE OVEN", 0));
-        categoryList.add(new CategoryStatusItem("IFBPC1000013", "REFRIGERATOR DC", 0));
-        categoryList.add(new CategoryStatusItem("IFBPC1000021", "WASHING MACHINE-FLU", 0));
-        categoryList.add(new CategoryStatusItem("IFBPC1000025", "WASHING MACHINE-TL", 0));
-        categoryList.add(new CategoryStatusItem("IFBPC1000040", "REFRIGERATOR FF", 0));
-    }
+
 
     private void setUpMapIfNeeded() {
 
@@ -822,6 +813,16 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                     llPunch.setVisibility(View.GONE);
                                     llBreak.setVisibility(View.GONE);
                                     checkBreakTime();
+
+                                    JSONObject jsonObject = new JSONObject();
+                                    try {
+                                        jsonObject.put("AEMEmployeeID",prefManager.getUserId());
+                                        jsonObject.put("CategoryID","IFBPC1000011");
+                                        jsonObject.put("SecurityCode",prefManager.getSecurityCode());
+                                        checkCompSalesFlag(jsonObject);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     llChekcinout.setVisibility(View.GONE);
                                     llPunchOut.setVisibility(View.GONE);
@@ -2552,6 +2553,20 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         TextView tvModalCompleted = dialog.findViewById(R.id.tvModalCompleted);
         TextView tvModalPending = dialog.findViewById(R.id.tvModalPending);
         Button btnClose = dialog.findViewById(R.id.btnCloseModal);
+        if (SkipFlag){
+            btnClose.setVisibility(View.VISIBLE);
+        }else {
+            btnClose.setVisibility(View.GONE);
+        }
+        Button btnNewCompSales = dialog.findViewById(R.id.btnNewCompSales);
+        btnNewCompSales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AttendanceManage2Activity.this, NewCompSalesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         // Calculate stats
         int completed = 0;
@@ -2577,6 +2592,86 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         btnClose.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+
+
+    private void checkCompSalesFlag(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/CheckStatus")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String Response_Code = job1.optString("Response_Code");
+
+                        if (Response_Code.equalsIgnoreCase("101")) {
+                            // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                            try {
+                                JSONObject responseData  = job1.optJSONObject("Response_Data");
+                                JSONArray Table=responseData.optJSONArray("Table");
+                                categoryList.clear();
+
+                                // Add Select Category option
+
+
+                                for (int i = 0; i < Table.length(); i++) {
+                                    JSONObject item = Table.getJSONObject(i);
+                                    String categoryId = item.getString("CategoryID");
+                                    String CategoryName = item.getString("CategoryName");
+                                    int IsCompleted=item.getInt("IsCompleted");
+                                    CategoryStatusItem categoryStatusItem = new CategoryStatusItem(categoryId, CategoryName, IsCompleted);
+                                    categoryList.add(categoryStatusItem);
+
+                                }
+
+                                JSONArray Table1=responseData.optJSONArray("Table1");
+                                JSONObject frstObject=Table1.getJSONObject(0);
+                                boolean DataPresentFlag=frstObject.getBoolean("DataPresentFlag");
+                                if (DataPresentFlag){
+
+                                }else {
+                                    showCategoryStatusModal();
+                                }
+
+                                 SkipFlag=frstObject.getBoolean("SkipFlag");
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
     }
 
 
