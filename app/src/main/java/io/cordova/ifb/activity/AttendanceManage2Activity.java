@@ -2545,7 +2545,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT
         );
-        dialog.setCancelable(true);
+        dialog.setCancelable(false);
 
         // Get views
         RecyclerView recyclerViewModal = dialog.findViewById(R.id.recyclerViewModalCategories);
