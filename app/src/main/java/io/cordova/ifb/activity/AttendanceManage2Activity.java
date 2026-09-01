@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -104,6 +105,8 @@ import io.cordova.ifb.Location.LocationModel;
 import io.cordova.ifb.Location.LocationServiceActivity;
 import io.cordova.ifb.R;
 import io.cordova.ifb.RoomDB.AppDatabase;
+import io.cordova.ifb.adapter.CategoryStatusAdapter;
+import io.cordova.ifb.module.CategoryStatusItem;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.CameraActivity;
@@ -122,6 +125,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.location.LocationCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class AttendanceManage2Activity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     public static final String TAG = AttendanceManage2Activity.class.getSimpleName();
@@ -223,6 +228,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     MockLocationDialog mockLocationDialog;
     Location locationForMock;
     boolean isDeveloperOptionsEnabled;
+    private CategoryStatusAdapter adapter;
+    private List<CategoryStatusItem> categoryList=new ArrayList<>();
+    boolean SkipFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -249,6 +258,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 getApplicationContext(),
                 okHttpClient
         );
+
         llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
         llBreak = findViewById(R.id.llBreak);
         btnRegularize = (Button) findViewById(R.id.btnRegularize);
@@ -376,6 +386,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         tvHeaderBlocker=findViewById(R.id.tvHeaderBlocker);
         btnBlockerOK= findViewById(R.id.btnBlockerOK);
         updateManageLayoutStatusForCheckOut();
+
+
 
 
     }
@@ -538,7 +550,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             mGoogleApiClient.disconnect();
         }*/
     }
-
 
     private void setUpMapIfNeeded() {
 
@@ -845,6 +856,16 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                     llPunch.setVisibility(View.GONE);
                                     llBreak.setVisibility(View.GONE);
                                     checkBreakTime();
+
+                                    JSONObject jsonObject = new JSONObject();
+                                    try {
+                                        jsonObject.put("AEMEmployeeID",prefManager.getUserId());
+                                        jsonObject.put("CategoryID","IFBPC1000011");
+                                        jsonObject.put("SecurityCode",prefManager.getSecurityCode());
+                                        checkCompSalesFlag(jsonObject);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 } else {
                                     llChekcinout.setVisibility(View.GONE);
                                     llPunchOut.setVisibility(View.GONE);
@@ -2627,6 +2648,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         alet1.show();
     }
 
+
     void mockLocationPopup(){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -2641,6 +2663,143 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
         alertDialog2.show();
+    private void showCategoryStatusModal() {
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_category_status);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.getWindow().setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+        );
+        dialog.setCancelable(false);
+
+        // Get views
+        RecyclerView recyclerViewModal = dialog.findViewById(R.id.recyclerViewModalCategories);
+        TextView tvModalTotal = dialog.findViewById(R.id.tvModalTotal);
+        TextView tvModalCompleted = dialog.findViewById(R.id.tvModalCompleted);
+        TextView tvModalPending = dialog.findViewById(R.id.tvModalPending);
+        Button btnClose = dialog.findViewById(R.id.btnCloseModal);
+        if (SkipFlag){
+            btnClose.setVisibility(View.VISIBLE);
+        }else {
+            btnClose.setVisibility(View.GONE);
+        }
+        Button btnNewCompSales = dialog.findViewById(R.id.btnNewCompSales);
+        btnNewCompSales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AttendanceManage2Activity.this, NewCompSalesActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        // Calculate stats
+        int completed = 0;
+        int pending = 0;
+        for (CategoryStatusItem item : categoryList) {
+            if (item.isCompleted()) {
+                completed++;
+            } else {
+                pending++;
+            }
+        }
+
+        tvModalTotal.setText(String.valueOf(categoryList.size()));
+        tvModalCompleted.setText(String.valueOf(completed));
+        tvModalPending.setText(String.valueOf(pending));
+
+        // Setup RecyclerView for modal
+        CategoryStatusAdapter modalAdapter = new CategoryStatusAdapter(this, categoryList);
+        recyclerViewModal.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewModal.setAdapter(modalAdapter);
+
+        // Close button
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+
+    private void checkCompSalesFlag(JSONObject jsonObject) {
+        Log.e("LOGIN", "login: " + jsonObject.toString());
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBEmployeeCompetorSales/CheckStatus")
+                .addJSONObjectBody(jsonObject)
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+
+                        JSONObject job1 = response;
+                        Log.e("response12", "@@@@@@" + job1);
+                        String Response_Code = job1.optString("Response_Code");
+
+                        if (Response_Code.equalsIgnoreCase("101")) {
+                            // Toast.makeText(getApplicationContext(),responseText,Toast.LENGTH_LONG).show();
+
+                            try {
+                                JSONObject responseData  = job1.optJSONObject("Response_Data");
+                                JSONArray Table=responseData.optJSONArray("Table");
+                                categoryList.clear();
+
+                                // Add Select Category option
+
+
+                                for (int i = 0; i < Table.length(); i++) {
+                                    JSONObject item = Table.getJSONObject(i);
+                                    String categoryId = item.getString("CategoryID");
+                                    String CategoryName = item.getString("CategoryName");
+                                    int IsCompleted=item.getInt("IsCompleted");
+                                    CategoryStatusItem categoryStatusItem = new CategoryStatusItem(categoryId, CategoryName, IsCompleted);
+                                    categoryList.add(categoryStatusItem);
+
+                                }
+
+                                JSONArray Table1=responseData.optJSONArray("Table1");
+                                JSONObject frstObject=Table1.getJSONObject(0);
+                                boolean DataPresentFlag=frstObject.getBoolean("DataPresentFlag");
+                                if (DataPresentFlag){
+
+                                }else {
+                                    showCategoryStatusModal();
+                                }
+
+                                 SkipFlag=frstObject.getBoolean("SkipFlag");
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+
+
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e("LOGIN", "onError: " + error);
+                        pd.dismiss();
+
+
+                    }
+                });
+
     }
 
 
