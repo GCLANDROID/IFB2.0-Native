@@ -64,6 +64,7 @@ public class NewCompSalesActivity extends AppCompatActivity {
     private String selectedCategory = "";
     private List<SavedEntry> savedEntries = new ArrayList<>();
     private List<CategoryItem> categoryList = new ArrayList<>();
+    ArrayList<String>category=new ArrayList<>();
     String selectedCategoryId,selectedCategoryName;
     PrefManager prefManager;
     AlertDialog alerDialog1;
@@ -179,6 +180,7 @@ public class NewCompSalesActivity extends AppCompatActivity {
                                     String categoryId = item.getString("CategoryID");
                                     String categoryName = item.getString("CategoryName");
                                     categoryList.add(new CategoryItem(categoryId, categoryName));
+
                                 }
 
                                 String[] categories = new String[categoryList.size()];
@@ -343,6 +345,13 @@ public class NewCompSalesActivity extends AppCompatActivity {
             // Reset quantities
             if (TextUtils.isEmpty(selectedCategoryId)) {
                 Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("SecurityCode",prefManager.getSecurityCode());
+                    getCategoryList(jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 return;
             }
 
@@ -740,7 +749,7 @@ public class NewCompSalesActivity extends AppCompatActivity {
                             try {
                                 JSONObject responseData  = job1.optJSONObject("Response_Data");
                                 JSONArray Table=responseData.optJSONArray("Table");
-                                categoryList.clear();
+
 
                                 // Add Select Category option
 

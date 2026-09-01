@@ -151,9 +151,9 @@ public class LoginActivity extends AppCompatActivity {
         phnonenumber = "okkk";
         refreshedToken=getAndroidID(LoginActivity.this);;
 
-      //  refreshedToken = "bbe80c0f81d3effc";
+        refreshedToken = "adef3a9a0bcaee5c";
 
-       // android_id= "533aa364e214c961";
+     //   android_id= "adef3a9a0bcaee5c";
         android_id = getAndroidID(LoginActivity.this);
         if (android_id.equals("0")) {
             TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
