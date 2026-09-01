@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
     String reason = "";
     AlertDialog alerDialog1;
     public static String SECRET_KEY = "74074750353890398886017484399862";
-
+    boolean isDeveloperOptionsEnabled;
     //  नाम
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +106,23 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login_activity);
         initialize();
         checkBersion();
+        //checkDeveloperOptions();
         onClick();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!prefManager.getUserCode().isEmpty()){
+            if (prefManager.getUserCode().equals("IFBAPPL00001")){
+                // SKIP CHECKING
+            } else {
+                if (isDeveloperOptionsEnabled){
+                    checkDeveloperOptions();
+                    //return;
+                }
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -119,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 getApplicationContext(),
                 okHttpClient
         );
-
+        isDeveloperOptionsEnabled = Settings.Global.getInt(getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
         prefManager = new PrefManager(LoginActivity.this);
         connectionCheck = new NetworkConnectionCheck(LoginActivity.this);
         llLogin = (TextView) findViewById(R.id.btnLogin);
@@ -238,8 +254,8 @@ public class LoginActivity extends AppCompatActivity {
                                     try {
                                         obj.put("LoginID", Util.encrypt(etUserName.getText().toString().trim(), SECRET_KEY));
                                         obj.put("Password", Util.encrypt(etPassword.getText().toString().trim(), SECRET_KEY));
-                                        obj.put("IMEI", android_id);
-                                        obj.put("DeviceID", android_id);
+                                        obj.put("IMEI", "d01137a74bc57a9f"/*android_id*/);
+                                        obj.put("DeviceID", "d01137a74bc57a9f"/*android_id*/);
                                         obj.put("DeviceType", "Android");
                                         obj.put("SecurityCode", secerutycodde);
                                         loginv2(obj);
@@ -437,6 +453,17 @@ public class LoginActivity extends AppCompatActivity {
 
                                     // Firebase(UserName);
                                 }
+
+                                if (prefManager.getUserCode().equals("IFBAPPL00001")){
+                                    // SKIP CHECKING
+                                } else {
+                                    if (isDeveloperOptionsEnabled){
+                                        checkDeveloperOptions();
+                                        return;
+                                    }
+                                }
+
+
                                 if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS")) {
                                     Intent intent = new Intent(LoginActivity.this, INDDashbaordActivity.class);
                                     startActivity(intent);
@@ -889,6 +916,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             // boolean _status = job1.getBoolean("status")
 
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(LoginActivity.this, "Volly Error", Toast.LENGTH_LONG).show();
@@ -1106,6 +1134,30 @@ public class LoginActivity extends AppCompatActivity {
             prefs.edit().putString("device_uuid", uuid).apply();
         }
         return uuid;
+    }
+
+    private void checkDeveloperOptions() {
+        //if (isDeveloperOptionsEnabled) {
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Developer Options Enabled")
+                    .setMessage("Developer Options are currently enabled. Please disable them to continue using the application.")
+                    .setCancelable(false)
+                    .setPositiveButton("Go to Settings", (dialog, which) -> {
+                        try {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            // Fallback if Developer Options screen cannot be opened
+                            Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Exit", (dialog, which) -> {
+                        finishAffinity();
+                    })
+                    .show();
+       // }
     }
 
 

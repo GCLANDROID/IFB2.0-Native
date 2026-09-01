@@ -82,6 +82,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.cordova.ifb.Location.LocationForegroundService;
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.module.SpinnerItemModule;
@@ -3073,14 +3074,12 @@ public class SalesManage2Activity extends AppCompatActivity {
                             Log.e("response12", "@@@@@@" + job1);
                             boolean responseStatus = job1.optBoolean("responseStatus");
                             if (responseStatus) {
+                                Intent intent = new Intent(SalesManage2Activity.this, LocationForegroundService.class);
+                                stopService(intent);
                                 successAlert("YOUR SALES REFERENCE NO "+refrenceNo+" REGISTERED SUCCESSFULLY. ");
-
                             } else {
 
                             }
-
-
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(SalesManage2Activity.this, "Volly Error", Toast.LENGTH_LONG).show();

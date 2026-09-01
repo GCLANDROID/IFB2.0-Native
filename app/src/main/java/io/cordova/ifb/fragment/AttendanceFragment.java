@@ -70,7 +70,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.cordova.ifb.Location.LocationForegroundService;
+import io.cordova.ifb.Location.LocationModel;
+import io.cordova.ifb.Location.LocationServiceActivity;
 import io.cordova.ifb.R;
+import io.cordova.ifb.RoomDB.AppDatabase;
 import io.cordova.ifb.activity.AttemdanceReportActivity;
 import io.cordova.ifb.activity.AttendanceCalendarDialogActivity;
 import io.cordova.ifb.activity.AttendanceCheckOutActivity;
@@ -90,7 +94,7 @@ import io.cordova.ifb.utility.PrefManager;
 import okhttp3.OkHttpClient;
 
 public class AttendanceFragment extends Fragment {
-
+    private static final String TAG = "AttendanceFragment";
       View view;
       PrefManager prefManager;
     LinearLayout llReport, llManage;
@@ -129,7 +133,7 @@ public class AttendanceFragment extends Fragment {
     int minCheckOutTime;
     int currentTime;
     TextView tvCheckIN,tvCheckOut;
-
+    AppDatabase appDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -152,6 +156,7 @@ public class AttendanceFragment extends Fragment {
                 okHttpClient
         );
         prefManager = new PrefManager(getContext());
+        appDatabase = AppDatabase.getDatabaseInstance(getContext());
         tvCheckOut=view.findViewById(R.id.tvCheckOut);
         tvCheckIN=view.findViewById(R.id.tvCheckIN);
         llChekcinout=(LinearLayout)view.findViewById(R.id.llChekcinout);
@@ -324,8 +329,11 @@ public class AttendanceFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getContext(), VaccineDashboardActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(getContext(), VaccineDashboardActivity.class);
+                startActivity(intent);*/
+                Intent intent = new Intent(getActivity(), LocationForegroundService.class);
+                getActivity().stopService(intent);
+                makeAJson();
 
             }
         });
@@ -380,6 +388,29 @@ public class AttendanceFragment extends Fragment {
 
 
 
+    }
+
+    private void makeAJson() {
+        int itemCount = appDatabase.LocationDao().getItemCount();
+        Log.e(TAG, "makeAJson: "+itemCount);
+        List<LocationModel> locationList = appDatabase.LocationDao().getAllLocation();
+        try{
+            JSONObject mainObject = new JSONObject();
+
+            mainObject.put("EmolyeeID", prefManager.getUserId());
+            mainObject.put("ItemCount", itemCount);
+            JSONArray dataArray = new JSONArray();
+            for (int i = 0; i < locationList.size(); i++){
+                JSONObject obj1 = new JSONObject();
+                obj1.put("longitude", locationList.get(i).getLongitude());
+                obj1.put("latitude", locationList.get(i).getLatitude());
+                dataArray.put(obj1);
+            }
+            mainObject.put("data", dataArray);
+            Log.e(TAG, "makeAJson: "+mainObject.toString(4));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void openLeaveBrowser() {

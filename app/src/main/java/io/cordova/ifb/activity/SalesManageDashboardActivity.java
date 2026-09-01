@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.cordova.ifb.Location.LocationForegroundService;
 import io.cordova.ifb.R;
 
 public class SalesManageDashboardActivity extends AppCompatActivity {
@@ -38,6 +40,10 @@ public class SalesManageDashboardActivity extends AppCompatActivity {
         llDelivery=(LinearLayout)findViewById(R.id.llDelivery);
         llReport=(LinearLayout)findViewById(R.id.llReport);
         llSerialNo=(LinearLayout) findViewById(R.id.llSerialNo);
+
+        Intent intent = new Intent(SalesManageDashboardActivity.this, LocationForegroundService.class);
+        ContextCompat.startForegroundService(SalesManageDashboardActivity.this, intent);
+
 
         llManage.setOnClickListener(new View.OnClickListener() {
             @Override

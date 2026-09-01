@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.cordova.ifb.Location.LocationForegroundService;
 import io.cordova.ifb.R;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockOneAdapter;
 import io.cordova.ifb.adapter.IncentiveCategoryBlockTwoAdapter;
@@ -257,7 +258,8 @@ public class IncentiveCalculationDetailsActivity extends AppCompatActivity {
         binding.recyclerViewCategories.setHasFixedSize(true);
         binding.recyclerViewCategories.setNestedScrollingEnabled(false);
 
-
+        Intent intent = new Intent(IncentiveCalculationDetailsActivity.this, LocationForegroundService.class);
+        ContextCompat.startForegroundService(IncentiveCalculationDetailsActivity.this, intent);
 
 
 

@@ -2536,7 +2536,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         alet1.show();
     }
 
-    private void showCategoryStatusModal(boolean skFlag) {
+    private void showCategoryStatusModal() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_category_status);
@@ -2553,7 +2553,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         TextView tvModalCompleted = dialog.findViewById(R.id.tvModalCompleted);
         TextView tvModalPending = dialog.findViewById(R.id.tvModalPending);
         Button btnClose = dialog.findViewById(R.id.btnCloseModal);
-        if (skFlag){
+        if (SkipFlag){
             btnClose.setVisibility(View.VISIBLE);
         }else {
             btnClose.setVisibility(View.GONE);
@@ -2640,14 +2640,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                 JSONArray Table1=responseData.optJSONArray("Table1");
                                 JSONObject frstObject=Table1.getJSONObject(0);
                                 boolean DataPresentFlag=frstObject.getBoolean("DataPresentFlag");
-
-
-                                 SkipFlag=frstObject.getBoolean("SkipFlag");
                                 if (DataPresentFlag){
 
                                 }else {
-                                    showCategoryStatusModal(SkipFlag);
+                                    showCategoryStatusModal();
                                 }
+
+                                 SkipFlag=frstObject.getBoolean("SkipFlag");
 
 
                             } catch (JSONException e) {
