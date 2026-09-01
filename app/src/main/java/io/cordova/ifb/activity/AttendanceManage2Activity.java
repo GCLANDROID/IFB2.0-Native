@@ -49,7 +49,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.SingleSpinnerSearch;
 import com.androidbuts.multispinnerfilter.SpinnerListener;
@@ -58,6 +57,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
+import com.developers.imagezipper.ImageZipper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -99,13 +99,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import id.zelory.compressor.Compressor;
+//import id.zelory.compressor.Compressor;
+import io.cordova.ifb.Location.LocationForegroundService;
+import io.cordova.ifb.Location.LocationModel;
+import io.cordova.ifb.Location.LocationServiceActivity;
 import io.cordova.ifb.R;
+import io.cordova.ifb.RoomDB.AppDatabase;
 import io.cordova.ifb.adapter.CategoryStatusAdapter;
 import io.cordova.ifb.module.CategoryStatusItem;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.CameraActivity;
+import io.cordova.ifb.utility.MockLocationDialog;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
@@ -119,6 +124,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -216,6 +222,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     TextView tvBlcckerText,tvHeaderBlocker;
     Button btnBlockerOK;
     String blockerTextHeader;
+    int punchOutFlag = 0;
+    List<LocationModel> locationDistanceList = new ArrayList<>();
+    AppDatabase appDatabase;
+    MockLocationDialog mockLocationDialog;
+    Location locationForMock;
+    boolean isDeveloperOptionsEnabled;
     private CategoryStatusAdapter adapter;
     private List<CategoryStatusItem> categoryList=new ArrayList<>();
     boolean SkipFlag;
@@ -230,11 +242,15 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         attendenceCheck();
         setUpMapIfNeeded();
         onClick();
+        //getDistanceLocationList();
     }
+
+
 
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
+        appDatabase = AppDatabase.getDatabaseInstance(this);
         OkHttpClient okHttpClient =
                 AppController.getUnsafeOkHttpClient();
 
@@ -256,7 +272,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         Calendar now = Calendar.getInstance();
         currentTime = now.get(Calendar.HOUR_OF_DAY) * 60
                 + now.get(Calendar.MINUTE);
-
+        isDeveloperOptionsEnabled = Settings.Global.getInt(getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
 
         counterid = prefManager.getSalesPointID();
         connectionCheck = new NetworkConnectionCheck(AttendanceManage2Activity.this);
@@ -280,6 +296,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
         llMain = (LinearLayout) findViewById(R.id.llMain);
         llLoader = (LinearLayout) findViewById(R.id.llLoader);
+
+        mockLocationDialog = new MockLocationDialog(AttendanceManage2Activity.this);
         int y = Calendar.getInstance().get(Calendar.YEAR);
         year = String.valueOf(y);
         Log.d("year", year);
@@ -513,6 +531,16 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (locationForMock != null){
+            if (LocationCompat.isMock(locationForMock)) {
+                mockLocationDialog.show();
+            }
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -522,8 +550,6 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             mGoogleApiClient.disconnect();
         }*/
     }
-
-
 
     private void setUpMapIfNeeded() {
 
@@ -583,6 +609,21 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
+        locationForMock = location;
+        if (location != null) {
+            if (LocationCompat.isMock(location)) {
+                Toast.makeText(this, "Mock location detected!", Toast.LENGTH_LONG).show();
+                // Don't allow login / attendance / transaction etc.
+                //mockLocationPopup();
+                mockLocationDialog.show();
+                return;
+            }
+            // Genuine location
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            Log.d("LOCATION", "Lat: " + latitude + ", Lng: " + longitude);
+        }
+
 
         currentLatitude = location.getLatitude();
         lat = String.valueOf(currentLatitude);
@@ -686,8 +727,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                     if (checkinStatus) {
                         if (!stringFile.equals("")) {
-                            llPunch.setEnabled(false);
+                            //llPunch.setEnabled(false);
+                            punchOutFlag = 0;
                             postAttenWithImage();
+
                         } else {
                             Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
@@ -715,7 +758,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         //API with call to check open pop up or call post attendance
                         //noSalesAlert();
                         //postAttenWithImage();
-
+                        punchOutFlag = 1;
                         checkPlanoBlocker();
 
                     } else {
@@ -1358,7 +1401,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             String imageurl = /*"file://" +*/ getRealPathFromURI(imageUri);
                             file = new File(imageurl);
                             try {
-                                compressedImageFile = new Compressor(this).compressToFile(file);
+                                compressedImageFile = new ImageZipper(this).compressToFile(file);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -1404,7 +1447,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             String filePath = getRealPathFromURIPath(uri, AttendanceManage2Activity.this);
                             file = new File(filePath);
                             try {
-                                compressedImageFile = new Compressor(this).compressToFile(file);
+                                compressedImageFile = new ImageZipper(this).compressToFile(file);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -1445,7 +1488,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     imgImage.setImageBitmap(putImage);
                     file = (File) data.getExtras().get("picture");
                     try {
-                        compressedImageFile = new Compressor(this).compressToFile(file);
+                        compressedImageFile = new ImageZipper(this).compressToFile(file);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1469,7 +1512,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                     imageUri = data.getParcelableExtra("imageUri");
                     file = new File(data.getStringExtra("imagePath"));
                     try {
-                        compressedImageFile = new Compressor(this).compressToFile(file);
+                        compressedImageFile = new ImageZipper(this).compressToFile(file);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -1574,6 +1617,16 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                             successAlert();
 
+                            if(workingStaus.equals("Own Mapped Counter")){
+                                if (punchOutFlag == 0){
+                                    Intent intent = new Intent(AttendanceManage2Activity.this, LocationForegroundService.class);
+                                    ContextCompat.startForegroundService(AttendanceManage2Activity.this, intent);
+
+                                }
+                            }
+
+
+
 
                             pd.dismiss();
                         } else {
@@ -1589,12 +1642,13 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                             }
 
 
+                            if (punchOutFlag == 1){
 
-
+                                getDistanceOperationList();
+                            }
                         }
 
 
-                        // boolean _status = job1.getBoolean("status");
 
 
                         // do anything with response
@@ -1609,7 +1663,63 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 });
     }
 
+    private void getDistanceOperationList() {
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        JSONObject obj=new JSONObject();
 
+        try {
+            locationDistanceList = appDatabase.LocationDao().getAllLocation();
+            obj.put("EmployeeID", prefManager.getUserId());
+            obj.put("SalesPartyCode",prefManager.getSalesPartyCode());
+            JSONArray dataArray = new JSONArray();
+            for (int i = 0; i < locationDistanceList.size(); i++) {
+                JSONObject dataObject = new JSONObject();
+                dataObject.put("AttDate", locationDistanceList.get(i).date);
+                dataObject.put("Latitude", locationDistanceList.get(i).latitude);
+                dataObject.put("Longitude", locationDistanceList.get(i).longitude);
+                dataArray.put(dataObject);
+            }
+            obj.put("Data",dataArray);
+            Log.e(TAG, "getDistanceOperationList: "+obj);
+            getSubmitDistanceApiCall(obj,pd);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getSubmitDistanceApiCall(JSONObject obj,ProgressDialog pd) {
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBAttendanceLocationTrackingSave/Save")
+                .addJSONObjectBody(obj)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e(TAG, "SUBMIT_DISTANCE : "+response);
+                        try {
+                            // TODO: DELETE ALL RECORD FROM THE TABLE
+
+                            Intent intent = new Intent(AttendanceManage2Activity.this, LocationForegroundService.class);
+                            stopService(intent);
+                            appDatabase.LocationDao().getDeleteAllRecorde();
+                            pd.dismiss();
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        pd.dismiss();
+                        Log.e(TAG, "SUBMIT_DISTANCE_error : "+anError.getErrorBody());
+                    }
+                });
+    }
 
 
     private void handleCheckoutTime(String apiTime) {
@@ -2116,6 +2226,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         JSONObject job1 = response;
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
+
+                            getDistanceOperationList();
                             Toast.makeText(AttendanceManage2Activity.this, "Regularization request submitted successfully", Toast.LENGTH_SHORT).show();
                         }
                         checkRegularize();
@@ -2536,6 +2648,21 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         alet1.show();
     }
 
+
+    void mockLocationPopup(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(AttendanceManage2Activity.this, R.style.CustomDialogNew);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = inflater.inflate(R.layout.dialog_mock_location, null);
+        dialogBuilder.setView(dialogView);
+
+
+
+        alertDialog2 = dialogBuilder.create();
+        alertDialog2.setCancelable(true);
+        Window window = alertDialog2.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setGravity(Gravity.CENTER);
+        alertDialog2.show();
     private void showCategoryStatusModal() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -2672,6 +2799,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                     }
                 });
+
     }
 
 
