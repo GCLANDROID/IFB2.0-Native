@@ -100,12 +100,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
+import io.cordova.ifb.Location.LocationForegroundService;
+import io.cordova.ifb.Location.LocationModel;
 import io.cordova.ifb.R;
+import io.cordova.ifb.RoomDB.AppDatabase;
 import io.cordova.ifb.adapter.CategoryStatusAdapter;
 import io.cordova.ifb.module.CategoryStatusItem;
 import io.cordova.ifb.module.ModelSpinnerModel;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.CameraActivity;
+import io.cordova.ifb.utility.MockLocationDialog;
 import io.cordova.ifb.utility.NetworkConnectionCheck;
 import io.cordova.ifb.utility.PrefManager;
 import io.cordova.ifb.utility.Util;
@@ -119,6 +123,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -219,6 +224,12 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     private CategoryStatusAdapter adapter;
     private List<CategoryStatusItem> categoryList=new ArrayList<>();
     boolean SkipFlag;
+    int punchOutFlag = 0;
+    List<LocationModel> locationDistanceList = new ArrayList<>();
+    AppDatabase appDatabase;
+    MockLocationDialog mockLocationDialog;
+    Location locationForMock;
+    boolean isDeveloperOptionsEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,6 +253,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 getApplicationContext(),
                 okHttpClient
         );
+        isDeveloperOptionsEnabled = Settings.Global.getInt(getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
 
         llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
         llBreak = findViewById(R.id.llBreak);
@@ -249,6 +261,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         btnAbsent = (Button) findViewById(R.id.btnAbsent);
         tvText = (TextView) findViewById(R.id.tvText);
         tvBreakText = (TextView) findViewById(R.id.tvBreakText);
+        mockLocationDialog = new MockLocationDialog(AttendanceManage2Activity.this);
 
         minCheckInTime = prefManager.getCheckInHr() * 60 + prefManager.getCheckInMin();
         minCheckOutTime = prefManager.getCheckOutHr() * 60 + prefManager.getCheckOutMin();
@@ -583,7 +596,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
-
+        locationForMock = location;
         currentLatitude = location.getLatitude();
         lat = String.valueOf(currentLatitude);
         currentLongitude = location.getLongitude();
@@ -686,8 +699,10 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                     if (checkinStatus) {
                         if (!stringFile.equals("")) {
-                            llPunch.setEnabled(false);
+                            //llPunch.setEnabled(false);
+                            punchOutFlag = 0;
                             postAttenWithImage();
+
                         } else {
                             Toast.makeText(AttendanceManage2Activity.this, "Please Capture Your Selfie Image", Toast.LENGTH_LONG).show();
 
@@ -715,7 +730,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         //API with call to check open pop up or call post attendance
                         //noSalesAlert();
                         //postAttenWithImage();
-
+                        punchOutFlag = 1;
                         checkPlanoBlocker();
 
                     } else {
@@ -1574,6 +1589,14 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                             successAlert();
 
+                            if(workingStaus.equals("Own Mapped Counter")){
+                                if (punchOutFlag == 0){
+                                    Intent intent = new Intent(AttendanceManage2Activity.this, LocationForegroundService.class);
+                                    ContextCompat.startForegroundService(AttendanceManage2Activity.this, intent);
+
+                                }
+                            }
+
 
                             pd.dismiss();
                         } else {
@@ -1586,6 +1609,11 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                 shoeDialog(showText);
 
 
+                            }
+
+                            if (punchOutFlag == 1){
+
+                                getDistanceOperationList();
                             }
 
 
@@ -2116,6 +2144,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                         JSONObject job1 = response;
                         boolean responseStatus = job1.optBoolean("responseStatus");
                         if (responseStatus) {
+                            getDistanceOperationList();
                             Toast.makeText(AttendanceManage2Activity.this, "Regularization request submitted successfully", Toast.LENGTH_SHORT).show();
                         }
                         checkRegularize();
@@ -2536,7 +2565,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         alet1.show();
     }
 
-    private void showCategoryStatusModal() {
+    private void showCategoryStatusModal(boolean skFlag) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_category_status);
@@ -2553,7 +2582,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
         TextView tvModalCompleted = dialog.findViewById(R.id.tvModalCompleted);
         TextView tvModalPending = dialog.findViewById(R.id.tvModalPending);
         Button btnClose = dialog.findViewById(R.id.btnCloseModal);
-        if (SkipFlag){
+        if (skFlag){
             btnClose.setVisibility(View.VISIBLE);
         }else {
             btnClose.setVisibility(View.GONE);
@@ -2593,6 +2622,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
         dialog.show();
     }
+
 
 
     private void checkCompSalesFlag(JSONObject jsonObject) {
@@ -2640,13 +2670,15 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                 JSONArray Table1=responseData.optJSONArray("Table1");
                                 JSONObject frstObject=Table1.getJSONObject(0);
                                 boolean DataPresentFlag=frstObject.getBoolean("DataPresentFlag");
+                                SkipFlag=frstObject.getBoolean("SkipFlag");
                                 if (DataPresentFlag){
 
                                 }else {
-                                    showCategoryStatusModal();
+
+                                    showCategoryStatusModal(SkipFlag);
                                 }
 
-                                 SkipFlag=frstObject.getBoolean("SkipFlag");
+
 
 
                             } catch (JSONException e) {
@@ -2672,6 +2704,75 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                     }
                 });
+    }
+
+
+    private void getDistanceOperationList() {
+        final ProgressDialog pd = new ProgressDialog(AttendanceManage2Activity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+        JSONObject obj=new JSONObject();
+
+        try {
+            locationDistanceList = appDatabase.LocationDao().getAllLocation();
+            obj.put("EmployeeID", prefManager.getUserId());
+            obj.put("SalesPartyCode",prefManager.getSalesPartyCode());
+            JSONArray dataArray = new JSONArray();
+            for (int i = 0; i < locationDistanceList.size(); i++) {
+                JSONObject dataObject = new JSONObject();
+                dataObject.put("AttDate", locationDistanceList.get(i).date);
+                dataObject.put("Latitude", locationDistanceList.get(i).latitude);
+                dataObject.put("Longitude", locationDistanceList.get(i).longitude);
+                dataArray.put(dataObject);
+            }
+            obj.put("Data",dataArray);
+            Log.e(TAG, "getDistanceOperationList: "+obj);
+            getSubmitDistanceApiCall(obj,pd);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getSubmitDistanceApiCall(JSONObject obj,ProgressDialog pd) {
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBAttendanceLocationTrackingSave/Save")
+                .addJSONObjectBody(obj)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e(TAG, "SUBMIT_DISTANCE : "+response);
+                        try {
+                            // TODO: DELETE ALL RECORD FROM THE TABLE
+
+                            Intent intent = new Intent(AttendanceManage2Activity.this, LocationForegroundService.class);
+                            stopService(intent);
+                            appDatabase.LocationDao().getDeleteAllRecorde();
+                            pd.dismiss();
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        pd.dismiss();
+                        Log.e(TAG, "SUBMIT_DISTANCE_error : "+anError.getErrorBody());
+                    }
+                });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (locationForMock != null){
+            if (LocationCompat.isMock(locationForMock)) {
+                mockLocationDialog.show();
+            }
+        }
     }
 
 

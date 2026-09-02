@@ -466,9 +466,7 @@
         <activity
             android:name=".activity.BarcodeScannerActivity"
             android:screenOrientation="userPortrait" />
-        <activity
-            android:name=".Location.LocationServiceActivity"
-            android:screenOrientation="userPortrait" />
+
         <service
             android:name=".Location.LocationForegroundService"
             android:foregroundServiceType="location"
