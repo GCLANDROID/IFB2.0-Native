@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
         phnonenumber = "okkk";
         refreshedToken=getAndroidID(LoginActivity.this);;
 
-        refreshedToken = "adef3a9a0bcaee5c";
+       // refreshedToken = "adef3a9a0bcaee5c";
 
      //   android_id= "adef3a9a0bcaee5c";
         android_id = getAndroidID(LoginActivity.this);
@@ -254,8 +254,8 @@ public class LoginActivity extends AppCompatActivity {
                                     try {
                                         obj.put("LoginID", Util.encrypt(etUserName.getText().toString().trim(), SECRET_KEY));
                                         obj.put("Password", Util.encrypt(etPassword.getText().toString().trim(), SECRET_KEY));
-                                        obj.put("IMEI", "d01137a74bc57a9f"/*android_id*/);
-                                        obj.put("DeviceID", "d01137a74bc57a9f"/*android_id*/);
+                                        obj.put("IMEI", android_id);
+                                        obj.put("DeviceID", android_id);
                                         obj.put("DeviceType", "Android");
                                         obj.put("SecurityCode", secerutycodde);
                                         loginv2(obj);
