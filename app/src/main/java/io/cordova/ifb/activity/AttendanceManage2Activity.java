@@ -246,6 +246,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     @SuppressLint("RestrictedApi")
     private void initialize() {
         prefManager = new PrefManager(AttendanceManage2Activity.this);
+        appDatabase = AppDatabase.getDatabaseInstance(this);
         OkHttpClient okHttpClient =
                 AppController.getUnsafeOkHttpClient();
 
@@ -1599,6 +1600,11 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                                 }
                             }
 
+                            if (punchOutFlag == 1){
+
+                                getDistanceOperationList();
+                            }
+
 
                             pd.dismiss();
                         } else {
@@ -1613,10 +1619,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
 
                             }
 
-                            if (punchOutFlag == 1){
 
-                                getDistanceOperationList();
-                            }
 
 
 
