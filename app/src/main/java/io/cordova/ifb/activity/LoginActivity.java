@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
     String reason = "";
     AlertDialog alerDialog1;
     public static String SECRET_KEY = "74074750353890398886017484399862";
-    boolean isDeveloperOptionsEnabled;
+    boolean isDeveloperOptionsEnabled=false;
     //  नाम
     @Override
     protected void onCreate(Bundle savedInstanceState) {

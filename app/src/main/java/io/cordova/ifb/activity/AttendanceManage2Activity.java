@@ -229,7 +229,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     AppDatabase appDatabase;
     MockLocationDialog mockLocationDialog;
     Location locationForMock;
-    boolean isDeveloperOptionsEnabled;
+    boolean isDeveloperOptionsEnabled=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,6 +254,8 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 okHttpClient
         );
         isDeveloperOptionsEnabled = Settings.Global.getInt(getContentResolver(), Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
+
+
 
         llRegularize = (LinearLayout) findViewById(R.id.llRegularize);
         llBreak = findViewById(R.id.llBreak);
@@ -2773,6 +2775,30 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
                 mockLocationDialog.show();
             }
         }
+    }
+
+    private void checkDeveloperOptions() {
+        //if (isDeveloperOptionsEnabled) {
+
+        new AlertDialog.Builder(this)
+                .setTitle("Developer Options Enabled")
+                .setMessage("Developer Options are currently enabled. Please disable them to continue using the application.")
+                .setCancelable(false)
+                .setPositiveButton("Go to Settings", (dialog, which) -> {
+                    try {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        // Fallback if Developer Options screen cannot be opened
+                        Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Exit", (dialog, which) -> {
+                    finishAffinity();
+                })
+                .show();
+        // }
     }
 
 
