@@ -30,6 +30,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.cordova.ifb.R;
 import io.cordova.ifb.RoomDB.AppDatabase;
@@ -47,15 +49,34 @@ public class LocationForegroundService extends Service {
     private static final String CHANNEL_ID = "location_channel";
     private static final String ACTION_STOP = "STOP_SERVICE";
     AppDatabase appDatabase;
+    private final ExecutorService databaseExecutor =
+            Executors.newSingleThreadExecutor();
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         appDatabase = AppDatabase.getDatabaseInstance(this);
+
         if (intent != null && ACTION_STOP.equals(intent.getAction())) {
             stopSelf();
             return START_NOT_STICKY;
         }
 
-        startMyForeground(); // MUST BE FIRST
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+                &&
+                ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED) {
+
+            Log.e("LocationFGS", "Location permission not granted");
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
+        startMyForeground();
 
         fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(this);
@@ -65,31 +86,97 @@ public class LocationForegroundService extends Service {
         return START_STICKY;
     }
 
+//    private void startMyForeground() {
+//
+//        createNotificationChannel();
+//
+//        Intent stopIntent = new Intent(this, LocationForegroundService.class);
+//        stopIntent.setAction(ACTION_STOP);
+//
+//        PendingIntent stopPendingIntent = PendingIntent.getService(
+//                this,
+//                0,
+//                stopIntent,
+//                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+//        );
+//
+//        Notification notification =
+//                new NotificationCompat.Builder(this, CHANNEL_ID)
+//                        .setContentTitle("Sales Message")
+//                        .setContentText("Dear Team, Kindly ensure that sales are punched on the same day of sale.")
+//                        .setSmallIcon(R.mipmap.ic_launcher)
+//                        .setOnlyAlertOnce(true)
+//                        .addAction(android.R.drawable.ic_delete,
+//                                "Stop", stopPendingIntent)
+//                        .build();
+//
+//        startForeground(NOTIFICATION_ID, notification);
+//    }
+
+
     private void startMyForeground() {
 
         createNotificationChannel();
 
-        Intent stopIntent = new Intent(this, LocationForegroundService.class);
+        Intent stopIntent =
+                new Intent(this, LocationForegroundService.class);
+
         stopIntent.setAction(ACTION_STOP);
 
-        PendingIntent stopPendingIntent = PendingIntent.getService(
-                this,
-                0,
-                stopIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+        PendingIntent stopPendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        stopIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                | PendingIntent.FLAG_IMMUTABLE
+                );
 
         Notification notification =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setContentTitle("Sales Message")
-                        .setContentText("Dear Team, Kindly ensure that sales are punched on the same day of sale.")
+                        .setContentText(
+                                "Dear Team, Kindly ensure that sales are punched on the same day of sale."
+                        )
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setOnlyAlertOnce(true)
-                        .addAction(android.R.drawable.ic_delete,
-                                "Stop", stopPendingIntent)
+                        .addAction(
+                                android.R.drawable.ic_delete,
+                                "Stop",
+                                stopPendingIntent
+                        )
                         .build();
 
-        startForeground(NOTIFICATION_ID, notification);
+        try {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+                startForeground(
+                        NOTIFICATION_ID,
+                        notification,
+                        android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+                );
+
+            } else {
+
+                startForeground(
+                        NOTIFICATION_ID,
+                        notification
+                );
+            }
+
+            Log.d("LocationFGS", "Foreground service started");
+
+        } catch (SecurityException e) {
+
+            Log.e(
+                    "LocationFGS",
+                    "Unable to start location foreground service",
+                    e
+            );
+
+            stopSelf();
+        }
     }
 
     private void createNotificationChannel() {
@@ -110,26 +197,54 @@ public class LocationForegroundService extends Service {
 
     private void requestLocationUpdates() {
 
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationRequest locationRequest =
+                LocationRequest.create();
+
+        locationRequest.setPriority(
+                LocationRequest.PRIORITY_HIGH_ACCURACY
+        );
+
         locationRequest.setInterval(10000);
-        locationRequest.setSmallestDisplacement(150f); // 150 meters
+        locationRequest.setSmallestDisplacement(150f);
 
         locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) return;
 
-                Location location = locationResult.getLastLocation();
+            @Override
+            public void onLocationResult(
+                    LocationResult locationResult) {
+
+                if (locationResult == null) {
+                    return;
+                }
+
+                Location location =
+                        locationResult.getLastLocation();
+
                 if (location != null) {
                     handleNewLocation(location);
                 }
             }
         };
 
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        boolean fineGranted =
+                ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED;
+
+        boolean coarseGranted =
+                ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED;
+
+        if (!fineGranted && !coarseGranted) {
+
+            Log.e(
+                    "LocationFGS",
+                    "Location permission not granted"
+            );
+
             return;
         }
 
@@ -175,11 +290,33 @@ public class LocationForegroundService extends Service {
     }
 
     private void sendLocationToServer(Location location) {
+
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-        Log.e("150M_TRACK", "Sending: " + lat + ", " + lng);
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(new Date());
-        appDatabase.LocationDao().insert(new LocationModel(0,timestamp,String.valueOf(lng),String.valueOf(lat)));
+
+        Log.e(
+                "150M_TRACK",
+                "Sending: " + lat + ", " + lng
+        );
+
+        String timestamp =
+                new SimpleDateFormat(
+                        "yyyy-MM-dd'T'HH:mm:ss",
+                        Locale.getDefault()
+                ).format(new Date());
+
+        databaseExecutor.execute(() -> {
+
+            appDatabase.LocationDao().insert(
+                    new LocationModel(
+                            0,
+                            timestamp,
+                            String.valueOf(lng),
+                            String.valueOf(lat)
+                    )
+            );
+
+        });
     }
 
     private void updateNotification() {
@@ -199,11 +336,18 @@ public class LocationForegroundService extends Service {
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
 
-        if (fusedLocationClient != null && locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
+        if (fusedLocationClient != null &&
+                locationCallback != null) {
+
+            fusedLocationClient.removeLocationUpdates(
+                    locationCallback
+            );
         }
+
+        databaseExecutor.shutdown();
     }
 
     @Nullable

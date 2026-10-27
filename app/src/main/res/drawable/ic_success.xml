@@ -1,0 +1,23 @@
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="140dp"
+    android:height="140dp"
+    android:viewportWidth="140"
+    android:viewportHeight="140">
+
+    <!-- Outer light green circle -->
+    <path
+        android:fillColor="#DDF4E7"
+        android:pathData="M70,4 A66,66 0,1 1,70 136 A66,66 0,1 1,70 4 Z" />
+
+    <!-- Inner green circle -->
+    <path
+        android:fillColor="#00A653"
+        android:pathData="M70,28 A42,42 0,1 1,70 112 A42,42 0,1 1,70 28 Z" />
+
+    <!-- White check mark -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M55,67 L66,78 L86,56 L92,62 L66,88 L49,73 Z" />
+
+</vector>

@@ -1517,4 +1517,14 @@ public class PrefManager {
         return _pref.getString("AccessToken","");
     }
 
+
+    public void saveAPISales(String APISales){
+        _editorPref.putString("APISales", APISales);
+        _editorPref.commit();
+    }
+
+    public String getAPISales(){
+        return _pref.getString("APISales","");
+    }
+
 }

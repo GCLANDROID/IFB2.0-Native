@@ -8,9 +8,9 @@ android {
     defaultConfig {
         applicationId "io.cordova.ifb"
         minSdkVersion 22
-        targetSdkVersion 35
-        versionCode 85
-        versionName "5.8"
+        targetSdkVersion 36
+        versionCode 95
+        versionName "6.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -127,6 +127,11 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:17.3.0'
     implementation 'com.github.delight-im:Android-AdvancedWebView:v3.2.1'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
+
+    def room_version = "2.4.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
 }
 
 

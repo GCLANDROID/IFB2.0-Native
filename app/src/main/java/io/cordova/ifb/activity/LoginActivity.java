@@ -113,16 +113,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!prefManager.getUserCode().isEmpty()){
-            if (prefManager.getUserCode().equals("IFBAPPL00001")){
-                // SKIP CHECKING
-            } else {
-                if (isDeveloperOptionsEnabled){
-                    checkDeveloperOptions();
-                    //return;
-                }
-            }
-        }
+//        if(!prefManager.getUserCode().isEmpty()){
+//            if (prefManager.getUserCode().equals("IFBAPPL00001")){
+//                // SKIP CHECKING
+//            } else {
+//                if (isDeveloperOptionsEnabled){
+//                    checkDeveloperOptions();
+//                    //return;
+//                }
+//            }
+//        }
     }
 
     @SuppressLint("MissingPermission")
@@ -169,24 +169,24 @@ public class LoginActivity extends AppCompatActivity {
 
        // refreshedToken = "adef3a9a0bcaee5c";
 
-     //   android_id= "adef3a9a0bcaee5c";
-        android_id = getAndroidID(LoginActivity.this);
-        if (android_id.equals("0")) {
-            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            android_id = telephonyManager.getDeviceId();
-        }else {
-            android_id = getAndroidID(LoginActivity.this);
-        }
+        android_id= "5cee4c4b03a70cf8";
+//        android_id = getAndroidID(LoginActivity.this);
+//        if (android_id.equals("0")) {
+//            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                return;
+//            }
+//            android_id = telephonyManager.getDeviceId();
+//        }else {
+//            android_id = getAndroidID(LoginActivity.this);
+//        }
 
         tvShow = (TextView) findViewById(R.id.tvShow);
         tvHide = (TextView) findViewById(R.id.tvHide);
@@ -450,18 +450,21 @@ public class LoginActivity extends AppCompatActivity {
                                     String Genius_Access_Token= obj.optString("Genius_Access_Token");
                                     prefManager.saveAccessToken(Genius_Access_Token);
 
+                                    String APISales=obj.optString("APISales");
+                                    prefManager.saveAPISales(APISales);
+
 
                                     // Firebase(UserName);
                                 }
 
-                                if (prefManager.getUserCode().equals("IFBAPPL00001")){
-                                    // SKIP CHECKING
-                                } else {
-                                    if (isDeveloperOptionsEnabled){
-                                        checkDeveloperOptions();
-                                        return;
-                                    }
-                                }
+//                                if (prefManager.getUserCode().equals("IFBAPPL00001")){
+//                                    // SKIP CHECKING
+//                                } else {
+//                                    if (isDeveloperOptionsEnabled){
+//                                        checkDeveloperOptions();
+//                                        return;
+//                                    }
+//                                }
 
 
                                 if (prefManager.getSecurityCode().equalsIgnoreCase("IND") || prefManager.getSecurityCode().equalsIgnoreCase("NAPS")) {

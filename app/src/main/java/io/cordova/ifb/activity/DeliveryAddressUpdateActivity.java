@@ -3,17 +3,18 @@ package io.cordova.ifb.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
 
 import android.os.Bundle;
@@ -27,7 +28,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,7 +42,6 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -58,7 +57,6 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.developers.imagezipper.ImageZipper;
-import com.wajahatkarim3.longimagecamera.LongImageCameraActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,8 +73,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import id.zelory.compressor.Compressor;
+//import id.zelory.compressor.Compressor;
 import io.cordova.ifb.AndroidXCamera.AndroidXCameraActivity;
 import io.cordova.ifb.R;
 import io.cordova.ifb.module.RcnModel;
@@ -88,6 +87,7 @@ import io.cordova.ifb.utility.ValidUtils;
 import okhttp3.OkHttpClient;
 
 public class DeliveryAddressUpdateActivity extends AppCompatActivity {
+    private static final String TAG = "DeliveryAddressUpdateAc";
     LinearLayout llDate, lnWIFI, lnPedestal, llScheme, llSalesType, llSalesDate;
     int MY_SOCKET_TIMEOUT_MS = 10000;
     TextView tvDate, tvSalesDate;
@@ -197,10 +197,14 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
     EditText etMoreAddress;
     String AddressUpdateFlag;
     boolean isNewCustomer=true;
-
+    String label;
+    double score;
+    JSONObject resultJson;
+    int invoiceExtractionFlag=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_delivery_address_update);
         initView();
         setState();
@@ -455,6 +459,49 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         currentDate = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.getDefault()).format(new Date());
         getCusDetail();
 
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("Code", prefManager.getUserCode());
+            jsonObject.put("SecurityCode", prefManager.getSecurityCode());
+            getInvoiceScanningFlag(jsonObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getInvoiceScanningFlag(JSONObject jsonObject) {
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(true);//you can cancel it by pressing back button
+        progressBar.setMessage("Loading...");
+        progressBar.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/InvoiceScanManage/ShowFlag")
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        progressBar.dismiss();
+                        try {
+                            JSONObject jsonObject = response;
+                            JSONArray responseData = jsonObject.getJSONArray("Response_Data");
+                            JSONObject dataObject = responseData.getJSONObject(0);
+                            invoiceExtractionFlag = dataObject.getInt("Status");
+                            Log.e("API_RESPONSE", "Status: " + invoiceExtractionFlag);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        progressBar.dismiss();
+                        Log.e(TAG, "onError: "+anError.getErrorBody());
+                    }
+                });
     }
 
     private void onClick() {
@@ -1099,8 +1146,6 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-
-
                         JSONObject job1 = response;
                         Log.e("response12", "@@@@@@" + job1);
                         boolean responseStatus = job1.optBoolean("responseStatus");
@@ -1109,10 +1154,38 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                             JSONArray responseData = job1.optJSONArray("responseData");
                             JSONObject obj = responseData.optJSONObject(0);
                             sucessText = obj.optString("Remarks");
+                            if (compressedImageFile != null || resultJson != null){
+                                //getExtractDataFromImage(compressedImageFile);
+                                if(invoiceExtractionFlag == 1){
+                                    JSONObject saveJson = new JSONObject();
+                                    try {
+                                        saveJson.put("ReferenceNo", refNo);
 
-                            getToken();
+                                        saveJson.put("vendorName", resultJson.optString("vendorName"));
+                                        saveJson.put("invoiceNumber", resultJson.optString("invoiceNumber"));
+                                        saveJson.put("invoiceDate", resultJson.optString("invoiceDate"));
+                                        saveJson.put("totalAmount", resultJson.isNull("totalAmount")
+                                                ? JSONObject.NULL
+                                                : resultJson.get("totalAmount"));
+                                        saveJson.put("vendorGSTIN", resultJson.optString("vendorGSTIN"));
+                                        saveJson.put("vendorAddress", resultJson.optString("vendorAddress"));
+
+                                        saveJson.put("LineItems", resultJson.optJSONArray("LineItems"));
+
+                                        saveJson.put("score", score);
+                                        saveJson.put("label", label);
+                                        saveJson.put("LoginID", prefManager.getUserId());
+                                        saveJson.put("SecurityCode", prefManager.getSecurityCode());
+                                        Log.e(TAG, "saveJson: " + saveJson);
+                                        insertInvoiceDataInGeniusDB(saveJson);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } else {
+                                getToken();
+                            }
                             pd.dismiss();
-
                         } else {
                             pd.dismiss();
                             if (responseText.contains("MIME")) {
@@ -1136,6 +1209,96 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         pd.dismiss();
                         Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG).show();
                         updateDeliveryAddressWithoutInvoice();
+                    }
+                });
+    }
+
+    private void getExtractDataFromImage(File invoiceFile) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
+                .build();
+        final ProgressDialog pd = new ProgressDialog(DeliveryAddressUpdateActivity.this);
+        pd.setMessage("Please wait while we extract the required information from the image.");
+        pd.setCancelable(false);
+        pd.show();
+        String url = "https://api-stg.extractdoc.com/api/v1/external/extract/GLoYjb3QfBURRVfGw2tXQi";
+        String apiKey = "extractdoc_live_JJpKjsKk4ePrrlW0Ndq1HYw96vYSNyz2";
+        AndroidNetworking.upload(url)
+                .addHeaders("X-API-Key", apiKey)
+                .addHeaders("Content-Type", "application/json")
+                .addMultipartFile("file", invoiceFile)
+                .setOkHttpClient(okHttpClient)
+                .setTag("ExtractDocument")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e(TAG, "EXTRACT_DATA: "+response.toString(4));
+                            pd.dismiss();
+                            JSONObject responseObject = response;
+                            boolean success = responseObject.getBoolean("success");
+                            if (success) {
+                                JSONObject dataObject = responseObject.getJSONObject("data");
+                                resultJson = dataObject.getJSONObject("result_json");
+                                Log.e(TAG, "resultJson: "+resultJson.toString(4));
+                                if (resultJson.optString("vendorName").equalsIgnoreCase("null")
+                                        || resultJson.optString("invoiceNumber").equalsIgnoreCase("null")){
+                                    showImageNotReadableDialog();
+                                } else {
+                                    showInvoiceExtractedData(resultJson);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "EXTRACT_DATA_error: "+anError.getErrorBody());
+                        pd.dismiss();
+                        showImageNotReadableDialog();
+                    }
+                });
+    }
+
+
+
+    private void insertInvoiceDataInGeniusDB(JSONObject jsonObject) {
+        final ProgressDialog pd = new ProgressDialog(DeliveryAddressUpdateActivity.this);
+        pd.setMessage("Please wait while we save the invoice details");
+        pd.setCancelable(false);
+        pd.show();
+        AndroidNetworking.post(AppController.APIV2URL + "api/UserSalesInvoiceDetails/PostFormData")
+                .addJSONObjectBody(jsonObject)
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            pd.dismiss();
+                            Log.e(TAG, "INSERT_INVOICE_DATA: "+response.toString(4));
+                            JSONObject job1 = response;
+                            boolean responseStatus = job1.optBoolean("responseStatus");
+                            String responseText = job1.optString("responseText");
+                            getToken();
+                        } catch (Exception e) {
+                           e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "INSERT_INVOICE_DATA_error: "+anError.getErrorBody());
+                        pd.dismiss();
+                        getToken();
                     }
                 });
     }
@@ -1243,6 +1406,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                     public void onError(ANError error) {
                         pd.dismiss();
                         Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG);
+                        Log.e(TAG, "onError: "+error.getErrorBody() );
                     }
                 });
     }
@@ -1484,8 +1648,10 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
+                //compressedImageFile = imageFile;
+                if(invoiceExtractionFlag == 1){
+                    validateImage(compressedImageFile);
+                }
                 try {
                     encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n", "");
                     //Log.e(TAG, "base64Image: ==================="+base64image );
@@ -1527,7 +1693,9 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                         compressedImageFile = file;
 
                     }
-
+                    if(invoiceExtractionFlag == 1){
+                        validateImage(compressedImageFile);
+                    }
                     try {
                         encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n", "");
                         //Log.e(TAG, "base64Image: ==================="+base64image );
@@ -1581,6 +1749,63 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void validateImage(File invoiceFile) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .writeTimeout(2, TimeUnit.MINUTES)
+                .build();
+        final ProgressDialog progressBar = new ProgressDialog(this);
+        progressBar.setCancelable(false);//you can cancel it by pressing back button
+        progressBar.setMessage("Please wait while we process your image");
+        progressBar.show();
+        String url = "https://api-stg.extractdoc.com/api/v1/external/readability/akTq7BH36h3dj2UZjzJnof";
+        String apiKey = "extractdoc_live_JJpKjsKk4ePrrlW0Ndq1HYw96vYSNyz2";
+        AndroidNetworking.upload(url)
+                .addHeaders("X-API-Key", apiKey)
+                .addHeaders("Content-Type", "application/json")
+                .addMultipartFile("file", invoiceFile)
+                .setOkHttpClient(okHttpClient)
+                .setTag("ExtractDocument")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e(TAG, "VALIDATE_IMAGE: " + response.toString(4));
+                            progressBar.dismiss();
+                            JSONObject responseObject = response;
+                            boolean success = responseObject.getBoolean("success");
+                            if (success) {
+                                JSONObject dataObject = responseObject.getJSONObject("data");
+                                JSONArray pagesArray = dataObject.getJSONArray("pages");
+                                label = dataObject.getString("label");
+                                score = dataObject.getDouble("score");
+                                Log.d("DOCUMENT_LABEL", "Label: " + label);
+                                if ("N/A".equalsIgnoreCase(label) || score == 0) {
+                                    score = 0;
+                                    showImageNotReadableDialog();
+                                } else {
+                                    // Image is readable
+                                    // Continue your next process
+                                    getExtractDataFromImage(invoiceFile);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "VALIDATE_IMAGE_error: "+anError.getErrorBody());
+                        progressBar.dismiss();
+                    }
+                });
     }
 
 
@@ -4353,5 +4578,96 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         existingAddressFlag.show();
     }
 
+    public void showImageNotReadableDialog(){
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_image_not_readable);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setLayout((int) (getResources().getDisplayMetrics().widthPixels * 0.90), WindowManager.LayoutParams.WRAP_CONTENT);
+        }
 
+        TextView btnCancel = dialog.findViewById(R.id.btnCancel);
+        TextView btnUploadAgain = dialog.findViewById(R.id.btnUploadAgain);
+
+        btnCancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        btnUploadAgain.setOnClickListener(v -> {
+            imgPic.setImageResource(R.drawable.noimage);
+            compressedImageFile = null;
+            dialog.dismiss();
+
+            // Open image picker
+        });
+
+        dialog.show();
+    }
+
+    private void showInvoiceExtractedData(JSONObject resultJson) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_invoice_result);
+        // Show the dialog first
+        dialog.show();
+        dialog.setCancelable(false);
+        // Set dialog width and height
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setLayout(
+                    (int) (getResources().getDisplayMetrics().widthPixels * 0.95),
+                    (int) (getResources().getDisplayMetrics().heightPixels * 0.85)
+            );
+        }
+
+        LinearLayout llLineItemsContainer = dialog.findViewById(R.id.llLineItemsContainer);
+
+        TextView tvVendorName = dialog.findViewById(R.id.tvVendorName);
+        TextView tvInvoiceNumber = dialog.findViewById(R.id.tvInvoiceNumber);
+        TextView tvInvoiceDate = dialog.findViewById(R.id.tvInvoiceDate);
+        TextView tvTotalAmount = dialog.findViewById(R.id.tvTotalAmount);
+        TextView tvVendorGSTIN = dialog.findViewById(R.id.tvVendorGSTIN);
+        TextView tvVendorAddress = dialog.findViewById(R.id.tvVendorAddress);
+        Button btnClose = dialog.findViewById(R.id.btnClose);
+        tvVendorName.setText(resultJson.optString("vendorName","N/A"));
+        tvInvoiceNumber.setText(resultJson.optString("invoiceNumber","N/A"));
+        tvInvoiceDate.setText(resultJson.optString("invoiceDate","N/A"));
+        tvTotalAmount.setText("₹"+resultJson.optString("totalAmount","0.00"));
+        tvVendorGSTIN.setText(resultJson.optString("vendorGSTIN","N/A"));
+        tvVendorAddress.setText(resultJson.optString("vendorAddress","N/A"));
+
+        addInvoiceItems(llLineItemsContainer,  resultJson.optJSONArray("LineItems"));
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+
+    private void addInvoiceItems(LinearLayout container, JSONArray items) {
+        container.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(container.getContext());
+        for (int i = 0; i < items.length(); i++) {
+            try {
+                JSONObject item = items.getJSONObject(i);
+                View itemView = inflater.inflate(R.layout.item_invoice_line, container, false);
+                TextView tvItemDescription = itemView.findViewById(R.id.tvItemDescription);
+                TextView tvItemQuantity = itemView.findViewById(R.id.tvItemQuantity);
+                TextView tvItemRate = itemView.findViewById(R.id.tvItemRate);
+                TextView tvItemTotal = itemView.findViewById(R.id.tvItemTotal);
+                TextView tvItemSerialNumber = itemView.findViewById(R.id.tvItemSerialNumber);
+                tvItemDescription.setText(item.optString("description", "N/A"));
+                tvItemQuantity.setText(item.optString("quantity", "N/A"));
+                tvItemRate.setText("₹" + item.optString("rate", "0.00"));
+                tvItemTotal.setText("₹" + item.optString("total", "0.00"));
+                tvItemSerialNumber.setText(item.optString("itemSerailNumber", "N/A"));
+                container.addView(itemView);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -2723,6 +2723,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
             locationDistanceList = appDatabase.LocationDao().getAllLocation();
             obj.put("EmployeeID", prefManager.getUserId());
             obj.put("SalesPartyCode",prefManager.getSalesPartyCode());
+            obj.put("SecurityCode",prefManager.getSecurityCode());
             JSONArray dataArray = new JSONArray();
             for (int i = 0; i < locationDistanceList.size(); i++) {
                 JSONObject dataObject = new JSONObject();
@@ -2740,7 +2741,7 @@ public class AttendanceManage2Activity extends AppCompatActivity implements OnMa
     }
 
     private void getSubmitDistanceApiCall(JSONObject obj,ProgressDialog pd) {
-        AndroidNetworking.post(AppController.APIV2URL + "api/IFBAttendanceLocationTrackingSave/Save")
+        AndroidNetworking.post(AppController.APIV2URL + "api/IFBAttendanceLocationTrackingSave/SaveV1")
                 .addJSONObjectBody(obj)
                 .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
                 .setTag("uploadTest")
