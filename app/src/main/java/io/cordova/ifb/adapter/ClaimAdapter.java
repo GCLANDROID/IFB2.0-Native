@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.NumberFormat;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.cordova.ifb.R;
+import io.cordova.ifb.activity.SalesClaimActivity;
 import io.cordova.ifb.activity.SalesManage2Activity;
 import io.cordova.ifb.module.CategoryItem;
 import io.cordova.ifb.module.ClaimItem;
@@ -151,13 +154,117 @@ public class ClaimAdapter extends RecyclerView.Adapter<ClaimAdapter.ClaimViewHol
             if (jsonObject != null) {
                 Log.d(TAG, jsonObject.toString());
 
-                Toast.makeText(
-                        context,
-                        "JSON created successfully",
-                        Toast.LENGTH_SHORT
-                ).show();
+                saveClaimData(jsonObject, currentItem);
             }
         });
+    }
+
+
+    private void saveClaimData(JSONObject jsonObject, ClaimItem item) {
+
+        String saveApiUrl = AppController.APIV2URL
+                + "api/IFBSalesPIClaim/SaveList";
+
+        AlertDialog loadingDialog = new AlertDialog.Builder(context)
+                .setTitle("Saving Claim")
+                .setMessage("Please wait...")
+                .setCancelable(false)
+                .create();
+
+        loadingDialog.show();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                saveApiUrl,
+                jsonObject,
+
+                response -> {
+                    if (loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    Log.d("CLAIM_SAVE_RESPONSE", response.toString());
+
+                    String responseCode =
+                            response.optString("Response_Code", "");
+
+                    if ("101".equals(responseCode)) {
+
+                        Toast.makeText(
+                                context,
+                                "Claim saved successfully",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        // Refresh claim data after successful save.
+
+                            JSONObject jsonObject1=new JSONObject();
+
+                            try {
+                                jsonObject1.put("AEMEmployeeID", preference.getUserId());
+                                ((SalesClaimActivity) context).loadClaimData(jsonObject1);
+                            } catch (JSONException e) {
+                                Log.e("CLAIM_SAVE_API", "JSON creation failed", e);
+                            }
+
+
+
+                    } else {
+                        String message = response.optString(
+                                "Response_Message",
+                                response.optString(
+                                        "ResponseMessage",
+                                        "Unable to save claim"
+                                )
+                        );
+
+                        Toast.makeText(
+                                context,
+                                message,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                },
+
+                error -> {
+                    if (loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    Log.e("CLAIM_SAVE_API", "Save request failed", error);
+
+                    String errorMessage = "Failed to save claim. Please try again.";
+
+                    if (error.networkResponse != null) {
+                        errorMessage += " HTTP "
+                                + error.networkResponse.statusCode;
+                    }
+
+                    Toast.makeText(
+                            context,
+                            errorMessage,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+        ) {
+            @Override
+            public java.util.Map<String, String> getHeaders()
+                    throws com.android.volley.AuthFailureError {
+
+                java.util.Map<String, String> headers =
+                        new java.util.HashMap<>();
+
+                String token = preference.getAccessToken();
+
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Accept", "application/json");
+                headers.put("Content-Type", "application/json");
+
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
     }
 
     private void updateModelUI(
@@ -364,72 +471,323 @@ public class ClaimAdapter extends RecyclerView.Adapter<ClaimAdapter.ClaimViewHol
                 .show();
     }
 
-    private void showModelDialog(
+    private void showModelDialog(ClaimItem item, int position) {
+
+        String modelApiUrl =
+                "https://ifb.geniushrtech.com/IFBApi/api/CommonDDL"
+                        + "?ModuleNo=18M"
+                        + "&ID=" + android.net.Uri.encode(item.selectedCategoryId)
+                        + "&ID1=0"
+                        + "&ID2=0"
+                        + "&ID3=0"
+                        + "&SecurityCode=IFB";
+
+        AlertDialog loadingDialog = new AlertDialog.Builder(context)
+                .setTitle("Loading Models")
+                .setMessage("Please wait...")
+                .setCancelable(false)
+                .create();
+
+        loadingDialog.show();
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                modelApiUrl,
+                null,
+
+                response -> {
+
+                    if (loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    try {
+                        boolean success =
+                                response.optBoolean("responseStatus", false);
+
+                        if (!success) {
+                            Toast.makeText(
+                                    context,
+                                    response.optString(
+                                            "responseText",
+                                            "Unable to load models"),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                            return;
+                        }
+
+                        JSONArray responseData =
+                                response.optJSONArray("responseData");
+
+                        if (responseData == null ||
+                                responseData.length() == 0) {
+
+                            Toast.makeText(
+                                    context,
+                                    "No models available",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            return;
+                        }
+
+                        List<CategoryItem> models = new ArrayList<>();
+
+                        for (int i = 0; i < responseData.length(); i++) {
+
+                            JSONObject modelObject =
+                                    responseData.getJSONObject(i);
+
+                            String modelId =
+                                    modelObject.optString("id", "");
+
+                            String modelName =
+                                    modelObject.optString("value", "");
+
+                            String mrp =
+                                    modelObject.optString("MRP", "0");
+
+                            if (!modelId.isEmpty() &&
+                                    !modelName.isEmpty()) {
+
+                                // Display model name and MRP in the dialog.
+                                String displayName = modelName
+                                        + " | MRP: ₹" + mrp;
+
+                                models.add(
+                                        new CategoryItem(
+                                                modelId,
+                                                displayName
+                                        )
+                                );
+                            }
+                        }
+
+                        if (models.isEmpty()) {
+                            Toast.makeText(
+                                    context,
+                                    "No valid models found",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            return;
+                        }
+
+                        showModelOptions(item, position, models);
+
+
+
+                    } catch (Exception e) {
+
+                        Log.e("MODEL_API", "JSON parsing error", e);
+
+                        Toast.makeText(
+                                context,
+                                "Unable to process models",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                },
+
+                error -> {
+
+                    if (loadingDialog.isShowing()) {
+                        loadingDialog.dismiss();
+                    }
+
+                    Log.e("MODEL_API", "Request failed", error);
+
+                    Toast.makeText(
+                            context,
+                            "Failed to load models. Please try again.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+        ) {
+            @Override
+            public java.util.Map<String, String> getHeaders()
+                    throws com.android.volley.AuthFailureError {
+
+                java.util.Map<String, String> headers =
+                        new java.util.HashMap<>();
+
+                // Use your existing Preference class.
+                String token = preference.getAccessToken();
+
+                headers.put("Authorization", "Bearer " + token);
+                headers.put("Accept", "application/json");
+
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+
+    private void showModelOptions(
             ClaimItem item,
-            int position) {
+            int position,
+            List<CategoryItem> models
+    ) {
+        // Filtered results currently displayed in the list.
+        final List<CategoryItem> filteredModels =
+                new ArrayList<>(models);
 
-        List<String> modelNames;
-        List<String> modelCodes;
+        LinearLayout mainLayout = new LinearLayout(context);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setPadding(dp(16), dp(8), dp(16), dp(8));
 
-        // Sample models for each category.
-        switch (item.selectedCategory) {
+        // Search input
+        EditText searchInput = new EditText(context);
+        searchInput.setSingleLine(true);
+        searchInput.setHint("Enter model name or code");
+        searchInput.setPadding(
+                dp(12), dp(8), dp(12), dp(8)
+        );
 
-            case "Washing Machine":
-                modelNames = Arrays.asList(
-                        "WM Model 1",
-                        "WM Model 2");
+        // Search button
+        Button searchButton = new Button(context);
+        searchButton.setText("Search");
 
-                modelCodes = Arrays.asList(
-                        "8903287005749",
-                        "8903287005756");
-                break;
+        // Display list
+        android.widget.ListView modelListView =
+                new android.widget.ListView(context);
 
-            case "Refrigerator":
-                modelNames = Arrays.asList(
-                        "Refrigerator Model 1",
-                        "Refrigerator Model 2");
+        modelListView.setChoiceMode(
+                android.widget.ListView.CHOICE_MODE_SINGLE
+        );
 
-                modelCodes = Arrays.asList(
-                        "8903287006005",
-                        "8903287006012");
-                break;
+        // Build display names for the adapter.
+        List<String> displayNames = new ArrayList<>();
 
-            case "Air Conditioner":
-                modelNames = Arrays.asList(
-                        "AC Model 1",
-                        "AC Model 2");
-
-                modelCodes = Arrays.asList(
-                        "8903287007002",
-                        "8903287007019");
-                break;
-
-            default:
-                modelNames = Arrays.asList(
-                        "TV Model 1",
-                        "TV Model 2");
-
-                modelCodes = Arrays.asList(
-                        "8903287008009",
-                        "8903287008016");
-                break;
+        for (CategoryItem model : filteredModels) {
+            displayNames.add(model.getValue());
         }
 
-        String[] modelOptions = modelNames.toArray(new String[0]);
+        android.widget.ArrayAdapter<String> modelAdapter =
+                new android.widget.ArrayAdapter<>(
+                        context,
+                        android.R.layout.simple_list_item_1,
+                        displayNames
+                );
 
-        new AlertDialog.Builder(context)
+        modelListView.setAdapter(modelAdapter);
+
+        mainLayout.addView(
+                searchInput,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+        mainLayout.addView(
+                searchButton,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+        );
+
+        LinearLayout.LayoutParams listParams =
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(300)
+                );
+
+        mainLayout.addView(modelListView, listParams);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle("Choose Model")
-                .setItems(modelOptions, (dialog, which) -> {
+                .setView(mainLayout)
+                .setNegativeButton("Back", (d, which) -> {
+                    showCategoryDialog(item, position);
+                })
+                .setCancelable(true)
+                .create();
 
-                    item.selectedModel = modelNames.get(which);
-                    item.selectedModelCode = modelCodes.get(which);
+        // Search button click
+        searchButton.setOnClickListener(v -> {
+            String query = searchInput.getText()
+                    .toString()
+                    .trim()
+                    .toLowerCase(Locale.ROOT);
+
+            filteredModels.clear();
+            displayNames.clear();
+
+            for (CategoryItem model : models) {
+                String modelName = model.getValue() == null
+                        ? ""
+                        : model.getValue().toLowerCase(Locale.ROOT);
+
+                String modelId = model.getId() == null
+                        ? ""
+                        : model.getId().toLowerCase(Locale.ROOT);
+
+                // Model value includes the name and MRP.
+                if (modelName.contains(query)
+                        || modelId.contains(query)) {
+
+                    filteredModels.add(model);
+                    displayNames.add(model.getValue());
+                }
+            }
+
+            modelAdapter.notifyDataSetChanged();
+
+            if (filteredModels.isEmpty()) {
+                Toast.makeText(
+                        context,
+                        "No matching models found",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+
+        // Select a model from the filtered list.
+        modelListView.setOnItemClickListener(
+                (parent, view, index, id) -> {
+
+                    if (index < 0 || index >= filteredModels.size()) {
+                        return;
+                    }
+
+                    if (position < 0 || position >= claimList.size()) {
+                        return;
+                    }
+
+                    ClaimItem currentItem = claimList.get(position);
+
+                    // Avoid applying the selection to a different claim.
+                    if (currentItem != item) {
+                        return;
+                    }
+
+                    CategoryItem selectedModel =
+                            filteredModels.get(index);
+
+                    currentItem.selectedModel =
+                            selectedModel.getValue();
+
+                    currentItem.selectedModelCode =
+                            selectedModel.getId();
 
                     notifyItemChanged(position);
-                })
-                .setNegativeButton("Back", (dialog, which) ->
-                        showCategoryDialog(item, position))
-                .show();
+                    dialog.dismiss();
+                }
+        );
+
+        dialog.show();
     }
+
+    private int dp(float value) {
+        return (int) (
+                value * context.getResources()
+                        .getDisplayMetrics().density + 0.5f
+        );
+    }
+
 
     // Creates the JSON object only. No API call.
     private JSONObject createSaveJson(ClaimItem item) {

@@ -9,8 +9,8 @@ android {
         applicationId "io.cordova.ifb"
         minSdkVersion 22
         targetSdkVersion 36
-        versionCode 95
-        versionName "6.3"
+        versionCode 105
+        versionName "6.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -131,6 +131,7 @@ dependencies {
     def room_version = "2.4.3"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
 }
 

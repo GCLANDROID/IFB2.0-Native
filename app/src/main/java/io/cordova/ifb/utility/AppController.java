@@ -23,6 +23,7 @@ import com.androidnetworking.interfaces.StringRequestListener;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -255,6 +256,12 @@ public class AppController {
             builder.hostnameVerifier(
                     (hostname, session) -> true
             );
+
+            builder.connectTimeout(30, TimeUnit.SECONDS);
+            builder.readTimeout(30, TimeUnit.SECONDS);
+            builder.writeTimeout(30, TimeUnit.SECONDS);
+
+
 
             return builder.build();
 

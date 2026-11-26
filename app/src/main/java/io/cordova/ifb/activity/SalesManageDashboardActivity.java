@@ -58,6 +58,8 @@ public class SalesManageDashboardActivity extends AppCompatActivity {
            llDelivery.setVisibility(View.GONE);
        }
 
+       // llSalesClaim.setVisibility(View.GONE);
+
         llManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

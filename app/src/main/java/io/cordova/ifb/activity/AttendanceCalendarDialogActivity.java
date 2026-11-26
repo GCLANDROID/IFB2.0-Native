@@ -63,7 +63,6 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
     JSONArray attendanceArray;
     ArrayList<String> dateList = new ArrayList<>();
     String shiftOverTime;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +104,7 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
         } else if (m == 12) {
             month = "December";
         }
+
         if(month.equals("January")){
             int futureyear = y - 1;
             financialYear = futureyear+"-"+year;
@@ -310,7 +310,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 Calendar calendar=Calendar.getInstance();
                 calendar.set(newMonth.get(Calendar.YEAR),0,1);
                 int futureyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futureyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futureyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR) - 1);
                 getAttendanceNav(financialYear,"January",calendar);
 
                 break;
@@ -320,7 +321,9 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 int year=Calendar.YEAR;
 
                 int futureoneyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futureoneyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futureoneyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = newMonth.get(Calendar.YEAR)+"-"+futureyear;
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR) - 1);
                 getAttendanceNav(financialYear,"February",calendar1);
 
 
@@ -331,7 +334,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar2.set(newMonth.get(Calendar.YEAR),2,1);
 
                 int futuretwoyear = newMonth.get(Calendar.YEAR) - 1;
-                financialYear = futuretwoyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futuretwoyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR) - 1);
                 getAttendanceNav(financialYear,"March",calendar2);
 
 
@@ -343,7 +347,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar3.set(newMonth.get(Calendar.YEAR),3,1);
 
                 int futurethreeyear = newMonth.get(Calendar.YEAR)+ 1;
-                financialYear = futurethreeyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futurethreeyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"April",calendar3);
 
 
@@ -354,7 +359,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar4.set(newMonth.get(Calendar.YEAR),4,1);
 
                 int futurefouryear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurefouryear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futurefouryear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"May",calendar4);
 
 
@@ -365,7 +371,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar5.set(newMonth.get(Calendar.YEAR),5,1);
 
                 int futurefiveyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurefiveyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futurefiveyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"June",calendar5);
 
 
@@ -376,7 +383,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar6.set(newMonth.get(Calendar.YEAR),6,1);
 
                 int futuresixyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futuresixyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futuresixyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"July",calendar6);
 
                 //getAttendanceListForNav(newMonth.get(Calendar.YEAR),7,calendar6);
@@ -386,7 +394,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar7.set(newMonth.get(Calendar.YEAR),7,1);
 
                 int futuresevenear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futuresevenear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futuresevenear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"August",calendar7);
 
 
@@ -397,7 +406,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar8.set(newMonth.get(Calendar.YEAR),8,1);
 
                 int futureeightyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futureeightyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futureeightyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"September",calendar8);
 
                 //getAttendanceListForNav(newMonth.get(Calendar.YEAR),9,calendar8);
@@ -407,7 +417,8 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar9.set(newMonth.get(Calendar.YEAR),9,1);
 
                 int futurnineyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurnineyear+"-"+newMonth.get(Calendar.YEAR);
+                //financialYear = futurnineyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
                 getAttendanceNav(financialYear,"October",calendar9);
 
 
@@ -418,8 +429,9 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar10.set(newMonth.get(Calendar.YEAR),10,1);
 
                 int futurtenyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futurtenyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"October",calendar10);
+                //financialYear = futurtenyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
+                getAttendanceNav(financialYear,"November",calendar10);
 
 
                 //getAttendanceListForNav(newMonth.get(Calendar.YEAR),11,calendar10);
@@ -431,8 +443,9 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                 calendar11.set(newMonth.get(Calendar.YEAR),11,1);
 
                 int futureleveyear = newMonth.get(Calendar.YEAR) + 1;
-                financialYear = futureleveyear+"-"+newMonth.get(Calendar.YEAR);
-                getAttendanceNav(financialYear,"October",calendar11);
+                //financialYear = futureleveyear+"-"+newMonth.get(Calendar.YEAR);
+                financialYear = Util.getFinancialYear(newMonth.get(Calendar.YEAR));
+                getAttendanceNav(financialYear,"December",calendar11);
 
 
                 //getAttendanceListForNav(newMonth.get(Calendar.YEAR),12,calendar11);
@@ -566,7 +579,6 @@ public class AttendanceCalendarDialogActivity extends AppCompatActivity implemen
                         Log.d("SelfAttendance", response);
 
                         pd.dismiss();
-
                         try {
                             JSONObject job1 = new JSONObject(response);
                             Log.e("response12", "@@@@@@" + job1);

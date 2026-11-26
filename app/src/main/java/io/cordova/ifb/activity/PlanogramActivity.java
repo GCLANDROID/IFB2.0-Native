@@ -26,6 +26,7 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -455,6 +456,12 @@ public class PlanogramActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(PlanogramActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(PlanogramActivity.this);
 
@@ -490,7 +497,7 @@ public class PlanogramActivity extends AppCompatActivity {
                             String productLast6 = productCode.substring(productCode.length() - 6);
 
                             if (scanFirst6.equals(productLast6)) {
-                                postDisplayProduct("1",productCode);
+                                postDisplayProduct("1",productCode,resultData);
                             } else {
                                 Toast.makeText(PlanogramActivity.this, "Incorrect product scanned", Toast.LENGTH_SHORT).show();
                             }
@@ -762,7 +769,73 @@ public class PlanogramActivity extends AppCompatActivity {
     }
 
 
-    public void postDisplayProduct(String updateFlag,String modelCode) {
+    public void postDisplayProduct(String updateFlag,String modelCode,String Barcode) {
+
+        final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
+        pd.setMessage("Loading..");
+        pd.setCancelable(false);
+        pd.show();
+
+        AndroidNetworking.post(AppController.APIV2URL + "api/post_IFBDisplayActualV2")
+                .addQueryParameter("Code", prefManager.getMasterId())
+                .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
+                .addQueryParameter("ModelCode", modelCode)
+                .addQueryParameter("Barcode",Barcode)
+                .addQueryParameter("updFlag", updateFlag)
+                .addQueryParameter("Operation", "1")
+                .addQueryParameter("SecurityCode", prefManager.getSecurityCode())
+                .addHeaders("Authorization", "Bearer " + prefManager.getAccessToken())
+                .setTag("uploadTest")
+                .setPriority(Priority.HIGH)
+                .build()
+                .setUploadProgressListener(new UploadProgressListener() {
+                    @Override
+                    public void onProgress(long bytesUploaded, long totalBytes) {
+                        pd.show();
+
+                    }
+                })
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        pd.dismiss();
+                        try {
+                            JSONObject job1 = response;
+                            productCode="";
+                            boolean responseStatus=job1.optBoolean("responseStatus");
+                            if (responseStatus){
+                                getDisplayProduct();
+                            }else {
+                                getDisplayProduct();
+                                Toast.makeText(PlanogramActivity.this,job1.optString("responseText"),Toast.LENGTH_LONG).show();
+
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // boolean _status = job1.getBoolean("status");
+
+
+                        // do anything with response
+                    }
+
+                    @Override
+                    public void onError(ANError error) {
+
+                        pd.dismiss();
+                        postDisplayProductV1(updateFlag,modelCode);
+                        Toast.makeText(PlanogramActivity.this, "Server is busy .Please try again after some time", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+
+    public void postDisplayProductV1(String updateFlag,String modelCode) {
 
         final ProgressDialog pd = new ProgressDialog(PlanogramActivity.this);
         pd.setMessage("Loading..");
@@ -773,6 +846,7 @@ public class PlanogramActivity extends AppCompatActivity {
                 .addQueryParameter("Code", prefManager.getMasterId())
                 .addQueryParameter("SalesPartyCode", prefManager.getSalesPartyCode())
                 .addQueryParameter("ModelCode", modelCode)
+
                 .addQueryParameter("updFlag", updateFlag)
                 .addQueryParameter("Operation", "1")
                 .addQueryParameter("SecurityCode", prefManager.getSecurityCode())

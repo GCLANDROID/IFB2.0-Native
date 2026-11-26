@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -407,6 +408,12 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
 //        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
 //        requestQueue.add(stringRequest);
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
 
@@ -484,6 +491,12 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
@@ -673,6 +686,12 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);
@@ -895,6 +914,12 @@ public class NewCompetitorDisplayMatrixActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(NewCompetitorDisplayMatrixActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
 
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(NewCompetitorDisplayMatrixActivity.this);

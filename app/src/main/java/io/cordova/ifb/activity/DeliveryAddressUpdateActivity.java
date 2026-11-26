@@ -703,7 +703,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             public void onFocusChange(View view, boolean b) {
                 if(b){
                     if (isNewCustomer){
-                        AddressUpdateFlag="N";
+                        AddressUpdateFlag="Y";
                     }else {
                         AddressUpdateFlag="U";
                     }
@@ -717,7 +717,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             public void onFocusChange(View view, boolean b) {
                 if(b){
                     if (isNewCustomer){
-                        AddressUpdateFlag="N";
+                        AddressUpdateFlag="Y";
                     }else {
                         AddressUpdateFlag="U";
                     }
@@ -854,8 +854,9 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                                         if (etHouse.getText().toString().replaceAll(" ", "").length() > 0) {
                                             if (etStreetName.getText().toString().replaceAll(" ", "").length() > 0) {
                                                 if (etLandMark.getText().toString().replaceAll(" ", "").length() > 0) {
+                                                   // updateDeliveryAddress();
 
-                                                    addressConfirmation(etMoreAddress.getText().toString(),tvCityName.getText().toString(),etPinCode.getText().toString(),areaName,etStreetName.getText().toString(),etLandMark.getText().toString(),etHouse.getText().toString());
+                                                     addressConfirmation(etMoreAddress.getText().toString(),tvCityName.getText().toString(),etPinCode.getText().toString(),areaName,etStreetName.getText().toString(),etLandMark.getText().toString(),etHouse.getText().toString());
                                                 } else {
                                                     Toast.makeText(DeliveryAddressUpdateActivity.this, "Please Enter Landmark.", Toast.LENGTH_LONG).show();
 
@@ -1154,37 +1155,9 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                             JSONArray responseData = job1.optJSONArray("responseData");
                             JSONObject obj = responseData.optJSONObject(0);
                             sucessText = obj.optString("Remarks");
-                            if (compressedImageFile != null || resultJson != null){
-                                //getExtractDataFromImage(compressedImageFile);
-                                if(invoiceExtractionFlag == 1){
-                                    JSONObject saveJson = new JSONObject();
-                                    try {
-                                        saveJson.put("ReferenceNo", refNo);
 
-                                        saveJson.put("vendorName", resultJson.optString("vendorName"));
-                                        saveJson.put("invoiceNumber", resultJson.optString("invoiceNumber"));
-                                        saveJson.put("invoiceDate", resultJson.optString("invoiceDate"));
-                                        saveJson.put("totalAmount", resultJson.isNull("totalAmount")
-                                                ? JSONObject.NULL
-                                                : resultJson.get("totalAmount"));
-                                        saveJson.put("vendorGSTIN", resultJson.optString("vendorGSTIN"));
-                                        saveJson.put("vendorAddress", resultJson.optString("vendorAddress"));
-
-                                        saveJson.put("LineItems", resultJson.optJSONArray("LineItems"));
-
-                                        saveJson.put("score", score);
-                                        saveJson.put("label", label);
-                                        saveJson.put("LoginID", prefManager.getUserId());
-                                        saveJson.put("SecurityCode", prefManager.getSecurityCode());
-                                        Log.e(TAG, "saveJson: " + saveJson);
-                                        insertInvoiceDataInGeniusDB(saveJson);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            } else {
                                 getToken();
-                            }
+
                             pd.dismiss();
                         } else {
                             pd.dismiss();
@@ -1223,7 +1196,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         pd.setMessage("Please wait while we extract the required information from the image.");
         pd.setCancelable(false);
         pd.show();
-        String url = "https://api-stg.extractdoc.com/api/v1/external/extract/GLoYjb3QfBURRVfGw2tXQi";
+        String url = "https://ifb.extractdoc.com/api/v1/external/extract/GLoYjb3QfBURRVfGw2tXQi";
         String apiKey = "extractdoc_live_JJpKjsKk4ePrrlW0Ndq1HYw96vYSNyz2";
         AndroidNetworking.upload(url)
                 .addHeaders("X-API-Key", apiKey)
@@ -1578,6 +1551,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 //        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
 //        requestQueue.add(stringRequest);
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
 
@@ -1650,7 +1629,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 }
                 //compressedImageFile = imageFile;
                 if(invoiceExtractionFlag == 1){
-                    validateImage(compressedImageFile);
+                    validateImage(imageFile);
                 }
                 try {
                     encodedImage = Util.fileToBase64(compressedImageFile).replaceAll("\n", "");
@@ -1761,7 +1740,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         progressBar.setCancelable(false);//you can cancel it by pressing back button
         progressBar.setMessage("Please wait while we process your image");
         progressBar.show();
-        String url = "https://api-stg.extractdoc.com/api/v1/external/readability/akTq7BH36h3dj2UZjzJnof";
+        String url = "https://ifb.extractdoc.com/api/v1/external/readability/akTq7BH36h3dj2UZjzJnof";
         String apiKey = "extractdoc_live_JJpKjsKk4ePrrlW0Ndq1HYw96vYSNyz2";
         AndroidNetworking.upload(url)
                 .addHeaders("X-API-Key", apiKey)
@@ -2978,6 +2957,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 //        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
 //        requestQueue.add(stringRequest);
 
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
 
@@ -3924,6 +3909,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
 
@@ -4131,6 +4122,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 return params;
             }
         };
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
 
@@ -4213,6 +4210,12 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(DeliveryAddressUpdateActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(DeliveryAddressUpdateActivity.this);
 
@@ -4278,7 +4281,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
 
                                 }else {
                                     isNewCustomer=true;
-                                    AddressUpdateFlag="N";
+                                    AddressUpdateFlag="Y";
                                 }
                             }
 
@@ -4476,7 +4479,7 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
                 etMoreAddress.setText(addressTwo);
                 pincodecheck(pincode);
                 existingAddressFlag.dismiss();
-                AddressUpdateFlag="N";
+                AddressUpdateFlag="Y";
             }
         });
 
@@ -4642,6 +4645,30 @@ public class DeliveryAddressUpdateActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+                JSONObject saveJson = new JSONObject();
+                try {
+                    saveJson.put("ReferenceNo", refNo);
+
+                    saveJson.put("vendorName", resultJson.optString("vendorName"));
+                    saveJson.put("invoiceNumber", resultJson.optString("invoiceNumber"));
+                    saveJson.put("invoiceDate", resultJson.optString("invoiceDate"));
+                    saveJson.put("totalAmount", resultJson.isNull("totalAmount")
+                            ? JSONObject.NULL
+                            : resultJson.get("totalAmount"));
+                    saveJson.put("vendorGSTIN", resultJson.optString("vendorGSTIN"));
+                    saveJson.put("vendorAddress", resultJson.optString("vendorAddress"));
+
+                    saveJson.put("LineItems", resultJson.optJSONArray("LineItems"));
+
+                    saveJson.put("score", score);
+                    saveJson.put("label", label);
+                    saveJson.put("LoginID", prefManager.getUserId());
+                    saveJson.put("SecurityCode", prefManager.getSecurityCode());
+                    Log.e(TAG, "saveJson: " + saveJson);
+                    insertInvoiceDataInGeniusDB(saveJson);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

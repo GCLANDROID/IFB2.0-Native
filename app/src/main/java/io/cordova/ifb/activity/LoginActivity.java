@@ -45,6 +45,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.ViewCompat;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -169,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
 
        // refreshedToken = "adef3a9a0bcaee5c";
 
-        android_id= "5cee4c4b03a70cf8";
+        android_id= "559646a28c838dfb";
 //        android_id = getAndroidID(LoginActivity.this);
 //        if (android_id.equals("0")) {
 //            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -330,6 +331,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addJSONObjectBody(jsonObject)
                 .setTag("uploadTest")
                 .setPriority(Priority.HIGH)
+
+
                 .build()
 
                 .getAsJSONObject(new JSONObjectRequestListener() {
@@ -941,6 +944,13 @@ public class LoginActivity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
 
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(LoginActivity.this);

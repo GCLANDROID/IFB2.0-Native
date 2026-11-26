@@ -71,7 +71,7 @@ public class SalesClaimActivity extends AppCompatActivity {
 
 
 
-    private void loadClaimData(JSONObject jsonObject) {
+    public void loadClaimData(JSONObject jsonObject) {
         Log.e("LOGIN", "login: " + jsonObject.toString());
        binding.llLoader.setVisibility(View.VISIBLE);
        binding.llMainData.setVisibility(View.GONE);

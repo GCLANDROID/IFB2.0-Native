@@ -1,10 +1,12 @@
 package io.cordova.ifb.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.icu.text.CaseMap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,9 +14,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,46 +31,45 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.bumptech.glide.Glide;
+import com.github.chrisbanes.photoview.PhotoView;
 
 
 import org.eazegraph.lib.models.PieModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.naishadhparmar.zcustomcalendar.CustomCalendar;
+/*import org.naishadhparmar.zcustomcalendar.CustomCalendar;
 import org.naishadhparmar.zcustomcalendar.OnNavigationButtonClickedListener;
-import org.naishadhparmar.zcustomcalendar.Property;
+import org.naishadhparmar.zcustomcalendar.Property;*/
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
 import io.cordova.ifb.R;
-import io.cordova.ifb.activity.AttemdanceReportActivity;
 import io.cordova.ifb.activity.AttendanceCalendarDialogActivity;
-import io.cordova.ifb.activity.ConsolidateSalesReportActivity;
-import io.cordova.ifb.activity.DashBoardActivity;
 import io.cordova.ifb.activity.DeliveryDetailsActivity;
-import io.cordova.ifb.activity.DisplayMatrixDashBoardActivity;
 import io.cordova.ifb.activity.NewCompetitorDisplayMatrixActivity;
 import io.cordova.ifb.activity.NewDashboardActivity;
-import io.cordova.ifb.activity.NotificationActivity;
 import io.cordova.ifb.activity.PlanogramActivity;
 import io.cordova.ifb.activity.RefNoReportActivity;
 import io.cordova.ifb.databinding.FragmentHomeBinding;
-import io.cordova.ifb.module.ReportModule;
 import io.cordova.ifb.utility.AppController;
 import io.cordova.ifb.utility.PrefManager;
-import io.cordova.ifb.utility.Util;
 
 
 public class HomeFragment extends Fragment  {
+    private static final String TAG = "HomeFragment";
     View view;
     FragmentHomeBinding binding;
     PrefManager prefManager;
@@ -263,16 +268,9 @@ public class HomeFragment extends Fragment  {
 
 
 
-
-
-
-
-
-
-
-
         getItemForNotification();
         setPieData();
+        getShowNotification();
 
         if (getArguments() != null) {
 
@@ -292,6 +290,136 @@ public class HomeFragment extends Fragment  {
         }
 
 
+    }
+
+    private void getShowNotification() {
+        AndroidNetworking.get(AppController.APIV2URL+"api/ShowNotification/Get")
+                .addHeaders("Authorization", "Bearer "+prefManager.getAccessToken())
+                .setTag("test")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e(TAG, "SHOW_NOTIFICATION: "+response.toString(4));
+                            try {
+                                JSONObject jsonObject = response;
+                                boolean responseStatus = jsonObject.optBoolean("responseStatus", false);
+                                if (responseStatus) {
+                                    JSONObject responseData = jsonObject.optJSONObject("responseData");
+                                    if (responseData != null) {
+                                        JSONArray tableArray = responseData.optJSONArray("Table");
+                                        if (tableArray != null && tableArray.length() > 0) {
+                                            JSONObject tableObject = tableArray.optJSONObject(0);
+                                            if (tableObject != null) {
+                                                String filePath = tableObject.optString("FilePath", "").trim();
+                                                String title = tableObject.optString("Title", "").trim();
+                                                String text = tableObject.optString("Text", "").trim();
+                                                // Show Image Alert
+                                                if (!filePath.isEmpty() && !filePath.equalsIgnoreCase("null")) {
+                                                    // Call your image alert method
+                                                    showImageAlert(filePath);
+                                                    return;
+                                                }
+
+                                                // Show Text Alert
+                                                if (!title.isEmpty() && !text.isEmpty()) {
+                                                    // Call your text alert method
+                                                    showTextAlert(title, text);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    // API response failed
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: "+anError.getErrorBody());
+                    }
+                });
+    }
+
+    private void showTextAlert(String title, String text) {
+        Dialog dialog = new Dialog(getActivity(),R.style.CustomDialogNew2);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.notification_popup_text_layout);
+        dialog.setCancelable(false);
+
+        ImageView ivClose = dialog.findViewById(R.id.ivClose);
+        TextView tvNotificationTitle = dialog.findViewById(R.id.tvNotificationTitle);
+        TextView tvNotificationMessage = dialog.findViewById(R.id.tvNotificationMessage);
+        TextView btnNotificationOk = dialog.findViewById(R.id.btnNotificationOk);
+
+        tvNotificationTitle.setText(title);
+        tvNotificationMessage.setText(text);
+        tvNotificationMessage.setText(text);
+
+        ivClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        btnNotificationOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        // Window settings
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            params.gravity = Gravity.TOP;
+            params.y = dpToPx(40);
+            window.setAttributes(params);
+        }
+        dialog.show();
+    }
+
+    private void showImageAlert(String filePath) {
+        Dialog dialog = new Dialog(getActivity(),R.style.CustomDialogNew2);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.ganesh_festival_popup_layout);
+        dialog.setCancelable(false);
+        // Close button
+        ImageView imgClose = dialog.findViewById(R.id.imgClose);
+        PhotoView imageView2 = dialog.findViewById(R.id.imageView2);
+        Glide.with(this)
+                .load(filePath)
+                .into(imageView2);
+        imgClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        // Window settings
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(android.R.color.transparent);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            params.gravity = Gravity.TOP;
+            params.y = dpToPx(40);
+            window.setAttributes(params);
+        }
+        dialog.show();
     }
 
 
@@ -602,4 +730,7 @@ public class HomeFragment extends Fragment  {
         }
     }
 
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
+    }
 }

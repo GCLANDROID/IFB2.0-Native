@@ -130,4 +130,10 @@ public class Util implements ActivityCompat.OnRequestPermissionsResultCallback {
         }
         return null;
     }
+    public static String getFinancialYear(int year) {
+        int startYear = year;
+        int endYear = year + 1;
+
+        return startYear + "-" + endYear;
+    }
 }

@@ -55,7 +55,7 @@ public class ProductDisplayAdapter extends RecyclerView.Adapter<ProductDisplayAd
                     ((PlanogramActivity) context).scanning(i);
                   //  ((PlanogramActivity) context).postDisplayProduct("1", itemList.get(i).getModelCode());
                 } else {
-                    ((PlanogramActivity) context).postDisplayProduct("1", itemList.get(i).getModelCode());
+                    ((PlanogramActivity) context).postDisplayProduct("1", itemList.get(i).getModelCode(),"0");
                 }
 
 
@@ -66,7 +66,7 @@ public class ProductDisplayAdapter extends RecyclerView.Adapter<ProductDisplayAd
             @Override
             public void onClick(View view) {
 
-                ((PlanogramActivity) context).postDisplayProduct("0", itemList.get(i).getModelCode());
+                ((PlanogramActivity) context).postDisplayProduct("0", itemList.get(i).getModelCode(),"0");
 
 
             }

@@ -1403,6 +1403,12 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -1489,6 +1495,12 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -1559,6 +1571,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -1643,6 +1660,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -1724,6 +1746,12 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -1807,6 +1835,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -2027,6 +2060,12 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -2222,6 +2261,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -2541,7 +2585,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                     public void onError(ANError error) {
                         llSubmit.setEnabled(true);
                         pd.dismiss();
-                        Toast.makeText(SalesManage2Activity.this,"Error Occured 1",Toast.LENGTH_LONG).show();
+                        Toast.makeText(SalesManage2Activity.this,"Error Occured During Sales Entry",Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -2714,6 +2758,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -2799,6 +2848,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -3103,6 +3157,11 @@ public class SalesManage2Activity extends AppCompatActivity {
         };
 //        RequestQueue requestQueue = Volley.newRequestQueue(SalesManage2Activity.this);
 //        requestQueue.add(stringRequest);
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
         RequestQueue requestQueue =
                 AppController.getUnsafeOkHttpQueue(SalesManage2Activity.this);
 
@@ -3153,7 +3212,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                     public void onError(ANError error) {
 
                         pd.dismiss();
-                        Toast.makeText(SalesManage2Activity.this,"Error Occured 1",Toast.LENGTH_LONG).show();
+                        Toast.makeText(SalesManage2Activity.this,"Error Occured During OTP",Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -3195,7 +3254,7 @@ public class SalesManage2Activity extends AppCompatActivity {
                 progressBar.dismiss();
                 String errormessgae=error.getMessage();
                 OTPTracker(refrenceNo,Cust_S_Code,errormessgae);
-                Toast.makeText(SalesManage2Activity.this,"Error Occured while sending Customer Code",Toast.LENGTH_LONG).show();
+                Toast.makeText(SalesManage2Activity.this,"Error Occured while sending Customer Code -IFB",Toast.LENGTH_LONG).show();
 
             }
         }) {
